@@ -1,0 +1,39 @@
+name: Phase 1 foundations
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  foundations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.19"
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: npm ci
+      - run: npm run check
+  infrastructure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: aws-actions/setup-sam@v2
+      - run: sam validate --lint --template-file infra/template.yaml
+        env:
+          # Syntax validation only; this is not a deployment-region choice.
+          AWS_DEFAULT_REGION: us-east-1

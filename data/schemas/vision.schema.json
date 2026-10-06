@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "VisionPart": {
+      "additionalProperties": false,
+      "properties": {
+        "part_id": {
+          "enum": [
+            "pcb_low_grade",
+            "pcb_mid_grade",
+            "pcb_high_grade",
+            "copper_wire",
+            "copper_winding_motor",
+            "copper_transformer",
+            "aluminium_heatsink",
+            "aluminium_body",
+            "steel_frame",
+            "brass_fitting",
+            "plastic_abs",
+            "li_ion_cell",
+            "lead_acid_cell",
+            "compressor_unit",
+            "crt_tube",
+            "lcd_panel",
+            "ram_chip",
+            "cpu_chip",
+            "hdd_drive",
+            "capacitor_large",
+            "magnet_neodymium",
+            "toner_cartridge",
+            "unknown_part",
+            "mercury_lamp",
+            "suspect_insulation",
+            "sealed_container"
+          ],
+          "title": "Part Id",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "material_class": {
+          "enum": [
+            "copper",
+            "aluminium",
+            "brass",
+            "steel",
+            "pcb",
+            "battery_cell",
+            "plastic",
+            "compressor",
+            "other"
+          ],
+          "title": "Material Class",
+          "type": "string"
+        },
+        "grade": {
+          "enum": [
+            "low",
+            "mid",
+            "high",
+            "na"
+          ],
+          "title": "Grade",
+          "type": "string"
+        },
+        "est_weight_g": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Est Weight G",
+          "type": "number"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        }
+      },
+      "required": [
+        "part_id",
+        "name",
+        "material_class",
+        "grade",
+        "est_weight_g",
+        "confidence"
+      ],
+      "title": "VisionPart",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "device_type": {
+      "enum": [
+        "mobile_phone",
+        "feature_phone",
+        "laptop",
+        "desktop_cpu",
+        "crt_monitor",
+        "lcd_monitor",
+        "crt_tv",
+        "led_tv",
+        "keyboard",
+        "mouse",
+        "printer",
+        "router_modem",
+        "charger_adapter",
+        "cables_wires",
+        "ceiling_fan",
+        "microwave",
+        "washing_machine",
+        "refrigerator",
+        "air_conditioner",
+        "inverter_ups",
+        "battery_pack",
+        "cfl_tube_light",
+        "power_bank",
+        "speaker_audio",
+        "unknown"
+      ],
+      "title": "Device Type",
+      "type": "string"
+    },
+    "brand_guess": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Brand Guess"
+    },
+    "condition": {
+      "enum": [
+        "working",
+        "damaged",
+        "burnt",
+        "unknown"
+      ],
+      "title": "Condition",
+      "type": "string"
+    },
+    "parts": {
+      "items": {
+        "$ref": "#/$defs/VisionPart"
+      },
+      "maxItems": 32,
+      "title": "Parts",
+      "type": "array"
+    },
+    "hazards_detected": {
+      "items": {
+        "enum": [
+          "HAZ_LI_ION",
+          "HAZ_LEAD_ACID",
+          "HAZ_CRT_LEAD",
+          "HAZ_MERCURY",
+          "HAZ_REFRIGERANT",
+          "HAZ_CAPACITOR_CHARGE",
+          "HAZ_TONER_DUST",
+          "HAZ_BROKEN_GLASS_LCD",
+          "HAZ_PCB_BURN_FUMES",
+          "HAZ_UNKNOWN_SEALED",
+          "HAZ_ASBESTOS_SUSPECTED"
+        ],
+        "type": "string"
+      },
+      "maxItems": 32,
+      "title": "Hazards Detected",
+      "type": "array"
+    },
+    "overall_confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Overall Confidence",
+      "type": "number"
+    },
+    "needs_more_photos": {
+      "title": "Needs More Photos",
+      "type": "boolean"
+    },
+    "suggested_angle": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Suggested Angle"
+    },
+    "unknowns": {
+      "items": {
+        "maxLength": 500,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Unknowns",
+      "type": "array"
+    }
+  },
+  "required": [
+    "device_type",
+    "brand_guess",
+    "condition",
+    "parts",
+    "hazards_detected",
+    "overall_confidence",
+    "needs_more_photos",
+    "suggested_angle",
+    "unknowns"
+  ],
+  "title": "VisionOutput",
+  "type": "object"
+}

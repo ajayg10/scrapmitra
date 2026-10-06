@@ -1,0 +1,67 @@
+{
+  "sources": [
+    {
+      "id": "epa_lithium",
+      "title": "Used Lithium-Ion Batteries",
+      "url": "https://www.epa.gov/recycle/used-lithium-ion-batteries",
+      "scope": "Battery fire risk and specialist recycling; US disposal law is not applied in India.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "epa_mercury",
+      "title": "Cleaning Up a Broken CFL",
+      "url": "https://www.epa.gov/mercury/cleaning-broken-cfl",
+      "scope": "Mercury-containing lamps; leave area and avoid spreading debris.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "epa_refrigerants",
+      "title": "Safe Disposal Procedures for Household Appliances that Use Refrigerants",
+      "url": "https://www.epa.gov/sites/default/files/2015-08/documents/safe_disposal_procedures_for_household_appliances_that_use_refrigerants.pdf",
+      "scope": "Refrigerant recovery before dismantling. US legal provisions are not Indian authorizations.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "epa_asbestos",
+      "title": "Protect Your Family from Exposures to Asbestos",
+      "url": "https://www.epa.gov/asbestos/protect-your-family-exposures-asbestos",
+      "scope": "Do not disturb suspected asbestos; a photo cannot establish its presence.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "osha_lead",
+      "title": "Battery Manufacturing — Hazards",
+      "url": "https://www.osha.gov/battery-manufacturing/hazards",
+      "scope": "Lead and chemical exposure hazards; not a field first-aid protocol.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "who_ewaste",
+      "title": "Electronic waste (e-waste)",
+      "url": "https://www.who.int/news-room/fact-sheets/detail/electronic-waste-%28e-waste%29",
+      "scope": "Hazards of unsound e-waste treatment, including burning.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "cpsc_microwave",
+      "title": "Electrocution Hazard with Do-It-Yourself Repairs of Microwave Ovens",
+      "url": "https://www.cpsc.gov/s3fs-public/micro.pdf",
+      "scope": "Shock risk can remain after power disconnection.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "osha_ink",
+      "title": "Hazard communication requirements for commercial ink cartridges",
+      "url": "https://www.osha.gov/laws-regs/standardinterpretations/2015-03-27",
+      "scope": "Normal sealed use differs from breached cartridges. Model-specific SDS is still required.",
+      "accessed_at": "2026-10-06"
+    },
+    {
+      "id": "epa_hhw",
+      "title": "Household Hazardous Waste",
+      "url": "https://www.epa.gov/hw/household-hazardous-waste-hhw",
+      "scope": "Do not mix hazardous contents; ask local waste authority for handling help.",
+      "accessed_at": "2026-10-06"
+    }
+  ]
+}

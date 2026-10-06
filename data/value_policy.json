@@ -1,0 +1,13 @@
+{
+  "dealer_margin_discount": {
+    "min": 0.1,
+    "max": 0.25
+  },
+  "price_freshness_days": 7,
+  "low_confidence_threshold": 0.6,
+  "currency": "INR",
+  "rounding": "outward_to_whole_rupees",
+  "unpriced_policy": "exclude_from_total_and_disclose_incomplete_valuation",
+  "reusable_part_premium": false,
+  "source": "Product policy defaults, not market evidence"
+}

@@ -1,0 +1,166 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "is_demo": true,
+    "source": "KabadiPlus Phase 1 illustrative seed; not field-validated",
+    "created_at": "2026-10-06"
+  },
+  "items": [
+    {
+      "material_class": "copper",
+      "grade": "bare_bright",
+      "price_per_kg_min": 650,
+      "price_per_kg_max": 800,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "copper",
+      "grade": "insulated",
+      "price_per_kg_min": 180,
+      "price_per_kg_max": 350,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "aluminium",
+      "grade": "clean",
+      "price_per_kg_min": 100,
+      "price_per_kg_max": 160,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "aluminium",
+      "grade": "mixed",
+      "price_per_kg_min": 60,
+      "price_per_kg_max": 110,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "brass",
+      "grade": "na",
+      "price_per_kg_min": 350,
+      "price_per_kg_max": 500,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "steel",
+      "grade": "na",
+      "price_per_kg_min": 18,
+      "price_per_kg_max": 30,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "pcb",
+      "grade": "low",
+      "price_per_kg_min": 30,
+      "price_per_kg_max": 70,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "pcb",
+      "grade": "mid",
+      "price_per_kg_min": 120,
+      "price_per_kg_max": 240,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "pcb",
+      "grade": "high",
+      "price_per_kg_min": 450,
+      "price_per_kg_max": 850,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "battery_cell",
+      "grade": "na",
+      "price_per_kg_min": null,
+      "price_per_kg_max": null,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "unpriced"
+    },
+    {
+      "material_class": "plastic",
+      "grade": "na",
+      "price_per_kg_min": 5,
+      "price_per_kg_max": 18,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "illustrative"
+    },
+    {
+      "material_class": "compressor",
+      "grade": "na",
+      "price_per_kg_min": null,
+      "price_per_kg_max": null,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "unpriced"
+    },
+    {
+      "material_class": "other",
+      "grade": "na",
+      "price_per_kg_min": null,
+      "price_per_kg_max": null,
+      "currency": "INR",
+      "source": "ILLUSTRATIVE DEMO SEED — not a market quote",
+      "last_updated": "2026-10-06",
+      "region": "DEMO_ONLY",
+      "is_demo": true,
+      "pricing_status": "unpriced"
+    }
+  ]
+}

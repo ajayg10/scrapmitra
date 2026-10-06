@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "image_key": {
+      "maxLength": 512,
+      "minLength": 1,
+      "pattern": "^uploads/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+\\.jpg$",
+      "title": "Image Key",
+      "type": "string"
+    },
+    "lang": {
+      "enum": [
+        "en",
+        "hi"
+      ],
+      "title": "Lang",
+      "type": "string"
+    }
+  },
+  "required": [
+    "image_key",
+    "lang"
+  ],
+  "title": "ScanRequest",
+  "type": "object"
+}

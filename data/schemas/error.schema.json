@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "error_code": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Error Code",
+      "type": "string"
+    },
+    "message_user_friendly": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Message User Friendly",
+      "type": "string"
+    },
+    "message_dev": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Message Dev"
+    }
+  },
+  "required": [
+    "error_code",
+    "message_user_friendly",
+    "message_dev"
+  ],
+  "title": "ErrorResponse",
+  "type": "object"
+}

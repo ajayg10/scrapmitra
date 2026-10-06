@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content_type": {
+      "const": "image/jpeg",
+      "title": "Content Type",
+      "type": "string"
+    },
+    "size_bytes": {
+      "exclusiveMinimum": 0,
+      "maximum": 307200,
+      "title": "Size Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "content_type",
+    "size_bytes"
+  ],
+  "title": "UploadRequest",
+  "type": "object"
+}

@@ -1,0 +1,405 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "is_demo": true,
+    "source": "KabadiPlus Phase 1 illustrative seed; not field-validated",
+    "created_at": "2026-10-06"
+  },
+  "items": [
+    {
+      "device_type": "mobile_phone",
+      "label": {
+        "en": "Mobile phone",
+        "hi": "मोबाइल फोन"
+      },
+      "possible_hazards": [
+        "HAZ_LI_ION",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 120,
+        "max": 250
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "feature_phone",
+      "label": {
+        "en": "Keypad phone",
+        "hi": "कीपैड फोन"
+      },
+      "possible_hazards": [
+        "HAZ_LI_ION",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 70,
+        "max": 180
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "laptop",
+      "label": {
+        "en": "Laptop",
+        "hi": "लैपटॉप"
+      },
+      "possible_hazards": [
+        "HAZ_LI_ION",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 900,
+        "max": 3500
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "desktop_cpu",
+      "label": {
+        "en": "Desktop tower",
+        "hi": "डेस्कटॉप कंप्यूटर"
+      },
+      "possible_hazards": [
+        "HAZ_CAPACITOR_CHARGE",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 3000,
+        "max": 12000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "crt_monitor",
+      "label": {
+        "en": "CRT monitor",
+        "hi": "पुराना भारी मॉनिटर"
+      },
+      "possible_hazards": [
+        "HAZ_CRT_LEAD",
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 6000,
+        "max": 25000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "lcd_monitor",
+      "label": {
+        "en": "LCD monitor",
+        "hi": "एलसीडी मॉनिटर"
+      },
+      "possible_hazards": [
+        "HAZ_BROKEN_GLASS_LCD",
+        "HAZ_MERCURY",
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 1500,
+        "max": 7000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "crt_tv",
+      "label": {
+        "en": "CRT television",
+        "hi": "पुराना भारी टीवी"
+      },
+      "possible_hazards": [
+        "HAZ_CRT_LEAD",
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 8000,
+        "max": 50000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "led_tv",
+      "label": {
+        "en": "LED television",
+        "hi": "एलईडी टीवी"
+      },
+      "possible_hazards": [
+        "HAZ_BROKEN_GLASS_LCD",
+        "HAZ_CAPACITOR_CHARGE",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 2500,
+        "max": 25000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "keyboard",
+      "label": {
+        "en": "Keyboard",
+        "hi": "कीबोर्ड"
+      },
+      "possible_hazards": [
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 200,
+        "max": 1200
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "mouse",
+      "label": {
+        "en": "Mouse",
+        "hi": "माउस"
+      },
+      "possible_hazards": [
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 40,
+        "max": 200
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "printer",
+      "label": {
+        "en": "Printer",
+        "hi": "प्रिंटर"
+      },
+      "possible_hazards": [
+        "HAZ_TONER_DUST",
+        "HAZ_CAPACITOR_CHARGE",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 2000,
+        "max": 25000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "router_modem",
+      "label": {
+        "en": "Router or modem",
+        "hi": "राउटर या मॉडेम"
+      },
+      "possible_hazards": [
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 100,
+        "max": 1500
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "charger_adapter",
+      "label": {
+        "en": "Charger or adapter",
+        "hi": "चार्जर या अडैप्टर"
+      },
+      "possible_hazards": [
+        "HAZ_CAPACITOR_CHARGE",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 30,
+        "max": 800
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "cables_wires",
+      "label": {
+        "en": "Cables and wires",
+        "hi": "केबल और तार"
+      },
+      "possible_hazards": [],
+      "weight_prior_g": {
+        "min": 10,
+        "max": 10000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "ceiling_fan",
+      "label": {
+        "en": "Ceiling fan",
+        "hi": "छत का पंखा"
+      },
+      "possible_hazards": [
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 2500,
+        "max": 8000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "microwave",
+      "label": {
+        "en": "Microwave",
+        "hi": "माइक्रोवेव"
+      },
+      "possible_hazards": [
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 8000,
+        "max": 25000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "washing_machine",
+      "label": {
+        "en": "Washing machine",
+        "hi": "वॉशिंग मशीन"
+      },
+      "possible_hazards": [
+        "HAZ_CAPACITOR_CHARGE",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 15000,
+        "max": 85000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "refrigerator",
+      "label": {
+        "en": "Refrigerator",
+        "hi": "फ्रिज"
+      },
+      "possible_hazards": [
+        "HAZ_REFRIGERANT",
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 15000,
+        "max": 100000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "air_conditioner",
+      "label": {
+        "en": "Air conditioner",
+        "hi": "एयर कंडीशनर"
+      },
+      "possible_hazards": [
+        "HAZ_REFRIGERANT",
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 15000,
+        "max": 90000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "inverter_ups",
+      "label": {
+        "en": "Inverter or UPS",
+        "hi": "इन्वर्टर या यूपीएस"
+      },
+      "possible_hazards": [
+        "HAZ_LEAD_ACID",
+        "HAZ_LI_ION",
+        "HAZ_CAPACITOR_CHARGE"
+      ],
+      "weight_prior_g": {
+        "min": 1000,
+        "max": 35000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "battery_pack",
+      "label": {
+        "en": "Battery pack",
+        "hi": "बैटरी पैक"
+      },
+      "possible_hazards": [
+        "HAZ_LI_ION",
+        "HAZ_LEAD_ACID"
+      ],
+      "weight_prior_g": {
+        "min": 20,
+        "max": 30000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "cfl_tube_light",
+      "label": {
+        "en": "CFL or tube light",
+        "hi": "सीएफएल या ट्यूबलाइट"
+      },
+      "possible_hazards": [
+        "HAZ_MERCURY"
+      ],
+      "weight_prior_g": {
+        "min": 30,
+        "max": 1000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "power_bank",
+      "label": {
+        "en": "Power bank",
+        "hi": "पावर बैंक"
+      },
+      "possible_hazards": [
+        "HAZ_LI_ION",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 100,
+        "max": 1000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "speaker_audio",
+      "label": {
+        "en": "Speaker or audio device",
+        "hi": "स्पीकर या ऑडियो उपकरण"
+      },
+      "possible_hazards": [
+        "HAZ_CAPACITOR_CHARGE",
+        "HAZ_LI_ION",
+        "HAZ_PCB_BURN_FUMES"
+      ],
+      "weight_prior_g": {
+        "min": 100,
+        "max": 15000
+      },
+      "prior_status": "illustrative_not_measured"
+    },
+    {
+      "device_type": "unknown",
+      "label": {
+        "en": "Unknown device",
+        "hi": "अज्ञात उपकरण"
+      },
+      "possible_hazards": [
+        "HAZ_UNKNOWN_SEALED"
+      ],
+      "weight_prior_g": {
+        "min": 0,
+        "max": 100000
+      },
+      "prior_status": "illustrative_not_measured"
+    }
+  ]
+}

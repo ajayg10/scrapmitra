@@ -1,0 +1,497 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "AgentTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "enum": [
+            "identify_parts",
+            "lookup_price",
+            "check_hazards",
+            "find_recycler",
+            "explain_in_language",
+            "request_better_photo"
+          ],
+          "title": "Tool",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "summary"
+      ],
+      "title": "AgentTrace",
+      "type": "object"
+    },
+    "DeviceSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "device_type": {
+          "enum": [
+            "mobile_phone",
+            "feature_phone",
+            "laptop",
+            "desktop_cpu",
+            "crt_monitor",
+            "lcd_monitor",
+            "crt_tv",
+            "led_tv",
+            "keyboard",
+            "mouse",
+            "printer",
+            "router_modem",
+            "charger_adapter",
+            "cables_wires",
+            "ceiling_fan",
+            "microwave",
+            "washing_machine",
+            "refrigerator",
+            "air_conditioner",
+            "inverter_ups",
+            "battery_pack",
+            "cfl_tube_light",
+            "power_bank",
+            "speaker_audio",
+            "unknown"
+          ],
+          "title": "Device Type",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "brand": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Brand"
+        },
+        "condition": {
+          "enum": [
+            "working",
+            "damaged",
+            "burnt",
+            "unknown"
+          ],
+          "title": "Condition",
+          "type": "string"
+        }
+      },
+      "required": [
+        "device_type",
+        "label",
+        "brand",
+        "condition"
+      ],
+      "title": "DeviceSummary",
+      "type": "object"
+    },
+    "LocalizedHazard": {
+      "additionalProperties": false,
+      "properties": {
+        "hazard_id": {
+          "enum": [
+            "HAZ_LI_ION",
+            "HAZ_LEAD_ACID",
+            "HAZ_CRT_LEAD",
+            "HAZ_MERCURY",
+            "HAZ_REFRIGERANT",
+            "HAZ_CAPACITOR_CHARGE",
+            "HAZ_TONER_DUST",
+            "HAZ_BROKEN_GLASS_LCD",
+            "HAZ_PCB_BURN_FUMES",
+            "HAZ_UNKNOWN_SEALED",
+            "HAZ_ASBESTOS_SUSPECTED"
+          ],
+          "title": "Hazard Id",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "icon": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Icon",
+          "type": "string"
+        },
+        "warning": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Warning",
+          "type": "string"
+        },
+        "do": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Do",
+          "type": "array"
+        },
+        "dont": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Dont",
+          "type": "array"
+        },
+        "exposure_help": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Exposure Help",
+          "type": "string"
+        },
+        "disposal_route": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Disposal Route",
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "draft",
+            "approved"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hazard_id",
+        "severity",
+        "icon",
+        "warning",
+        "do",
+        "dont",
+        "exposure_help",
+        "disposal_route",
+        "review_status"
+      ],
+      "title": "LocalizedHazard",
+      "type": "object"
+    },
+    "MoneyRange": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "minimum": 0,
+          "title": "Min",
+          "type": "number"
+        },
+        "max": {
+          "minimum": 0,
+          "title": "Max",
+          "type": "number"
+        },
+        "currency": {
+          "const": "INR",
+          "title": "Currency",
+          "type": "string"
+        }
+      },
+      "required": [
+        "min",
+        "max",
+        "currency"
+      ],
+      "title": "MoneyRange",
+      "type": "object"
+    },
+    "NextAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "retake_photo",
+            "find_recycler",
+            "contact_recycler"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "recycler_id": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recycler Id"
+        }
+      },
+      "required": [
+        "kind",
+        "label",
+        "recycler_id"
+      ],
+      "title": "NextAction",
+      "type": "object"
+    },
+    "PartAppraisal": {
+      "additionalProperties": false,
+      "properties": {
+        "part_id": {
+          "enum": [
+            "pcb_low_grade",
+            "pcb_mid_grade",
+            "pcb_high_grade",
+            "copper_wire",
+            "copper_winding_motor",
+            "copper_transformer",
+            "aluminium_heatsink",
+            "aluminium_body",
+            "steel_frame",
+            "brass_fitting",
+            "plastic_abs",
+            "li_ion_cell",
+            "lead_acid_cell",
+            "compressor_unit",
+            "crt_tube",
+            "lcd_panel",
+            "ram_chip",
+            "cpu_chip",
+            "hdd_drive",
+            "capacitor_large",
+            "magnet_neodymium",
+            "toner_cartridge",
+            "unknown_part",
+            "mercury_lamp",
+            "suspect_insulation",
+            "sealed_container"
+          ],
+          "title": "Part Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "weight_g_min": {
+          "minimum": 0,
+          "title": "Weight G Min",
+          "type": "number"
+        },
+        "weight_g_max": {
+          "minimum": 0,
+          "title": "Weight G Max",
+          "type": "number"
+        },
+        "value_range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MoneyRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pricing_status": {
+          "enum": [
+            "priced",
+            "illustrative",
+            "unpriced"
+          ],
+          "title": "Pricing Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "part_id",
+        "label",
+        "weight_g_min",
+        "weight_g_max",
+        "value_range",
+        "pricing_status"
+      ],
+      "title": "PartAppraisal",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "scan_id": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Scan Id",
+      "type": "string"
+    },
+    "lang": {
+      "enum": [
+        "en",
+        "hi"
+      ],
+      "title": "Lang",
+      "type": "string"
+    },
+    "device": {
+      "$ref": "#/$defs/DeviceSummary"
+    },
+    "parts": {
+      "items": {
+        "$ref": "#/$defs/PartAppraisal"
+      },
+      "title": "Parts",
+      "type": "array"
+    },
+    "hazards": {
+      "items": {
+        "$ref": "#/$defs/LocalizedHazard"
+      },
+      "title": "Hazards",
+      "type": "array"
+    },
+    "value_range": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MoneyRange"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "valuation_complete": {
+      "title": "Valuation Complete",
+      "type": "boolean"
+    },
+    "confidence_label": {
+      "enum": [
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "title": "Confidence Label",
+      "type": "string"
+    },
+    "price_source": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Price Source",
+      "type": "string"
+    },
+    "price_last_updated": {
+      "anyOf": [
+        {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Price Last Updated"
+    },
+    "is_demo": {
+      "title": "Is Demo",
+      "type": "boolean"
+    },
+    "needs_more_photos": {
+      "title": "Needs More Photos",
+      "type": "boolean"
+    },
+    "suggested_angle": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Suggested Angle"
+    },
+    "audio_script": {
+      "maxLength": 8000,
+      "minLength": 1,
+      "title": "Audio Script",
+      "type": "string"
+    },
+    "next_actions": {
+      "items": {
+        "$ref": "#/$defs/NextAction"
+      },
+      "title": "Next Actions",
+      "type": "array"
+    },
+    "agent_trace": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/AgentTrace"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Agent Trace"
+    }
+  },
+  "required": [
+    "scan_id",
+    "lang",
+    "device",
+    "parts",
+    "hazards",
+    "value_range",
+    "valuation_complete",
+    "confidence_label",
+    "price_source",
+    "price_last_updated",
+    "is_demo",
+    "needs_more_photos",
+    "suggested_angle",
+    "audio_script",
+    "next_actions",
+    "agent_trace"
+  ],
+  "title": "AppraisalResponse",
+  "type": "object"
+}
