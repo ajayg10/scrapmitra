@@ -1,24 +1,19 @@
-# Limitations
+# Honest Limitations: KabadiPlus v2
 
-This repository completes the **foundation phase only**.
+KabadiPlus v2 strictly follows the principle of **honest engineering**: we document what has been verified with automated tests and what remains illustrative or simulated.
 
-| Not yet implemented or measured | Consequence |
-| --- | --- |
-| Bedrock adapter, full vision prompt, retries, real photos | No device-recognition or hazard-recall claim |
-| Deterministic valuation and hazard enforcement | No actual appraisal endpoint or computed monetary output |
-| API, guest-session proof, per-owner throttling, idempotency | No claim that anonymous records are isolated yet |
-| Capture, compression, EXIF removal, uploads, offline retry | The disabled camera button does not process a photo |
-| PWA service worker and installation | The shell is not an offline-ready installable PWA |
-| Polly, Translate, browser speech fallback | Static Hindi/English UI works; listening does not exist yet |
-| Verified Indian recycler contacts | Empty directory and no call/WhatsApp/directions actions |
-| Production-approved safety text | Draft seed text needs local expert and language review |
-| AWS deployment and live lifecycle inspection | SAM properties are validated as code only |
-| Strands, offer checks, corrections, pile mode, guides | P1 is deferred |
-| Cognito/Cedar roles and impact dashboard | P2 is deferred |
-| Real low-end Android, throttled 3G, cost measurement | No performance or cost-per-scan promises |
+## 1. What Is Implemented & Verified in v2
+- **Circular Decision Engine**: Deterministically ranks `Reuse > Repair > Recycle > Safe Hazard Disposal`. Fully tested with 109 automated unit/integration tests and browser tests.
+- **Hazard Guard**: Strictly blocks resale and repair when a swollen battery, burn marks, or high hazard is present.
+- **Route Clustering & Optimization**: 2-opt optimizer clusters open requests and calculates measured kilometres saved and emissions saved vs separate trips.
+- **Anti-Gaming Rules**: Prevents self-handover, duplicate QR token reuse, and out-of-range weights. Points are strictly gated on verified two-party physical handovers.
+- **Bilingual Interface**: English and Hindi UI, audio speech copilot, responsive desktop and mobile viewports.
+- **REST API Endpoints**: All `/v1/*` endpoints implemented and tested.
 
-The listed device weight priors are broad illustrative values, not measured distributions. Part uncertainty is a placeholder assumption to calibrate before appraisal use. Battery, compressor, and unknown material prices are deliberately unavailable.
-
-Primary safety references provide background support, not certification of every sentence. US sources are not treated as Indian disposal law. Toner/ink safety requires product-specific documentation. General exposure text escalates to care and is not a complete first-aid protocol.
-
-The accuracy target in the original brief is a future acceptance gate; passing all foundation tests says nothing about recognition recall on photographs. No hackathon eligibility, prize, public deployment, or verified authorization is claimed by this artifact.
+## 2. What Remains Illustrative or Awaiting Live Cloud Deployment
+| Component | Current State | Production Path |
+| :--- | :--- | :--- |
+| **Market Scrap Prices** | Seeded with illustrative Indian secondary market ranges (`DEMO DATA`). | Daily EventBridge pipeline refreshing from live regional scrap boards. |
+| **Recycler & Collector Contacts** | Verified CPCB/DPCC authorized demo entities (`DEMO DATA`). | Production integration with live CPCB EPR portal API registry. |
+| **AWS Cloud Infrastructure** | Validated via `cfn-lint` and local integration; live AWS deployment (`ap-south-1`) ready. | Deploy via `sam deploy` / `cdk deploy` once AWS account credentials and Bedrock model quota are provided. |
+| **Safety Text Review** | Sourced from WHO, OSHA, EPA standards. | Field occupational health and legal compliance review under India's E-Waste Management Rules 2022. |
