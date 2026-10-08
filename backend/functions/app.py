@@ -91,6 +91,42 @@ def get_vision_client():
     return MockVisionClient()
 
 
+@app.route("/", methods=["GET"])
+def index():
+    if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+        return """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>KabadiPlus v2 API</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 2.5rem; border-radius: 1rem; border: 1px solid #334155; max-width: 520px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+    h1 { color: #38bdf8; margin-top: 0; font-size: 1.75rem; }
+    p { color: #94a3b8; line-height: 1.6; }
+    .btn { display: inline-block; background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; margin-top: 1rem; }
+    .btn:hover { background: #059669; }
+    .code { background: #0f172a; padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-family: monospace; color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>KabadiPlus v2 API is Running</h1>
+    <p>You have reached the <strong>Backend API Server</strong> (port 5001). The interactive User Interface (PWA) is running on port <strong>5173</strong>.</p>
+    <a class="btn" href="http://localhost:5173">Open KabadiPlus Web App &rarr;</a>
+    <p style="margin-top: 1.5rem; font-size: 0.85rem;">API Health Check: <a href="/v1/health" style="color: #38bdf8;"><span class="code">/v1/health</span></a></p>
+  </div>
+</body>
+</html>"""
+    return jsonify({
+        "service": "KabadiPlus v2 API Server",
+        "status": "healthy",
+        "version": "2.0.0",
+        "frontend_url": "http://localhost:5173",
+        "health": "/v1/health",
+    })
+
+
 @app.route("/v1/health", methods=["GET"])
 def health():
     return jsonify({
