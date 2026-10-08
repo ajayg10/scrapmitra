@@ -163,10 +163,99 @@ def scan():
     _image_key = body.get("image_key", "uploads/guest/default.jpg")
     lang = body.get("lang", "en")
     powers_on = body.get("powers_on")
+    device_type_hint = body.get("device_type")
 
     # 1. Inspect image
     client = get_vision_client()
     dummy_bytes = b"mock_image_bytes"
+    if body.get("image_b64"):
+        try:
+            raw_b64 = str(body["image_b64"])
+            if "," in raw_b64:
+                raw_b64 = raw_b64.split(",", 1)[1]
+            import base64
+            dummy_bytes = base64.b64decode(raw_b64)
+        except Exception:
+            pass
+
+    if isinstance(client, MockVisionClient) and device_type_hint:
+        if device_type_hint == "laptop":
+            client.default_response = {
+                "device_type": "laptop",
+                "brand_guess": "Dell",
+                "condition": "damaged",
+                "age_band": "3to6",
+                "visible_damage": ["cracked_screen"],
+                "battery_present": True,
+                "parts": [
+                    {"part_id": "lcd_panel", "est_weight_g_min": 250.0, "est_weight_g_max": 400.0, "confidence": 0.9},
+                    {"part_id": "pcb_high", "est_weight_g_min": 120.0, "est_weight_g_max": 200.0, "confidence": 0.92},
+                    {"part_id": "li_ion_cell", "est_weight_g_min": 180.0, "est_weight_g_max": 280.0, "confidence": 0.88},
+                    {"part_id": "aluminium", "est_weight_g_min": 300.0, "est_weight_g_max": 500.0, "confidence": 0.85},
+                ],
+                "hazards_detected": ["HAZ_LI_ION", "HAZ_BROKEN_GLASS_LCD"],
+                "overall_confidence": 0.9,
+                "needs_more_photos": False,
+                "suggested_angle": None,
+                "unknowns": [],
+            }
+        elif device_type_hint == "crt_tv":
+            client.default_response = {
+                "device_type": "crt_tv",
+                "brand_guess": "Onida",
+                "condition": "burnt",
+                "age_band": "gt10",
+                "visible_damage": ["burn_marks"],
+                "battery_present": False,
+                "parts": [
+                    {"part_id": "crt_tube", "est_weight_g_min": 6000.0, "est_weight_g_max": 10000.0, "confidence": 0.95},
+                    {"part_id": "copper_winding", "est_weight_g_min": 400.0, "est_weight_g_max": 900.0, "confidence": 0.88},
+                    {"part_id": "pcb_low", "est_weight_g_min": 350.0, "est_weight_g_max": 600.0, "confidence": 0.82},
+                ],
+                "hazards_detected": ["HAZ_CRT_LEAD", "HAZ_PCB_BURN_FUMES"],
+                "overall_confidence": 0.92,
+                "needs_more_photos": False,
+                "suggested_angle": None,
+                "unknowns": [],
+            }
+        elif device_type_hint == "battery_pack":
+            client.default_response = {
+                "device_type": "battery_pack",
+                "brand_guess": "Generic",
+                "condition": "damaged",
+                "age_band": "3to6",
+                "visible_damage": ["swollen_battery"],
+                "battery_present": True,
+                "parts": [
+                    {"part_id": "li_ion_cell", "est_weight_g_min": 250.0, "est_weight_g_max": 400.0, "confidence": 0.95},
+                    {"part_id": "pcb_low", "est_weight_g_min": 20.0, "est_weight_g_max": 40.0, "confidence": 0.8},
+                ],
+                "hazards_detected": ["HAZ_LI_ION"],
+                "overall_confidence": 0.95,
+                "needs_more_photos": False,
+                "suggested_angle": None,
+                "unknowns": [],
+            }
+        elif device_type_hint == "ceiling_fan":
+            client.default_response = {
+                "device_type": "ceiling_fan",
+                "brand_guess": "Usha",
+                "condition": "looks_intact",
+                "age_band": "6to10",
+                "visible_damage": [],
+                "battery_present": False,
+                "parts": [
+                    {"part_id": "copper_winding", "est_weight_g_min": 600.0, "est_weight_g_max": 1100.0, "confidence": 0.9},
+                    {"part_id": "steel", "est_weight_g_min": 2500.0, "est_weight_g_max": 3500.0, "confidence": 0.92},
+                    {"part_id": "aluminium", "est_weight_g_min": 800.0, "est_weight_g_max": 1400.0, "confidence": 0.88},
+                ],
+                "hazards_detected": [],
+                "overall_confidence": 0.91,
+                "needs_more_photos": False,
+                "suggested_angle": None,
+                "unknowns": [],
+            }
+
     vision_output, err = inspect_with_retry(client, dummy_bytes)
 
     if vision_output is None:

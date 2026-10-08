@@ -19,6 +19,23 @@
 .camera-button:hover:not(:disabled){transform:translateY(-1px);background:#1a4d38}
 .catalog-toggle{display:flex;align-items:center;gap:6px;color:var(--green);background:transparent;border:0;padding:0;min-height:44px;font-size:13px;font-weight:650}.no-account{display:flex;align-items:center;gap:7px;color:#5b685e;font-size:11px;margin:7px 0 0}
 
+/* Upload & Camera Actions */
+.upload-zone{border:2px dashed #9fb696;border-radius:16px;padding:22px 18px;background:#f3f6f0;text-align:center;transition:all 0.2s;margin:16px 0}
+.upload-zone.dragging{border-color:var(--green);background:#eaf2e7}
+.action-buttons-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.secondary-upload-btn{min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 18px;border:1px solid #b8cbaf;border-radius:12px;background:#fff;color:#1e4938;font-size:14px;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.03);transition:all 0.15s}
+.secondary-upload-btn:hover{background:#edf4ea;border-color:var(--green)}
+.preview-card{background:#fff;border:1px solid #dce4d6;border-radius:14px;padding:18px;margin:16px 0;display:flex;flex-direction:column;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,0.04);width:100%}
+.preview-img{max-height:220px;max-width:100%;border-radius:10px;object-fit:cover;border:1px solid #dce4d6}
+.preview-meta{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#15803d;background:#dcfce7;padding:5px 12px;border-radius:20px;margin:12px 0}
+.preset-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+.preset-pill{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;border:1px solid #cad6c4;background:#fff;font-size:12px;font-weight:600;color:#354d3d;transition:all 0.15s}
+.preset-pill:hover,.preset-pill.active{background:#e3ede0;border-color:var(--green);color:var(--green)}
+.webcam-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.webcam-container{background:#111;border-radius:16px;overflow:hidden;max-width:600px;width:100%;position:relative;border:2px solid #444}
+.webcam-video{width:100%;height:auto;display:block}
+.webcam-actions{display:flex;gap:14px;justify-content:center;margin-top:16px}
+
 .device-illustration{height:300px;position:relative;border-radius:50%;background:radial-gradient(circle at 50% 48%,#e6edde 0%,transparent 66%)}.orbit{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:1px solid #dbe4d6;border-radius:50%}.orbit-one{width:92%;aspect-ratio:1}.orbit-two{width:65%;aspect-ratio:1}.device-tile{position:absolute;display:grid;place-items:center;border:1px solid #d1dbca;box-shadow:0 15px 35px #2a513713;border-radius:22px}.tile-laptop{width:160px;height:135px;left:9%;top:45px;background:#eef2e6;color:#456b4e;transform:rotate(-9deg)}.tile-phone{width:98px;height:145px;right:10%;top:110px;background:#f4dfb8;color:#72603a;transform:rotate(12deg)}.tile-circuit{width:88px;height:78px;left:25%;bottom:26px;background:#c5d9bd;color:#476544;transform:rotate(5deg)}.recycle-circle{position:absolute;right:25%;top:28px;display:grid;place-items:center;background:var(--green);color:#f5faf1;width:76px;height:76px;border:6px solid #f7f8f3;border-radius:50%}
 
 /* Prompt question card */

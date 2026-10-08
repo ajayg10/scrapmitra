@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from './components/Icon';
 import { device_type, type Language } from './generated/taxonomy';
@@ -21,11 +21,127 @@ export default function App() {
   const [adminReport, setAdminReport] = useState<any | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
 
+  // Camera & Image Upload state
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageSizeKb, setImageSizeKb] = useState<number | null>(null);
+  const [isWebcamOpen, setIsWebcamOpen] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
   const lang: Language = i18n.resolvedLanguage === 'hi' ? 'hi' : 'en';
 
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  // Client-side canvas compression (max 1280px, JPEG 0.75, EXIF stripped, <300KB)
+  const processImageFile = (file: File) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1280;
+        let w = img.width;
+        let h = img.height;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          const kb = Math.round((dataUrl.length * 3) / 4 / 1024);
+          setImagePreview(dataUrl);
+          setImageSizeKb(kb);
+          setSelectedPreset(null);
+        }
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileInputChange = (files: FileList | null) => {
+    if (files && files[0]) {
+      processImageFile(files[0]);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processImageFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const startWebcam = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 } },
+      });
+      streamRef.current = stream;
+      setIsWebcamOpen(true);
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          void videoRef.current.play();
+        }
+      }, 100);
+    } catch {
+      // Fallback: trigger camera input if webcam getUserMedia is blocked or unsupported
+      cameraInputRef.current?.click();
+    }
+  };
+
+  const stopWebcam = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setIsWebcamOpen(false);
+  };
+
+  const captureWebcamFrame = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+      const kb = Math.round((dataUrl.length * 3) / 4 / 1024);
+      setImagePreview(dataUrl);
+      setImageSizeKb(kb);
+      setSelectedPreset(null);
+    }
+    stopWebcam();
+  };
+
+  const loadPresetDevice = (devType: string, label: string) => {
+    setSelectedPreset(devType);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400"><rect width="640" height="400" fill="#13231d"/><circle cx="320" cy="180" r="100" fill="#1a3d2e"/><text x="50%" y="46%" dominant-baseline="middle" text-anchor="middle" fill="#34d399" font-size="28" font-family="sans-serif" font-weight="bold">${label}</text><text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="16" font-family="sans-serif">Sample Preset (${devType})</text></svg>`;
+    const dataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    setImagePreview(dataUrl);
+    setImageSizeKb(36);
+  };
 
   // Voice synthesis (WebSpeech API with Polly fallback order)
   const speakText = (text: string) => {
@@ -40,15 +156,19 @@ export default function App() {
   };
 
   // Perform inspection simulation
-  const handleInspect = async () => {
+  const handleInspect = async (overrideImg?: string, overrideDev?: string) => {
     setIsScanning(true);
+    const activeImg = overrideImg || imagePreview;
+    const activeDev = overrideDev || selectedPreset;
     // Call backend API if available, else local deterministic calculation
     try {
       const res = await fetch('http://127.0.0.1:5001/v1/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          image_key: 'uploads/guest/phone.jpg',
+          image_key: 'uploads/guest/device_capture.jpg',
+          image_b64: activeImg || undefined,
+          device_type: activeDev || undefined,
           lang,
           powers_on: powersOn,
         }),
@@ -234,6 +354,42 @@ export default function App() {
         {/* TAB 1: SCAN & DECIDE */}
         {activeTab === 'scan' && (
           <section>
+            {/* Hidden inputs for native camera & device file upload */}
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              style={{ display: 'none' }}
+              onChange={(e) => handleFileInputChange(e.target.files)}
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/*"
+              style={{ display: 'none' }}
+              onChange={(e) => handleFileInputChange(e.target.files)}
+            />
+
+            {/* Live Webcam Modal Viewfinder */}
+            {isWebcamOpen && (
+              <div className="webcam-overlay" role="dialog" aria-modal="true" aria-label="Webcam scanner">
+                <div className="webcam-container">
+                  <video ref={videoRef} className="webcam-video" autoPlay playsInline muted />
+                </div>
+                <div className="webcam-actions">
+                  <button type="button" className="camera-button" onClick={captureWebcamFrame}>
+                    <Icon name="Camera" size={20} />
+                    {t('snapWebcam')}
+                  </button>
+                  <button type="button" className="secondary-upload-btn" onClick={stopWebcam}>
+                    <Icon name="X" size={18} />
+                    {t('closeWebcam')}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="hero">
               <div className="hero-copy">
                 <p className="eyebrow">{t('eyebrow')}</p>
@@ -250,10 +406,138 @@ export default function App() {
                   </div>
                 </div>
 
-                <button type="button" className="camera-button" onClick={handleInspect} disabled={isScanning}>
-                  <Icon name={isScanning ? 'RefreshCw' : 'Camera'} size={24} />
-                  {isScanning ? (lang === 'hi' ? 'जाँच हो रही है...' : 'Inspecting Device...') : t('scan')}
-                </button>
+                {/* Photo Upload & Camera Action Controls */}
+                {!imagePreview ? (
+                  <div
+                    className={`upload-zone ${isDragging ? 'dragging' : ''}`}
+                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={handleDrop}
+                  >
+                    <p className="m-0 mb-3 text-sm font-semibold text-emerald-950">
+                      {t('dropImage')}
+                    </p>
+
+                    <button
+                      type="button"
+                      className="camera-button w-full mb-3"
+                      onClick={() => void handleInspect()}
+                      disabled={isScanning}
+                    >
+                      <Icon name={isScanning ? 'RefreshCw' : 'Camera'} size={24} />
+                      {isScanning
+                        ? (lang === 'hi' ? 'जाँच हो रही है...' : 'Inspecting Device...')
+                        : t('scan')}
+                    </button>
+
+                    <div className="action-buttons-grid">
+                      <button
+                        type="button"
+                        className="secondary-upload-btn"
+                        onClick={() => {
+                          if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                            cameraInputRef.current?.click();
+                          } else {
+                            void startWebcam();
+                          }
+                        }}
+                      >
+                        <Icon name="Camera" size={18} />
+                        {t('takePhoto')}
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary-upload-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Icon name="Upload" size={18} />
+                        {t('uploadPhoto')}
+                      </button>
+                    </div>
+
+                    {/* Quick Demo Test Presets */}
+                    <div className="mt-4 pt-3 border-t border-[#d8e2d4]">
+                      <span className="text-xs text-[#556658] font-semibold">{t('sampleDevices')}</span>
+                      <div className="preset-list">
+                        <button
+                          type="button"
+                          className="preset-pill"
+                          onClick={() => loadPresetDevice('mobile_phone', lang === 'hi' ? 'स्मार्टफोन' : 'Smartphone')}
+                        >
+                          <Icon name="Smartphone" size={14} />
+                          {lang === 'hi' ? 'स्मार्टफोन' : 'Phone'}
+                        </button>
+                        <button
+                          type="button"
+                          className="preset-pill"
+                          onClick={() => loadPresetDevice('laptop', lang === 'hi' ? 'लैपटॉप' : 'Laptop')}
+                        >
+                          <Icon name="Laptop" size={14} />
+                          {lang === 'hi' ? 'लैपटॉप' : 'Laptop'}
+                        </button>
+                        <button
+                          type="button"
+                          className="preset-pill"
+                          onClick={() => loadPresetDevice('crt_tv', lang === 'hi' ? 'सीआरटी टीवी' : 'CRT TV')}
+                        >
+                          <Icon name="Tv" size={14} />
+                          {lang === 'hi' ? 'टीवी' : 'CRT TV'}
+                        </button>
+                        <button
+                          type="button"
+                          className="preset-pill"
+                          onClick={() => loadPresetDevice('battery_pack', lang === 'hi' ? 'लिथियम बैटरी' : 'Li-ion Battery')}
+                        >
+                          <Icon name="BatteryWarning" size={14} />
+                          {lang === 'hi' ? 'बैटरी' : 'Battery'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="preview-card">
+                    <img src={imagePreview} alt="Captured E-Waste" className="preview-img" />
+                    <div className="preview-meta">
+                      <Icon name="Check" size={15} />
+                      <span>{imageSizeKb ? `${imageSizeKb} KB · ` : ''}{t('imageReady')}</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="camera-button w-full"
+                      onClick={() => void handleInspect()}
+                      disabled={isScanning}
+                    >
+                      <Icon name={isScanning ? 'RefreshCw' : 'Camera'} size={22} />
+                      {isScanning
+                        ? (lang === 'hi' ? 'जाँच हो रही है...' : 'Inspecting Device...')
+                        : t('inspectNow')}
+                    </button>
+
+                    <div className="flex gap-2 w-full mt-3">
+                      <button
+                        type="button"
+                        className="secondary-upload-btn flex-1"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setSelectedPreset(null);
+                        }}
+                      >
+                        <Icon name="RefreshCw" size={16} />
+                        {t('changePhoto')}
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary-upload-btn flex-1"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Icon name="Upload" size={16} />
+                        {t('uploadPhoto')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <p className="scan-status">{t('scanSoon')}</p>
                 <p className="no-account"><Icon name="ShieldCheck" size={18} />{t('noAccount')}</p>
               </div>

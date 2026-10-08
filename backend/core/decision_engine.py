@@ -54,7 +54,7 @@ def evaluate_circular_decision(
         "swollen_battery" in visible_damage
         or "burn_marks" in visible_damage
         or condition == "burnt"
-        or (has_high_hazard and (condition == "damaged" or bool(visible_damage)))
+        or ("corrosion" in visible_damage and has_high_hazard)
     )
 
     carbon_info = EMBODIED_CARBON.get(device_type, EMBODIED_CARBON["unknown"])
@@ -219,10 +219,11 @@ def evaluate_circular_decision(
     if repair_viability >= threshold and economic_repair_favorable:
         est_net_resale_min = max(0.0, float(rule["resale_min"] - rule["repair_cost_max"]))
         est_net_resale_max = max(est_net_resale_min, float(rule["resale_max"] - rule["repair_cost_min"]))
+        repair_title = "Screen Repair & Refurbishment" if "cracked_screen" in visible_damage else "Repair & Refurbishment"
         options.append(
             CircularOption(
                 option_id="REPAIR_THEN_REUSE",
-                title="Repair & Refurbishment",
+                title=repair_title,
                 money_range=MoneyRange(
                     min=est_net_resale_min,
                     max=est_net_resale_max,

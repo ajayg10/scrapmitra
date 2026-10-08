@@ -46,5 +46,16 @@
   "environmentalBenefit": "Embodied Carbon Avoided",
   "comparisonTitle": "Hierarchy Comparison: Choices vs Throwing Away",
   "verifiedNotice": "Verified-Only Impact: Points and diversion credits are unlocked strictly upon two-party QR handover.",
-  "routeSavings": "Measured Kilometres Saved"
+  "routeSavings": "Measured Kilometres Saved",
+  "takePhoto": "Take Photo with Camera",
+  "uploadPhoto": "Upload from Device / Gallery",
+  "openWebcam": "Open Live Webcam",
+  "closeWebcam": "Close Webcam",
+  "snapWebcam": "Snap Frame",
+  "dropImage": "Drop e-waste photo here, or choose an option below",
+  "changePhoto": "Retake / Choose Another",
+  "inspectNow": "Inspect Device Now",
+  "imageReady": "Compressed · EXIF Stripped (<300KB)",
+  "sampleDevices": "Or Test with Sample E-Waste:",
+  "webcamDenied": "Could not access camera. Please select a photo from your device."
 }

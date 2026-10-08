@@ -8,5 +8,5 @@ export default defineConfig({
     { name: 'mobile-shell', use: { viewport: { width: 360, height: 800 } } },
     { name: 'desktop-shell', use: { viewport: { width: 1280, height: 900 } } },
   ],
-  webServer: { command: 'npm run dev', url: 'http://127.0.0.1:5173', reuseExistingServer: false },
+  webServer: { command: 'npm run dev', url: 'http://127.0.0.1:5173', reuseExistingServer: true },
 });
