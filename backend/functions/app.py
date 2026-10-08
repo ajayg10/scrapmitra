@@ -18,9 +18,16 @@ Implements all /v1 endpoints specified in Section 16 of the Master Spec:
 """
 
 import os
+import sys
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
+
+# Ensure project root is in sys.path so app.py can be run directly from any directory
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS

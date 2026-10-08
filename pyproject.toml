@@ -26,3 +26,6 @@ extend-exclude = ["backend/core/taxonomy_types.py"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/functions/app.py" = ["E402"]
