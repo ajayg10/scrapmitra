@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "schema_version": "1.0.0",
+    "schema_version": "2.0.0",
     "is_demo": true,
-    "source": "Project-authored safety drafts using the scoped references in data/sources.json",
-    "created_at": "2026-10-06",
+    "source": "Project-authored safety drafts using references in data/sources.json",
+    "created_at": "2026-10-09",
     "field_use_approved": false
   },
   "items": [
@@ -12,36 +12,38 @@
       "severity": "HIGH",
       "icon": "BatteryWarning",
       "review_status": "draft",
-      "source_ids": [
-        "epa_lithium"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["epa_lithium"],
+      "review_note": "Project-authored draft for lithium batteries.",
       "text": {
         "en": {
-          "warning": "A lithium battery may catch fire if damaged.",
+          "warning": "A lithium battery may catch fire or explode if punctured, crushed, or heated.",
           "do": [
-            "Stop handling a swollen, hot, or leaking battery.",
-            "Ask a trained battery handler for help."
+            "Stop handling a swollen, hot, punctured or leaking battery.",
+            "Store in a cool, non-flammable container away from combustibles.",
+            "Ask a verified battery collector for safe collection."
           ],
           "dont": [
-            "Do not puncture, crush, burn, or charge it.",
-            "Do not pry a battery out of a device."
+            "Do not puncture, crush, hammer, or incinerate.",
+            "Do not pry a glued battery out of a phone or laptop.",
+            "Never put this in household waste or general scrap piles."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A recycler verified to accept this battery type."
+          "exposure_help": "Move away from toxic fumes. If burning, use sand or Class D/ABC fire extinguisher. Seek urgent medical care for chemical burns.",
+          "disposal_route": "Authorized hazardous collection or CPCB-registered battery recycler."
         },
         "hi": {
-          "warning": "क्षतिग्रस्त लिथियम बैटरी में आग लग सकती है।",
+          "warning": "क्षतिग्रस्त लिथियम बैटरी में आग लग सकती है या विस्फोट हो सकता है।",
           "do": [
-            "फूली, गर्म या रिसती बैटरी को छूना बंद करें।",
-            "प्रशिक्षित बैटरी कर्मचारी से मदद लें।"
+            "फूली, गर्म, छेद वाली या रिसती बैटरी को तुरंत अलग करें।",
+            "इसे किसी अज्वलनशील बर्तन में रेत के साथ सुरक्षित रखें।",
+            "अधिकृत बैटरी रीसाइक्लर को ही सौंपें।"
           ],
           "dont": [
-            "इसे छेदें, दबाएँ, जलाएँ या चार्ज न करें।",
-            "उपकरण से बैटरी उखाड़कर न निकालें।"
+            "इसे छेदें, दबाएँ, हथौड़े से न मारें या आग में न डालें।",
+            "चिपकी हुई बैटरी को चाकू या पेचकस से जबरन न निकालें।",
+            "इसे कभी भी घरेलू कचरे या खुले कबाड़ में न फेंकें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "इस प्रकार की बैटरी लेने वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "धुएँ से तुरंत दूर हटें। त्वचा पर रसायन लगने पर प्रचुर पानी से धोएँ और डॉक्टर से संपर्क करें।",
+          "disposal_route": "अधिकृत खतरनाक कचरा केंद्र या पंजीकृत बैटरी रीसाइक्लर।"
         }
       }
     },
@@ -50,34 +52,38 @@
       "severity": "HIGH",
       "icon": "BatteryWarning",
       "review_status": "draft",
-      "source_ids": [
-        "osha_lead"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["osha_lead"],
+      "review_note": "Project-authored draft for lead acid batteries.",
       "text": {
         "en": {
-          "warning": "This battery may contain corrosive acid and lead.",
+          "warning": "Lead-acid batteries contain toxic lead and corrosive sulfuric acid that can blind and burn.",
           "do": [
-            "Keep people away from leaks.",
-            "Ask a trained battery handler for help."
+            "Keep upright to prevent sulfuric acid spills.",
+            "Wear acid-resistant gloves and safety glasses if moving.",
+            "Hand over intact to an authorized battery recycler."
           ],
           "dont": [
-            "Do not open, drain, burn, or break the battery."
+            "Never break open or drain acid into drains, soil, or scrap yards.",
+            "Do not melt lead plates in open fire or informal pits.",
+            "Never put this in household waste."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A recycler verified to accept lead-acid batteries."
+          "exposure_help": "Flush acid splashes with plenty of clean water for 15 minutes. Seek emergency medical attention.",
+          "disposal_route": "Authorized lead recycling facility registered under Battery Waste Management Rules."
         },
         "hi": {
-          "warning": "इस बैटरी में जलाने वाला तेज़ाब और सीसा हो सकता है।",
+          "warning": "लेड-एसिड बैटरी में अत्यधिक जहरीला सीसा और घातक सल्फ्यूरिक एसिड होता है।",
           "do": [
-            "रिसाव से लोगों को दूर रखें।",
-            "प्रशिक्षित बैटरी कर्मचारी से मदद लें।"
+            "बैटरी को हमेशा सीधा रखें ताकि तेजाब न छलके।",
+            "दस्ताने और सुरक्षात्मक चश्मा पहनकर ही संभालें।",
+            "इसे केवल अधिकृत रीसाइक्लर को ही सौंपें।"
           ],
           "dont": [
-            "बैटरी को खोलें, खाली करें, जलाएँ या तोड़ें नहीं।"
+            "बैटरी को कभी न तोड़ें और तेजाब को नाली या मिट्टी में न बहाएँ।",
+            "सीसे को खुली भट्टी या चूल्हे पर कभी न पिघलाएँ।",
+            "इसे कभी भी साधारण कचरे में न डालें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "लेड एसिड बैटरी लेने वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "एसिड लगने पर कम से कम 15 मिनट तक लगातार साफ पानी से धोएँ और तुरंत अस्पताल जाएँ।",
+          "disposal_route": "बैटरी अपशिष्ट प्रबंधन नियमों के तहत पंजीकृत अधिकृत रीसाइक्लर।"
         }
       }
     },
@@ -86,34 +92,38 @@
       "severity": "HIGH",
       "icon": "Monitor",
       "review_status": "draft",
-      "source_ids": [
-        "who_ewaste"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["who_ewaste"],
+      "review_note": "Project-authored draft for cathode ray tubes.",
       "text": {
         "en": {
-          "warning": "A CRT can contain leaded glass and hazardous dust.",
+          "warning": "CRT tubes contain high-vacuum implosion danger and up to 2-3 kg of hazardous leaded glass.",
           "do": [
-            "Leave the tube and enclosure intact.",
-            "Keep away from broken glass and dust."
+            "Keep the glass envelope intact without scratches.",
+            "Handle with heavy protective gloves and eye protection.",
+            "Route to a specialized CRT recovery recycler."
           ],
           "dont": [
-            "Do not smash, grind, or open the tube."
+            "Do not smash or break CRT glass to extract the copper yoke.",
+            "Do not discard broken CRT funnel glass in open scrap piles.",
+            "Never put this in household waste."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A verified recycler that accepts CRT equipment."
+          "exposure_help": "Treat deep glass cuts immediately. Avoid inhaling phosphor coating dust from inside broken tubes.",
+          "disposal_route": "Authorized CRT processing facility with lead smelting recovery."
         },
         "hi": {
-          "warning": "सीआरटी में सीसा वाला काँच और हानिकारक धूल हो सकती है।",
+          "warning": "सीआरटी पिक्चर ट्यूब में भयंकर विस्फोट (इम्प्लोजन) का खतरा और 2-3 किलो जहरीला लेड होता है।",
           "do": [
-            "ट्यूब और बाहरी ढाँचा साबुत रहने दें।",
-            "टूटे काँच और धूल से दूर रहें।"
+            "ग्लास ट्यूब को हमेशा बिना तोड़े साबुत रखें।",
+            "मोटे दस्ताने और आँखों की सुरक्षा के साथ ही छुएँ।",
+            "विशेष सीआरटी रीसाइक्लिंग केंद्र पर ही भेजें।"
           ],
           "dont": [
-            "ट्यूब को तोड़ें, पीसें या खोलें नहीं।"
+            "तांबे का छल्ला निकालने के लिए पिक्चर ट्यूब को कभी न तोड़ें।",
+            "टूटे हुए कांच को खुले में न फेंकें।",
+            "इसे कभी भी घरेलू कचरे में न डालें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "सीआरटी उपकरण लेने वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "कांच के घावों पर प्राथमिक उपचार करें। ट्यूब के अंदर लगे फास्फोरस पाउडर को सांस में न जाने दें।",
+          "disposal_route": "लेड रिकवरी की सुविधा वाला अधिकृत ई-कचरा रीसाइक्लर।"
         }
       }
     },
@@ -122,34 +132,38 @@
       "severity": "HIGH",
       "icon": "Lightbulb",
       "review_status": "draft",
-      "source_ids": [
-        "epa_mercury"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["epa_mercury"],
+      "review_note": "Project-authored draft for mercury in CFLs and CCFL backlights.",
       "text": {
         "en": {
-          "warning": "This lamp or older backlight may contain mercury.",
+          "warning": "Contains toxic mercury vapor which causes severe neurological harm when inhaled.",
           "do": [
-            "Keep the lamp intact.",
-            "If it breaks, leave the area and get trained cleanup help."
+            "Keep tubes and bulbs intact inside protective sleeves.",
+            "If broken, ventilate the room for 15 minutes and avoid vacuuming.",
+            "Hand over intact to authorized e-waste collection."
           ],
           "dont": [
-            "Do not crush lamps or vacuum scattered powder."
+            "Do not crush lamps or break screen backlights.",
+            "Do not burn fluorescent tubes.",
+            "Never put this in household waste."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A verified facility that accepts mercury lamps."
+          "exposure_help": "Leave the area immediately if mercury lamps break. Seek medical consultation for chronic exposure symptoms.",
+          "disposal_route": "Authorized mercury retorting and hazardous disposal facility."
         },
         "hi": {
-          "warning": "इस लाइट या पुराने बैकलाइट में पारा हो सकता है।",
+          "warning": "इसमें जहरीला पारा (मर्करी) होता है, जिसकी भाप सांस में जाने से मस्तिष्क और तंत्रिका तंत्र को भारी नुकसान होता है।",
           "do": [
-            "लाइट को साबुत रखें।",
-            "टूटने पर जगह से दूर जाएँ और प्रशिक्षित सफाई सहायता लें।"
+            "ट्यूब और बल्ब को टूटने से बचाकर गत्ते में सुरक्षित रखें।",
+            "टूटने पर तुरंत खिड़की खोलें और 15 मिनट तक कमरे से बाहर रहें।",
+            "अधिकृत खतरनाक अपशिष्ट केंद्र को ही दें।"
           ],
           "dont": [
-            "लाइट को कुचलें नहीं और बिखरे पाउडर पर वैक्यूम न चलाएँ।"
+            "ट्यूबलाइट या बैकलाइट को कभी न फोड़ें।",
+            "इन्हें आग में न जलाएँ।",
+            "घरेलू कूड़ेदान में कभी न डालें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "पारा वाली लाइट लेने वाली सत्यापित सुविधा।"
+          "exposure_help": "पारे की भाप से तुरंत दूर ताजी हवा में जाएँ और डॉक्टर से परामर्श लें।",
+          "disposal_route": "पारा अलग करने की तकनीक वाला पंजीकृत रीसाइक्लर।"
         }
       }
     },
@@ -158,70 +172,78 @@
       "severity": "HIGH",
       "icon": "Wind",
       "review_status": "draft",
-      "source_ids": [
-        "epa_refrigerants"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["epa_refrigerants"],
+      "review_note": "Project-authored draft for refrigerants and compressor oil.",
       "text": {
         "en": {
-          "warning": "Cooling pipes may contain refrigerant; a compressor may contain oil.",
+          "warning": "Pressurized refrigerants cause frostbite, asphyxiation, and extreme greenhouse/ozone damage.",
           "do": [
-            "Leave pipes and the compressor sealed.",
-            "Use a trained refrigerant recovery service."
+            "Keep cooling coils, capillary tubes, and compressor lines intact.",
+            "Only allow certified recovery technicians with evacuation pumps to tap lines.",
+            "Route whole appliances to authorized recyclers."
           ],
           "dont": [
-            "Do not cut pipes, vent gas, or drain compressor oil."
+            "Never cut or pinch copper pipes to release gas into the air.",
+            "Do not drain compressor oil into soil or open sewers.",
+            "Never discard intact compressor units in scrap metal crushers."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A verified facility with refrigerant recovery capability."
+          "exposure_help": "Treat pressurized gas frostbite with lukewarm water (never hot). Move to fresh air if dizziness occurs.",
+          "disposal_route": "Authorized appliance de-pollution facility with certified refrigerant recovery."
         },
         "hi": {
-          "warning": "ठंडी करने वाली पाइप में गैस और कंप्रेसर में तेल हो सकता है।",
+          "warning": "दबाव वाली फ्रिज/एसी गैस से त्वचा जमने (शीतदंश), दम घुटने और पर्यावरण को भारी नुकसान का खतरा होता है।",
           "do": [
-            "पाइप और कंप्रेसर बंद रहने दें।",
-            "प्रशिक्षित गैस रिकवरी सेवा की मदद लें।"
+            "कंप्रेसर और तांबे की पाइप लाइनों को हमेशा सुरक्षित रखें।",
+            "केवल रिकवरी पंप वाले अधिकृत मैकेनिक से ही गैस निकलवाएँ।",
+            "पूरे उपकरण को अधिकृत केंद्र पर भेजें।"
           ],
           "dont": [
-            "पाइप काटें, गैस छोड़ें या कंप्रेसर का तेल निकालें नहीं।"
+            "तांबे के पाइप काटकर हवा में गैस कभी न छोड़ें।",
+            "कंप्रेसर के तेल को जमीन या नाली में न बहाएँ।",
+            "इसे बिना गैस निकाले धातु कटर में न डालें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "गैस रिकवरी की क्षमता वाली सत्यापित सुविधा।"
+          "exposure_help": "गैस से त्वचा सुन्न होने पर गुनगुने पानी से सेकें। चक्कर आने पर तुरंत खुली हवा में आएँ।",
+          "disposal_route": "प्रशीतक गैस रिकवरी प्रणाली वाला अधिकृत रीसाइक्लर।"
         }
       }
     },
     {
       "hazard_id": "HAZ_CAPACITOR_CHARGE",
-      "severity": "HIGH",
+      "severity": "MEDIUM",
       "icon": "Zap",
       "review_status": "draft",
-      "source_ids": [
-        "cpsc_microwave"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["cpsc_microwave"],
+      "review_note": "Project-authored draft for large capacitors.",
       "text": {
         "en": {
-          "warning": "Stored electrical charge may remain after unplugging.",
+          "warning": "Large capacitors in power supplies, inverters and CRT sets can hold lethal charges for days.",
           "do": [
-            "Leave the enclosure closed.",
-            "Ask a trained electrical technician for help."
+            "Keep appliance housings closed unless trained.",
+            "Discharge through a rated resistor before touching terminals.",
+            "Use insulated tools rated for 1000V."
           ],
           "dont": [
-            "Do not touch internal terminals or try to discharge them."
+            "Do not short terminals with a bare screwdriver.",
+            "Do not touch exposed inverter or microwave power boards.",
+            "Never open microwave power modules informally."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A verified recycler with trained electrical handlers."
+          "exposure_help": "If shock occurs, check breathing and pulse, perform CPR if trained, and call emergency services immediately.",
+          "disposal_route": "Discharged PCB and electrical scrap recycling."
         },
         "hi": {
-          "warning": "प्लग निकालने के बाद भी अंदर बिजली का चार्ज रह सकता है।",
+          "warning": "इन्वर्टर, माइक्रोवेव और टीवी के बड़े कैपेसिटर में बंद होने के बाद भी जानलेवा करंट रह सकता है।",
           "do": [
-            "उपकरण का ढाँचा बंद रहने दें।",
-            "प्रशिक्षित बिजली तकनीशियन से मदद लें।"
+            "उपकरण के ढक्कन को बिना जानकारी न खोलें।",
+            "टर्मिनलों को छूने से पहले उचित प्रतिरोधक से डिस्चार्ज करें।",
+            "केवल इंसुलेटेड औजारों का प्रयोग करें।"
           ],
           "dont": [
-            "अंदर के टर्मिनल छुएँ नहीं और चार्ज निकालने की कोशिश न करें।"
+            "साधारण पेचकस से कैपेसिटर को शॉर्ट न करें।",
+            "खुले सर्किट बोर्ड को नंगे हाथों से न छुएँ।",
+            "माइक्रोवेव या इन्वर्टर के हाई-वोल्टेज पुर्जे न खोलें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "प्रशिक्षित बिजली कर्मचारियों वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "बिजली का झटका लगने पर तुरंत डॉक्टर की सहायता लें और होश की जाँच करें।",
+          "disposal_route": "सुरक्षित डिस्चार्ज के बाद अधिकृत ई-कचरा केंद्र।"
         }
       }
     },
@@ -230,34 +252,38 @@
       "severity": "MEDIUM",
       "icon": "Printer",
       "review_status": "draft",
-      "source_ids": [
-        "osha_ink"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["osha_ink"],
+      "review_note": "Project-authored draft for printer toner dust.",
       "text": {
         "en": {
-          "warning": "A damaged cartridge may release powder or ink.",
+          "warning": "Microfine toner dust is a severe respiratory irritant and can form combustible dust clouds.",
           "do": [
-            "Keep the cartridge closed.",
-            "Follow its manufacturer safety instructions."
+            "Keep cartridges sealed inside bags.",
+            "Wear a certified particulate respirator (N95/FFP2) if handling open cartridges.",
+            "Clean spills with damp cloths, not household vacuums."
           ],
           "dont": [
-            "Do not open, shake, burn, or blow out the cartridge."
+            "Do not shake, smash or burn plastic toner bottles.",
+            "Do not use regular vacuum cleaners (spark risk causes dust ignition).",
+            "Do not dump toner powder down sinks or drains."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A manufacturer take-back service or verified accepting recycler."
+          "exposure_help": "Flush eyes with water if toner enters. Move to fresh air if coughing or experiencing breathing difficulty.",
+          "disposal_route": "Authorized toner cartridge remanufacturer or closed-system plastic recycler."
         },
         "hi": {
-          "warning": "क्षतिग्रस्त कार्ट्रिज से पाउडर या स्याही निकल सकती है।",
+          "warning": "टोनर का बारीक पाउडर फेफड़ों के लिए हानिकारक है और हवा में आग पकड़ सकता है।",
           "do": [
-            "कार्ट्रिज बंद रखें।",
-            "निर्माता के सुरक्षा निर्देशों का पालन करें।"
+            "कार्ट्रिज को हमेशा प्लास्टिक थैली में सील रखें।",
+            "मास्क पहनकर ही संभालें।",
+            "गिरे पाउडर को गीले कपड़े से साफ करें।"
           ],
           "dont": [
-            "कार्ट्रिज खोलें, झटकें, जलाएँ या उसमें हवा फूँकें नहीं।"
+            "कार्ट्रिज को पटकें, तोड़ें या आग में न जलाएँ।",
+            "साधारण वैक्यूम क्लीनर का इस्तेमाल न करें।",
+            "पाउडर को नाली या वॉशबेसिन में न बहाएँ।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "निर्माता की वापसी सेवा या कार्ट्रिज लेने वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "आँख में जाने पर साफ पानी से धोएँ। खाँसी होने पर खुली हवा में जाएँ।",
+          "disposal_route": "अधिकृत कार्ट्रिज रीसाइक्लिंग केंद्र।"
         }
       }
     },
@@ -266,34 +292,38 @@
       "severity": "MEDIUM",
       "icon": "GlassWater",
       "review_status": "draft",
-      "source_ids": [
-        "who_ewaste"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["who_ewaste"],
+      "review_note": "Project-authored draft for broken LCD and display panels.",
       "text": {
         "en": {
-          "warning": "Broken display glass can cut; older backlights may contain mercury.",
+          "warning": "Shattered display glass causes deep lacerations and exposes liquid crystal compounds.",
           "do": [
-            "Keep people away from sharp edges.",
-            "Ask a trained recycler to handle the panel."
+            "Wrap cracked screens in clear tape or stretch film before transport.",
+            "Wear cut-resistant safety gloves and safety glasses.",
+            "Store upright in cushioned slots."
           ],
           "dont": [
-            "Do not break the panel or pick up loose glass with bare hands."
+            "Do not smash screens to salvage frame metals.",
+            "Do not allow children or unequipped workers to handle broken glass panels.",
+            "Do not toss broken glass into general dry waste bins."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A verified recycler that accepts display panels."
+          "exposure_help": "Clean cuts and apply direct pressure with sterile bandage. Seek medical stitching if lacerations are deep.",
+          "disposal_route": "Authorized flat panel display recycler with optical plastic separation."
         },
         "hi": {
-          "warning": "टूटा स्क्रीन काँच काट सकता है; पुराने बैकलाइट में पारा हो सकता है।",
+          "warning": "टूटी स्क्रीन से गहरे घाव हो सकते हैं और लिक्विड क्रिस्टल रसायन बाहर आ सकते हैं।",
           "do": [
-            "लोगों को तेज़ किनारों से दूर रखें।",
-            "पैनल संभालने के लिए प्रशिक्षित रीसाइक्लर को बुलाएँ।"
+            "टूटे कांच पर तुरंत चौड़ा टेप चिपकाएँ ताकि टुकड़े न गिरें।",
+            "कट-रेसिस्टेंट दस्ताने पहनकर ही उठाएँ।",
+            "सुरक्षित रूप से सीधा खड़ा करके रखें।"
           ],
           "dont": [
-            "पैनल तोड़ें नहीं और नंगे हाथों से टूटा काँच न उठाएँ।"
+            "धातु निकालने के लिए स्क्रीन को पत्थरों से न फोड़ें।",
+            "टूटे कांच को बिना सुरक्षा के न छुएँ।",
+            "साधारण सूखे कचरे के डिब्बे में न फेंकें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "स्क्रीन पैनल लेने वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "घाव को साफ पट्टी से दबाकर खून रोकें और डॉक्टर से टांके लगवाएँ।",
+          "disposal_route": "फ्लैट पैनल रीसाइक्लिंग की सुविधा वाला अधिकृत केंद्र।"
         }
       }
     },
@@ -302,106 +332,78 @@
       "severity": "HIGH",
       "icon": "Flame",
       "review_status": "draft",
-      "source_ids": [
-        "who_ewaste"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["who_ewaste"],
+      "review_note": "Project-authored draft for toxic PCB burn fumes.",
       "text": {
         "en": {
-          "warning": "Burning circuit boards or electronic plastic releases harmful fumes.",
+          "warning": "Open burning of circuit boards emits cancer-causing dioxins, furans and heavy metal fumes.",
           "do": [
-            "Keep boards intact.",
-            "Stay away from smoke and open burning."
+            "Keep circuit boards whole and dry.",
+            "Deliver boards intact to authorized smelting refiners.",
+            "Use mechanical desoldering in well-ventilated licensed facilities only."
           ],
           "dont": [
-            "Do not burn boards, strip wires by burning, or use acid."
+            "NEVER burn circuit boards over open fires, hot plates or kerosene stoves.",
+            "Never use acid leaching (aqua regia) in informal workshops.",
+            "Never inhale smoke from scorching electronics."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A verified recycler that accepts circuit boards."
+          "exposure_help": "Leave toxic smoke immediately. Seek urgent emergency care for smoke inhalation, chest tightness or dizziness.",
+          "disposal_route": "Registered R2 or e-Stewards compliant hydrometallurgical refining facility."
         },
         "hi": {
-          "warning": "सर्किट बोर्ड या इलेक्ट्रॉनिक प्लास्टिक जलाने से हानिकारक धुआँ निकलता है।",
+          "warning": "सर्किट बोर्ड को जलाने से अत्यधिक विषैले डाइऑक्सिन और कैंसरकारी धुआं निकलता है।",
           "do": [
-            "सर्किट बोर्ड साबुत रखें।",
-            "धुएँ और खुले में जलते कचरे से दूर रहें।"
+            "सर्किट बोर्ड को साबुत और सूखा रखें।",
+            "पुर्जों को अधिकृत मेटल रिफाइनरी को ही सौंपें।",
+            "उचित वेंटिलेशन और लाइसेंस प्राप्त लैब में ही काम करें।"
           ],
           "dont": [
-            "बोर्ड जलाएँ नहीं, तार जलाकर धातु न निकालें और तेज़ाब न लगाएँ।"
+            "सर्किट बोर्ड को कभी भी चूल्हे, अंगीठी या खुली आग पर न जलाएँ।",
+            "तेजाब (अम्ल) से सोना/तांबा निकालने का अनाधिकृत काम न करें।",
+            "इसके धुएँ को कभी भी सांस में न लें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "सर्किट बोर्ड लेने वाला सत्यापित रीसाइक्लर।"
+          "exposure_help": "धुएँ से तुरंत दूर ताजी हवा में जाएँ। सीने में जलन या दम घुटने पर तुरंत डॉक्टर को दिखाएँ।",
+          "disposal_route": "रजिस्टर्ड ई-कचरा रिफाइनरी और अधिकृत धातु शोधक।"
         }
       }
     },
     {
       "hazard_id": "HAZ_UNKNOWN_SEALED",
-      "severity": "HIGH",
+      "severity": "MEDIUM",
       "icon": "CircleAlert",
       "review_status": "draft",
-      "source_ids": [
-        "epa_hhw"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
+      "source_ids": ["epa_hhw"],
+      "review_note": "Project-authored draft for unknown sealed containers.",
       "text": {
         "en": {
-          "warning": "The contents of this sealed item are unknown.",
+          "warning": "Unidentified sealed cylinders or packs can contain pressurized gases, toxic chemicals or flammable fluids.",
           "do": [
-            "Leave it closed and keep people away from leaks.",
-            "Ask a trained waste handler to identify it."
+            "Keep sealed and label with warning tape.",
+            "Store upright in a well-ventilated dry area away from heat sources.",
+            "Request hazardous inspection before attempting any recovery."
           ],
           "dont": [
-            "Do not open, sniff, heat, or mix its contents."
+            "Do not drill, puncture, cut with grinders, or heat the container.",
+            "Do not shake violently or drop from height.",
+            "Never attempt informal extraction."
           ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "Ask the local waste authority for a qualified accepting facility."
+          "exposure_help": "If leaking occurs, evacuate the immediate perimeter and call specialized hazardous response personnel.",
+          "disposal_route": "Authorized hazardous waste treatment, storage and disposal facility (TSDF)."
         },
         "hi": {
-          "warning": "इस बंद वस्तु के अंदर क्या है, यह पता नहीं है।",
+          "warning": "अज्ञात सीलबंद बक्से या सिलेंडर में दबाव वाली गैस, जहरीले रसायन या ज्वलनशील तरल हो सकते हैं।",
           "do": [
-            "इसे बंद रखें और लोगों को रिसाव से दूर रखें।",
-            "पहचान के लिए प्रशिक्षित कचरा कर्मचारी से मदद लें।"
+            "इसे बिना खोले वैसा ही रखें और चेतावनी चिन्ह लगाएँ।",
+            "खुली और ठंडी जगह पर रखें।",
+            "खतरनाक सामग्री विशेषज्ञों को जाँच के लिए बुलाएँ।"
           ],
           "dont": [
-            "इसे खोलें, सूँघें, गर्म करें या अंदर की चीज़ मिलाएँ नहीं।"
+            "ड्रिल न करें, छेनी-हथौड़े से न तोड़ें और न ही आग के पास लाएँ।",
+            "इसे ऊँचाई से न गिराएँ।",
+            "अपने स्तर पर जबरन खोलने का प्रयास न करें।"
           ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "योग्य सुविधा के लिए स्थानीय कचरा प्राधिकरण से पूछें।"
-        }
-      }
-    },
-    {
-      "hazard_id": "HAZ_ASBESTOS_SUSPECTED",
-      "severity": "HIGH",
-      "icon": "ShieldAlert",
-      "review_status": "draft",
-      "source_ids": [
-        "epa_asbestos"
-      ],
-      "review_note": "Project-authored conservative draft; local occupational-safety and Hindi language review pending. Not an approved treatment protocol.",
-      "text": {
-        "en": {
-          "warning": "Old insulation may need asbestos assessment; a photo cannot confirm it.",
-          "do": [
-            "Leave the material undisturbed.",
-            "Ask a qualified asbestos professional for assessment."
-          ],
-          "dont": [
-            "Do not cut, scrape, sweep, or vacuum the material."
-          ],
-          "exposure_help": "Stop handling and move away from the hazard. Get urgent medical help for exposure, injury, or breathing trouble.",
-          "disposal_route": "A qualified specialist facility, confirmed by the local authority."
-        },
-        "hi": {
-          "warning": "पुराने इन्सुलेशन में एस्बेस्टस की जाँच ज़रूरी हो सकती है; फोटो से पुष्टि नहीं हो सकती।",
-          "do": [
-            "सामग्री को न छेड़ें।",
-            "जाँच के लिए योग्य एस्बेस्टस विशेषज्ञ से संपर्क करें।"
-          ],
-          "dont": [
-            "सामग्री को काटें, खुरचें, झाड़ें या वैक्यूम न करें।"
-          ],
-          "exposure_help": "काम रोकें और खतरे से दूर जाएँ। संपर्क, चोट या साँस की तकलीफ होने पर तुरंत चिकित्सा सहायता लें।",
-          "disposal_route": "स्थानीय प्राधिकरण से पुष्टि की गई योग्य विशेषज्ञ सुविधा।"
+          "exposure_help": "रिसाव होने पर जगह को तुरंत खाली करें और आपातकालीन सहायता बुलाएँ।",
+          "disposal_route": "अधिकृत खतरनाक अपशिष्ट निपटान सुविधा (TSDF)।"
         }
       }
     }

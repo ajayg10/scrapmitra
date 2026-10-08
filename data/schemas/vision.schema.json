@@ -6,20 +6,18 @@
       "properties": {
         "part_id": {
           "enum": [
-            "pcb_low_grade",
-            "pcb_mid_grade",
-            "pcb_high_grade",
+            "pcb_low",
+            "pcb_mid",
+            "pcb_high",
             "copper_wire",
-            "copper_winding_motor",
-            "copper_transformer",
-            "aluminium_heatsink",
-            "aluminium_body",
-            "steel_frame",
-            "brass_fitting",
+            "copper_winding",
+            "aluminium",
+            "steel",
+            "brass",
             "plastic_abs",
             "li_ion_cell",
             "lead_acid_cell",
-            "compressor_unit",
+            "compressor",
             "crt_tube",
             "lcd_panel",
             "ram_chip",
@@ -28,49 +26,21 @@
             "capacitor_large",
             "magnet_neodymium",
             "toner_cartridge",
-            "unknown_part",
-            "mercury_lamp",
-            "suspect_insulation",
-            "sealed_container"
+            "unknown_part"
           ],
           "title": "Part Id",
           "type": "string"
         },
-        "name": {
-          "maxLength": 120,
-          "minLength": 1,
-          "title": "Name",
-          "type": "string"
-        },
-        "material_class": {
-          "enum": [
-            "copper",
-            "aluminium",
-            "brass",
-            "steel",
-            "pcb",
-            "battery_cell",
-            "plastic",
-            "compressor",
-            "other"
-          ],
-          "title": "Material Class",
-          "type": "string"
-        },
-        "grade": {
-          "enum": [
-            "low",
-            "mid",
-            "high",
-            "na"
-          ],
-          "title": "Grade",
-          "type": "string"
-        },
-        "est_weight_g": {
+        "est_weight_g_min": {
           "maximum": 1000000,
           "minimum": 0,
-          "title": "Est Weight G",
+          "title": "Est Weight G Min",
+          "type": "number"
+        },
+        "est_weight_g_max": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Est Weight G Max",
           "type": "number"
         },
         "confidence": {
@@ -82,10 +52,8 @@
       },
       "required": [
         "part_id",
-        "name",
-        "material_class",
-        "grade",
-        "est_weight_g",
+        "est_weight_g_min",
+        "est_weight_g_max",
         "confidence"
       ],
       "title": "VisionPart",
@@ -140,13 +108,45 @@
     },
     "condition": {
       "enum": [
-        "working",
+        "looks_intact",
         "damaged",
         "burnt",
         "unknown"
       ],
       "title": "Condition",
       "type": "string"
+    },
+    "age_band": {
+      "enum": [
+        "lt3",
+        "3to6",
+        "6to10",
+        "gt10",
+        "unknown"
+      ],
+      "title": "Age Band",
+      "type": "string"
+    },
+    "visible_damage": {
+      "items": {
+        "enum": [
+          "cracked_screen",
+          "bent_frame",
+          "burn_marks",
+          "swollen_battery",
+          "water_damage",
+          "missing_parts",
+          "corrosion"
+        ],
+        "type": "string"
+      },
+      "maxItems": 10,
+      "title": "Visible Damage",
+      "type": "array"
+    },
+    "battery_present": {
+      "title": "Battery Present",
+      "type": "boolean"
     },
     "parts": {
       "items": {
@@ -168,8 +168,7 @@
           "HAZ_TONER_DUST",
           "HAZ_BROKEN_GLASS_LCD",
           "HAZ_PCB_BURN_FUMES",
-          "HAZ_UNKNOWN_SEALED",
-          "HAZ_ASBESTOS_SUSPECTED"
+          "HAZ_UNKNOWN_SEALED"
         ],
         "type": "string"
       },
@@ -215,6 +214,9 @@
     "device_type",
     "brand_guess",
     "condition",
+    "age_band",
+    "visible_damage",
+    "battery_present",
     "parts",
     "hazards_detected",
     "overall_confidence",

@@ -9,11 +9,14 @@ TYPE_KEYS = {
     "DeviceType": "device_type",
     "PartId": "part_id",
     "HazardId": "hazard_id",
+    "OptionId": "option_id",
     "MaterialClass": "material_class",
     "VisionGrade": "vision_grade",
     "PriceGrade": "price_grade",
     "Language": "language",
     "Condition": "condition",
+    "AgeBand": "age_band",
+    "VisibleDamage": "visible_damage",
 }
 
 
@@ -28,9 +31,14 @@ def generated_files() -> dict[Path, str]:
         py.append(f"{name} = Literal[{literals}]")
         ts.extend([f"export const {key} = [{literals}] as const;", f"export type {name} = (typeof {key})[number];"])
         prompt.append(f"- {key}: {', '.join(values)}")
-    prompt.extend(["", "`grade` uses vision_grade. Market price grades are resolved by part_catalog, never chosen by the model.", "Use unknown_part when unsure. Do not claim asbestos from a photograph; flag suspected material for expert review."])
+    prompt.extend([
+        "",
+        "`grade` uses vision_grade. Market price grades are resolved by part_catalog, never chosen by the model.",
+        "Use unknown_part when unsure. Do not guess unreadable labels.",
+        "Flag hazards conservatively: err on the side of caution.",
+    ])
     icon_data = json.loads((ROOT / "data/icons.json").read_text(encoding="utf-8"))
-    icons = '\n'.join([
+    icons = "\n".join([
         "// Generated from data/icons.json. Do not edit by hand.",
         'import type { DeviceType, PartId, HazardId } from "./taxonomy";',
         'import type { IconName } from "../components/Icon";',
@@ -38,7 +46,8 @@ def generated_files() -> dict[Path, str]:
         "  device_type: Record<DeviceType, IconName>;",
         "  part_id: Record<PartId, IconName>;",
         "  hazard_id: Record<HazardId, IconName>;",
-        "};", "",
+        "};",
+        "",
     ])
     return {
         ROOT / "backend/core/taxonomy_types.py": "\n".join(py) + "\n",

@@ -16,6 +16,23 @@
       ],
       "title": "Lang",
       "type": "string"
+    },
+    "powers_on": {
+      "anyOf": [
+        {
+          "enum": [
+            "yes",
+            "no",
+            "unsure"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Powers On"
     }
   },
   "required": [

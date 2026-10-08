@@ -30,20 +30,18 @@ export const iconMap = {
     "unknown": "CircleHelp"
   },
   "part_id": {
-    "pcb_low_grade": "CircuitBoard",
-    "pcb_mid_grade": "CircuitBoard",
-    "pcb_high_grade": "CircuitBoard",
+    "pcb_low": "CircuitBoard",
+    "pcb_mid": "CircuitBoard",
+    "pcb_high": "CircuitBoard",
     "copper_wire": "Cable",
-    "copper_winding_motor": "Fan",
-    "copper_transformer": "Zap",
-    "aluminium_heatsink": "Layers",
-    "aluminium_body": "Box",
-    "steel_frame": "Box",
-    "brass_fitting": "Wrench",
+    "copper_winding": "Fan",
+    "aluminium": "Layers",
+    "steel": "Box",
+    "brass": "Wrench",
     "plastic_abs": "Box",
     "li_ion_cell": "Battery",
     "lead_acid_cell": "Battery",
-    "compressor_unit": "Cylinder",
+    "compressor": "Cylinder",
     "crt_tube": "Monitor",
     "lcd_panel": "Monitor",
     "ram_chip": "MemoryStick",
@@ -52,10 +50,7 @@ export const iconMap = {
     "capacitor_large": "Zap",
     "magnet_neodymium": "Magnet",
     "toner_cartridge": "Printer",
-    "unknown_part": "CircleHelp",
-    "mercury_lamp": "Lightbulb",
-    "suspect_insulation": "Layers",
-    "sealed_container": "Cylinder"
+    "unknown_part": "CircleHelp"
   },
   "hazard_id": {
     "HAZ_LI_ION": "BatteryWarning",
@@ -67,8 +62,7 @@ export const iconMap = {
     "HAZ_TONER_DUST": "Printer",
     "HAZ_BROKEN_GLASS_LCD": "GlassWater",
     "HAZ_PCB_BURN_FUMES": "Flame",
-    "HAZ_UNKNOWN_SEALED": "CircleAlert",
-    "HAZ_ASBESTOS_SUSPECTED": "ShieldAlert"
+    "HAZ_UNKNOWN_SEALED": "CircleAlert"
   }
 } as const satisfies {
   device_type: Record<DeviceType, IconName>;

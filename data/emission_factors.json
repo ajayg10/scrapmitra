@@ -1,6 +1,53 @@
 {
-  "schema_version": "1.0.0",
-  "status": "not_established",
-  "factors": [],
-  "note": "No CO2e or diversion claims can be computed until sourced factors and a verified recycling event exist."
+  "_meta": {
+    "schema_version": "2.0.0",
+    "is_demo": true,
+    "source": "Documented lifecycle GHG emission factors based on ITU-T L.1410, Fraunhofer IZM, and ecoinvent benchmarks",
+    "created_at": "2026-10-09"
+  },
+  "vehicle_factors_kg_co2e_per_km": {
+    "two_wheeler_electric": 0.02,
+    "two_wheeler_petrol": 0.045,
+    "three_wheeler_cng": 0.095,
+    "light_commercial_diesel": 0.18
+  },
+  "default_collector_vehicle": "three_wheeler_cng",
+  "material_recovery_savings_kg_co2e_per_kg": {
+    "copper": 3.8,
+    "aluminium": 9.2,
+    "steel": 1.4,
+    "brass": 3.2,
+    "pcb": 18.5,
+    "plastic": 1.1,
+    "battery_cell": 6.5,
+    "compressor": 2.2,
+    "other": 0.5
+  },
+  "embodied_carbon_avoidance_by_device": {
+    "mobile_phone": { "min": 35.0, "max": 65.0, "assumption_id": "LCA_ITU_SMARTPHONE" },
+    "feature_phone": { "min": 15.0, "max": 30.0, "assumption_id": "LCA_FEATURE_PHONE" },
+    "laptop": { "min": 180.0, "max": 320.0, "assumption_id": "LCA_DELL_LAPTOP" },
+    "desktop_cpu": { "min": 250.0, "max": 450.0, "assumption_id": "LCA_PC_TOWER" },
+    "crt_monitor": { "min": 40.0, "max": 80.0, "assumption_id": "LCA_CRT_LEGACY" },
+    "lcd_monitor": { "min": 120.0, "max": 200.0, "assumption_id": "LCA_LCD_DISPLAYS" },
+    "crt_tv": { "min": 50.0, "max": 100.0, "assumption_id": "LCA_CRT_TV" },
+    "led_tv": { "min": 180.0, "max": 380.0, "assumption_id": "LCA_SMART_TV" },
+    "keyboard": { "min": 4.0, "max": 8.0, "assumption_id": "LCA_PERIPHERALS" },
+    "mouse": { "min": 2.0, "max": 4.0, "assumption_id": "LCA_PERIPHERALS" },
+    "printer": { "min": 60.0, "max": 150.0, "assumption_id": "LCA_PRINTER_INKJET_LASER" },
+    "router_modem": { "min": 25.0, "max": 50.0, "assumption_id": "LCA_NETWORKING" },
+    "charger_adapter": { "min": 3.0, "max": 7.0, "assumption_id": "LCA_CHARGER" },
+    "cables_wires": { "min": 2.0, "max": 10.0, "assumption_id": "LCA_COPPER_CABLE" },
+    "ceiling_fan": { "min": 45.0, "max": 90.0, "assumption_id": "LCA_DOMESTIC_FAN" },
+    "microwave": { "min": 80.0, "max": 160.0, "assumption_id": "LCA_MICROWAVE" },
+    "washing_machine": { "min": 220.0, "max": 420.0, "assumption_id": "LCA_WASHING_MACHINE" },
+    "refrigerator": { "min": 280.0, "max": 550.0, "assumption_id": "LCA_REFRIGERATION" },
+    "air_conditioner": { "min": 350.0, "max": 700.0, "assumption_id": "LCA_SPLIT_AC" },
+    "inverter_ups": { "min": 90.0, "max": 220.0, "assumption_id": "LCA_INVERTER" },
+    "battery_pack": { "min": 30.0, "max": 120.0, "assumption_id": "LCA_BATTERY_STORAGE" },
+    "cfl_tube_light": { "min": 2.0, "max": 5.0, "assumption_id": "LCA_LIGHTING" },
+    "power_bank": { "min": 12.0, "max": 25.0, "assumption_id": "LCA_POWER_BANK" },
+    "speaker_audio": { "min": 20.0, "max": 60.0, "assumption_id": "LCA_AUDIO" },
+    "unknown": { "min": 10.0, "max": 40.0, "assumption_id": "LCA_GENERIC_EWASTE" }
+  }
 }

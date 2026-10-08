@@ -2,13 +2,17 @@
 # Allowed vision taxonomy
 
 - device_type: mobile_phone, feature_phone, laptop, desktop_cpu, crt_monitor, lcd_monitor, crt_tv, led_tv, keyboard, mouse, printer, router_modem, charger_adapter, cables_wires, ceiling_fan, microwave, washing_machine, refrigerator, air_conditioner, inverter_ups, battery_pack, cfl_tube_light, power_bank, speaker_audio, unknown
-- part_id: pcb_low_grade, pcb_mid_grade, pcb_high_grade, copper_wire, copper_winding_motor, copper_transformer, aluminium_heatsink, aluminium_body, steel_frame, brass_fitting, plastic_abs, li_ion_cell, lead_acid_cell, compressor_unit, crt_tube, lcd_panel, ram_chip, cpu_chip, hdd_drive, capacitor_large, magnet_neodymium, toner_cartridge, unknown_part, mercury_lamp, suspect_insulation, sealed_container
-- hazard_id: HAZ_LI_ION, HAZ_LEAD_ACID, HAZ_CRT_LEAD, HAZ_MERCURY, HAZ_REFRIGERANT, HAZ_CAPACITOR_CHARGE, HAZ_TONER_DUST, HAZ_BROKEN_GLASS_LCD, HAZ_PCB_BURN_FUMES, HAZ_UNKNOWN_SEALED, HAZ_ASBESTOS_SUSPECTED
+- part_id: pcb_low, pcb_mid, pcb_high, copper_wire, copper_winding, aluminium, steel, brass, plastic_abs, li_ion_cell, lead_acid_cell, compressor, crt_tube, lcd_panel, ram_chip, cpu_chip, hdd_drive, capacitor_large, magnet_neodymium, toner_cartridge, unknown_part
+- hazard_id: HAZ_LI_ION, HAZ_LEAD_ACID, HAZ_CRT_LEAD, HAZ_MERCURY, HAZ_REFRIGERANT, HAZ_CAPACITOR_CHARGE, HAZ_TONER_DUST, HAZ_BROKEN_GLASS_LCD, HAZ_PCB_BURN_FUMES, HAZ_UNKNOWN_SEALED
+- option_id: REUSE_SELL, REUSE_DONATE, REPAIR_THEN_REUSE, RECYCLE_AUTHORIZED, HAZARDOUS_SPECIAL_HANDLING
 - material_class: copper, aluminium, brass, steel, pcb, battery_cell, plastic, compressor, other
 - vision_grade: low, mid, high, na
 - price_grade: bare_bright, insulated, clean, mixed, low, mid, high, na
 - language: en, hi
-- condition: working, damaged, burnt, unknown
+- condition: looks_intact, damaged, burnt, unknown
+- age_band: lt3, 3to6, 6to10, gt10, unknown
+- visible_damage: cracked_screen, bent_frame, burn_marks, swollen_battery, water_damage, missing_parts, corrosion
 
 `grade` uses vision_grade. Market price grades are resolved by part_catalog, never chosen by the model.
-Use unknown_part when unsure. Do not claim asbestos from a photograph; flag suspected material for expert review.
+Use unknown_part when unsure. Do not guess unreadable labels.
+Flag hazards conservatively: err on the side of caution.

@@ -30,42 +30,31 @@ export type DeviceType =
   | "unknown";
 export type Label = string;
 export type Brand = string | null;
-export type Condition = "working" | "damaged" | "burnt" | "unknown";
-export type PartId =
-  | "pcb_low_grade"
-  | "pcb_mid_grade"
-  | "pcb_high_grade"
-  | "copper_wire"
-  | "copper_winding_motor"
-  | "copper_transformer"
-  | "aluminium_heatsink"
-  | "aluminium_body"
-  | "steel_frame"
-  | "brass_fitting"
-  | "plastic_abs"
-  | "li_ion_cell"
-  | "lead_acid_cell"
-  | "compressor_unit"
-  | "crt_tube"
-  | "lcd_panel"
-  | "ram_chip"
-  | "cpu_chip"
-  | "hdd_drive"
-  | "capacitor_large"
-  | "magnet_neodymium"
-  | "toner_cartridge"
-  | "unknown_part"
-  | "mercury_lamp"
-  | "suspect_insulation"
-  | "sealed_container";
-export type Label1 = string;
-export type WeightGMin = number;
-export type WeightGMax = number;
+export type Condition = "looks_intact" | "damaged" | "burnt" | "unknown";
+export type AgeBand = "lt3" | "3to6" | "6to10" | "gt10" | "unknown";
+export type BatteryPresent = boolean;
+export type RecommendedTier =
+  "REUSE_SELL" | "REUSE_DONATE" | "REPAIR_THEN_REUSE" | "RECYCLE_AUTHORIZED" | "HAZARDOUS_SPECIAL_HANDLING";
+export type OptionId =
+  "REUSE_SELL" | "REUSE_DONATE" | "REPAIR_THEN_REUSE" | "RECYCLE_AUTHORIZED" | "HAZARDOUS_SPECIAL_HANDLING";
+export type Title = string;
 export type Min = number;
 export type Max = number;
 export type Currency = "INR";
-export type PricingStatus = "priced" | "illustrative" | "unpriced";
-export type Parts = PartAppraisal[];
+export type EnvRating = "much_better" | "better" | "good" | "poor";
+export type Co2EAvoidedMinKg = number;
+export type Co2EAvoidedMaxKg = number;
+export type Viability = number;
+export type ConfidenceLabel = "High" | "Medium" | "Low";
+export type Why = string;
+export type AssumptionId = string;
+export type Options = CircularOption[];
+export type OptionName = string;
+export type MoneyText = string;
+export type EnvRating1 = "much_better" | "better" | "good" | "poor";
+export type Co2EAvoidedText = string;
+export type SummaryReason = string;
+export type ComparisonTable = ComparisonRow[];
 export type HazardId =
   | "HAZ_LI_ION"
   | "HAZ_LEAD_ACID"
@@ -76,8 +65,7 @@ export type HazardId =
   | "HAZ_TONER_DUST"
   | "HAZ_BROKEN_GLASS_LCD"
   | "HAZ_PCB_BURN_FUMES"
-  | "HAZ_UNKNOWN_SEALED"
-  | "HAZ_ASBESTOS_SUSPECTED";
+  | "HAZ_UNKNOWN_SEALED";
 export type Severity = "HIGH" | "MEDIUM" | "LOW";
 export type Icon = string;
 export type Warning = string;
@@ -95,64 +83,67 @@ export type ExposureHelp = string;
 export type DisposalRoute = string;
 export type ReviewStatus = "draft" | "approved";
 export type Hazards = LocalizedHazard[];
-export type ValuationComplete = boolean;
-export type ConfidenceLabel = "High" | "Medium" | "Low";
-export type PriceSource = string;
-export type PriceLastUpdated = string | null;
+export type SafetyGateTriggered = boolean;
+export type Hazards1 = LocalizedHazard[];
 export type IsDemo = boolean;
 export type NeedsMorePhotos = boolean;
 export type SuggestedAngle = string | null;
 export type AudioScript = string;
-export type Kind = "retake_photo" | "find_recycler" | "contact_recycler";
-export type Label2 = string;
-export type RecyclerId = string | null;
+export type Kind = "retake_photo" | "arrange_pickup" | "find_recycler" | "contact_recycler";
+export type Label1 = string;
+export type TargetId = string | null;
 export type NextActions = NextAction[];
-export type AgentTrace = AgentTrace1[] | null;
-export type Tool =
-  | "identify_parts"
-  | "lookup_price"
-  | "check_hazards"
-  | "find_recycler"
-  | "explain_in_language"
-  | "request_better_photo";
-export type Summary = string;
 
 export interface AppraisalResponse {
   scan_id: ScanId;
   lang: Lang;
   device: DeviceSummary;
-  parts: Parts;
-  hazards: Hazards;
-  value_range: MoneyRange | null;
-  valuation_complete: ValuationComplete;
-  confidence_label: ConfidenceLabel;
-  price_source: PriceSource;
-  price_last_updated: PriceLastUpdated;
+  decision: DecisionOutput;
+  hazards: Hazards1;
   is_demo: IsDemo;
   needs_more_photos: NeedsMorePhotos;
   suggested_angle: SuggestedAngle;
   audio_script: AudioScript;
   next_actions: NextActions;
-  agent_trace: AgentTrace;
 }
 export interface DeviceSummary {
   device_type: DeviceType;
   label: Label;
   brand: Brand;
   condition: Condition;
+  age_band: AgeBand;
+  battery_present: BatteryPresent;
 }
-export interface PartAppraisal {
-  part_id: PartId;
-  label: Label1;
-  weight_g_min: WeightGMin;
-  weight_g_max: WeightGMax;
-  value_range: MoneyRange | null;
-  pricing_status: PricingStatus;
+export interface DecisionOutput {
+  recommended_tier: RecommendedTier;
+  options: Options;
+  comparison_table: ComparisonTable;
+  hazards: Hazards;
+  safety_gate_triggered: SafetyGateTriggered;
+}
+export interface CircularOption {
+  option_id: OptionId;
+  title: Title;
+  money_range: MoneyRange | null;
+  env_rating: EnvRating;
+  co2e_avoided_min_kg: Co2EAvoidedMinKg;
+  co2e_avoided_max_kg: Co2EAvoidedMaxKg;
+  viability: Viability;
+  confidence_label: ConfidenceLabel;
+  why: Why;
+  assumption_id: AssumptionId;
 }
 export interface MoneyRange {
   min: Min;
   max: Max;
   currency: Currency;
+}
+export interface ComparisonRow {
+  option_name: OptionName;
+  money_text: MoneyText;
+  env_rating: EnvRating1;
+  co2e_avoided_text: Co2EAvoidedText;
+  summary_reason: SummaryReason;
 }
 export interface LocalizedHazard {
   hazard_id: HazardId;
@@ -167,10 +158,6 @@ export interface LocalizedHazard {
 }
 export interface NextAction {
   kind: Kind;
-  label: Label2;
-  recycler_id: RecyclerId;
-}
-export interface AgentTrace1 {
-  tool: Tool;
-  summary: Summary;
+  label: Label1;
+  target_id: TargetId;
 }

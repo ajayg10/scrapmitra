@@ -1,0 +1,556 @@
+{
+  "_meta": {
+    "is_demo": true,
+    "count": 20
+  },
+  "items": [
+    {
+      "request_id": "req_demo_01",
+      "owner_id": "citizen_delhi_01",
+      "pseudonym": "EcoCitizen-Kalkaji-01",
+      "geohash": "ttn328",
+      "approx_lat": 28.53968,
+      "approx_lng": 77.24675,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_01_1",
+          "device_type": "crt_tv",
+          "est_weight_kg_min": 15.3,
+          "est_weight_kg_max": 20.7,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 15.3,
+      "total_weight_kg_max": 20.7,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_02",
+      "owner_id": "citizen_delhi_02",
+      "pseudonym": "EcoCitizen-NehruPlace-02",
+      "geohash": "ttn704",
+      "approx_lat": 28.52469,
+      "approx_lng": 77.24907,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_02_1",
+          "device_type": "router_modem",
+          "est_weight_kg_min": 0.38,
+          "est_weight_kg_max": 0.52,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.38,
+      "total_weight_kg_max": 0.52,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_03",
+      "owner_id": "citizen_delhi_03",
+      "pseudonym": "EcoCitizen-Kalkaji-03",
+      "geohash": "ttn617",
+      "approx_lat": 28.53316,
+      "approx_lng": 77.24689,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_03_1",
+          "device_type": "microwave",
+          "est_weight_kg_min": 9.78,
+          "est_weight_kg_max": 13.22,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 9.78,
+      "total_weight_kg_max": 13.22,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_04",
+      "owner_id": "citizen_delhi_04",
+      "pseudonym": "EcoCitizen-Lajpat-04",
+      "geohash": "ttn325",
+      "approx_lat": 28.53856,
+      "approx_lng": 77.26284,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_04_1",
+          "device_type": "router_modem",
+          "est_weight_kg_min": 0.38,
+          "est_weight_kg_max": 0.52,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.38,
+      "total_weight_kg_max": 0.52,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_05",
+      "owner_id": "citizen_delhi_05",
+      "pseudonym": "EcoCitizen-Kalkaji-05",
+      "geohash": "ttn814",
+      "approx_lat": 28.53398,
+      "approx_lng": 77.25435,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_05_1",
+          "device_type": "mobile_phone",
+          "est_weight_kg_min": 0.15,
+          "est_weight_kg_max": 0.21,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.15,
+      "total_weight_kg_max": 0.21,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_06",
+      "owner_id": "citizen_delhi_06",
+      "pseudonym": "EcoCitizen-Okhla-06",
+      "geohash": "ttn204",
+      "approx_lat": 28.53318,
+      "approx_lng": 77.25434,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_06_1",
+          "device_type": "microwave",
+          "est_weight_kg_min": 9.78,
+          "est_weight_kg_max": 13.22,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 9.78,
+      "total_weight_kg_max": 13.22,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_07",
+      "owner_id": "citizen_delhi_07",
+      "pseudonym": "EcoCitizen-CRPark-07",
+      "geohash": "ttn370",
+      "approx_lat": 28.52328,
+      "approx_lng": 77.2489,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_07_1",
+          "device_type": "refrigerator",
+          "est_weight_kg_min": 32.3,
+          "est_weight_kg_max": 43.7,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 32.3,
+      "total_weight_kg_max": 43.7,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_08",
+      "owner_id": "citizen_delhi_08",
+      "pseudonym": "EcoCitizen-NehruPlace-08",
+      "geohash": "ttn487",
+      "approx_lat": 28.54471,
+      "approx_lng": 77.26789,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_08_1",
+          "device_type": "router_modem",
+          "est_weight_kg_min": 0.38,
+          "est_weight_kg_max": 0.52,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.38,
+      "total_weight_kg_max": 0.52,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_09",
+      "owner_id": "citizen_delhi_09",
+      "pseudonym": "EcoCitizen-Okhla-09",
+      "geohash": "ttn691",
+      "approx_lat": 28.52286,
+      "approx_lng": 77.2548,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_09_1",
+          "device_type": "keyboard",
+          "est_weight_kg_min": 0.55,
+          "est_weight_kg_max": 0.75,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.55,
+      "total_weight_kg_max": 0.75,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_10",
+      "owner_id": "citizen_delhi_10",
+      "pseudonym": "EcoCitizen-Okhla-10",
+      "geohash": "ttn181",
+      "approx_lat": 28.52627,
+      "approx_lng": 77.24809,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_10_1",
+          "device_type": "microwave",
+          "est_weight_kg_min": 9.78,
+          "est_weight_kg_max": 13.22,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 9.78,
+      "total_weight_kg_max": 13.22,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_11",
+      "owner_id": "citizen_delhi_11",
+      "pseudonym": "EcoCitizen-Okhla-11",
+      "geohash": "ttn564",
+      "approx_lat": 28.54616,
+      "approx_lng": 77.27199,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_11_1",
+          "device_type": "battery_pack",
+          "est_weight_kg_min": 7.22,
+          "est_weight_kg_max": 9.77,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 7.22,
+      "total_weight_kg_max": 9.77,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_12",
+      "owner_id": "citizen_delhi_12",
+      "pseudonym": "EcoCitizen-Okhla-12",
+      "geohash": "ttn314",
+      "approx_lat": 28.53957,
+      "approx_lng": 77.25694,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_12_1",
+          "device_type": "refrigerator",
+          "est_weight_kg_min": 32.3,
+          "est_weight_kg_max": 43.7,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 32.3,
+      "total_weight_kg_max": 43.7,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_13",
+      "owner_id": "citizen_delhi_13",
+      "pseudonym": "EcoCitizen-CRPark-13",
+      "geohash": "ttn750",
+      "approx_lat": 28.54061,
+      "approx_lng": 77.26705,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_13_1",
+          "device_type": "laptop",
+          "est_weight_kg_min": 1.87,
+          "est_weight_kg_max": 2.53,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 1.87,
+      "total_weight_kg_max": 2.53,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_14",
+      "owner_id": "citizen_delhi_14",
+      "pseudonym": "EcoCitizen-Lajpat-14",
+      "geohash": "ttn488",
+      "approx_lat": 28.52563,
+      "approx_lng": 77.26787,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_14_1",
+          "device_type": "ceiling_fan",
+          "est_weight_kg_min": 3.23,
+          "est_weight_kg_max": 4.37,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 3.23,
+      "total_weight_kg_max": 4.37,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_15",
+      "owner_id": "citizen_delhi_15",
+      "pseudonym": "EcoCitizen-Kalkaji-15",
+      "geohash": "ttn801",
+      "approx_lat": 28.5286,
+      "approx_lng": 77.27376,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_15_1",
+          "device_type": "router_modem",
+          "est_weight_kg_min": 0.38,
+          "est_weight_kg_max": 0.52,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.38,
+      "total_weight_kg_max": 0.52,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_16",
+      "owner_id": "citizen_delhi_16",
+      "pseudonym": "EcoCitizen-Kalkaji-16",
+      "geohash": "ttn941",
+      "approx_lat": 28.53023,
+      "approx_lng": 77.26905,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_16_1",
+          "device_type": "mobile_phone",
+          "est_weight_kg_min": 0.15,
+          "est_weight_kg_max": 0.21,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.15,
+      "total_weight_kg_max": 0.21,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_17",
+      "owner_id": "citizen_delhi_17",
+      "pseudonym": "EcoCitizen-NehruPlace-17",
+      "geohash": "ttn316",
+      "approx_lat": 28.52146,
+      "approx_lng": 77.25546,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_17_1",
+          "device_type": "crt_tv",
+          "est_weight_kg_min": 15.3,
+          "est_weight_kg_max": 20.7,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 15.3,
+      "total_weight_kg_max": 20.7,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_18",
+      "owner_id": "citizen_delhi_18",
+      "pseudonym": "EcoCitizen-Kalkaji-18",
+      "geohash": "ttn771",
+      "approx_lat": 28.54789,
+      "approx_lng": 77.26302,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_18_1",
+          "device_type": "refrigerator",
+          "est_weight_kg_min": 32.3,
+          "est_weight_kg_max": 43.7,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 32.3,
+      "total_weight_kg_max": 43.7,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_19",
+      "owner_id": "citizen_delhi_19",
+      "pseudonym": "EcoCitizen-Kalkaji-19",
+      "geohash": "ttn371",
+      "approx_lat": 28.53548,
+      "approx_lng": 77.27254,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_19_1",
+          "device_type": "cfl_tube_light",
+          "est_weight_kg_min": 0.13,
+          "est_weight_kg_max": 0.17,
+          "recommended_option": "HAZARDOUS_SPECIAL_HANDLING",
+          "hazards": [
+            "HAZ_LI_ION"
+          ]
+        }
+      ],
+      "total_weight_kg_min": 0.13,
+      "total_weight_kg_max": 0.17,
+      "hazard_flags": [
+        "HAZ_LI_ION"
+      ],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    },
+    {
+      "request_id": "req_demo_20",
+      "owner_id": "citizen_delhi_20",
+      "pseudonym": "EcoCitizen-Okhla-20",
+      "geohash": "ttn864",
+      "approx_lat": 28.52469,
+      "approx_lng": 77.26835,
+      "window": "Today, 2:00 PM - 5:00 PM",
+      "items": [
+        {
+          "item_id": "item_20_1",
+          "device_type": "router_modem",
+          "est_weight_kg_min": 0.38,
+          "est_weight_kg_max": 0.52,
+          "recommended_option": "RECYCLE_AUTHORIZED",
+          "hazards": []
+        }
+      ],
+      "total_weight_kg_min": 0.38,
+      "total_weight_kg_max": 0.52,
+      "hazard_flags": [],
+      "status": "REQUESTED",
+      "cluster_id": null,
+      "collector_id": null,
+      "created_at": "2026-10-09T08:30:00Z"
+    }
+  ]
+}

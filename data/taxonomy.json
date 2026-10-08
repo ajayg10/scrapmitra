@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "device_type": [
     "mobile_phone",
     "feature_phone",
@@ -27,21 +27,41 @@
     "speaker_audio",
     "unknown"
   ],
+  "condition": [
+    "looks_intact",
+    "damaged",
+    "burnt",
+    "unknown"
+  ],
+  "age_band": [
+    "lt3",
+    "3to6",
+    "6to10",
+    "gt10",
+    "unknown"
+  ],
+  "visible_damage": [
+    "cracked_screen",
+    "bent_frame",
+    "burn_marks",
+    "swollen_battery",
+    "water_damage",
+    "missing_parts",
+    "corrosion"
+  ],
   "part_id": [
-    "pcb_low_grade",
-    "pcb_mid_grade",
-    "pcb_high_grade",
+    "pcb_low",
+    "pcb_mid",
+    "pcb_high",
     "copper_wire",
-    "copper_winding_motor",
-    "copper_transformer",
-    "aluminium_heatsink",
-    "aluminium_body",
-    "steel_frame",
-    "brass_fitting",
+    "copper_winding",
+    "aluminium",
+    "steel",
+    "brass",
     "plastic_abs",
     "li_ion_cell",
     "lead_acid_cell",
-    "compressor_unit",
+    "compressor",
     "crt_tube",
     "lcd_panel",
     "ram_chip",
@@ -50,10 +70,7 @@
     "capacitor_large",
     "magnet_neodymium",
     "toner_cartridge",
-    "unknown_part",
-    "mercury_lamp",
-    "suspect_insulation",
-    "sealed_container"
+    "unknown_part"
   ],
   "hazard_id": [
     "HAZ_LI_ION",
@@ -65,8 +82,14 @@
     "HAZ_TONER_DUST",
     "HAZ_BROKEN_GLASS_LCD",
     "HAZ_PCB_BURN_FUMES",
-    "HAZ_UNKNOWN_SEALED",
-    "HAZ_ASBESTOS_SUSPECTED"
+    "HAZ_UNKNOWN_SEALED"
+  ],
+  "option_id": [
+    "REUSE_SELL",
+    "REUSE_DONATE",
+    "REPAIR_THEN_REUSE",
+    "RECYCLE_AUTHORIZED",
+    "HAZARDOUS_SPECIAL_HANDLING"
   ],
   "material_class": [
     "copper",
@@ -128,12 +151,6 @@
       "na"
     ]
   },
-  "condition": [
-    "working",
-    "damaged",
-    "burnt",
-    "unknown"
-  ],
   "language": [
     "en",
     "hi"

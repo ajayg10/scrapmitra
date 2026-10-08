@@ -1,33 +1,195 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
-    "AgentTrace": {
+    "CircularOption": {
       "additionalProperties": false,
       "properties": {
-        "tool": {
+        "option_id": {
           "enum": [
-            "identify_parts",
-            "lookup_price",
-            "check_hazards",
-            "find_recycler",
-            "explain_in_language",
-            "request_better_photo"
+            "REUSE_SELL",
+            "REUSE_DONATE",
+            "REPAIR_THEN_REUSE",
+            "RECYCLE_AUTHORIZED",
+            "HAZARDOUS_SPECIAL_HANDLING"
           ],
-          "title": "Tool",
+          "title": "Option Id",
           "type": "string"
         },
-        "summary": {
+        "title": {
           "maxLength": 500,
           "minLength": 1,
-          "title": "Summary",
+          "title": "Title",
+          "type": "string"
+        },
+        "money_range": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MoneyRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "env_rating": {
+          "enum": [
+            "much_better",
+            "better",
+            "good",
+            "poor"
+          ],
+          "title": "Env Rating",
+          "type": "string"
+        },
+        "co2e_avoided_min_kg": {
+          "minimum": 0,
+          "title": "Co2E Avoided Min Kg",
+          "type": "number"
+        },
+        "co2e_avoided_max_kg": {
+          "minimum": 0,
+          "title": "Co2E Avoided Max Kg",
+          "type": "number"
+        },
+        "viability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Viability",
+          "type": "number"
+        },
+        "confidence_label": {
+          "enum": [
+            "High",
+            "Medium",
+            "Low"
+          ],
+          "title": "Confidence Label",
+          "type": "string"
+        },
+        "why": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Why",
+          "type": "string"
+        },
+        "assumption_id": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Assumption Id",
           "type": "string"
         }
       },
       "required": [
-        "tool",
-        "summary"
+        "option_id",
+        "title",
+        "money_range",
+        "env_rating",
+        "co2e_avoided_min_kg",
+        "co2e_avoided_max_kg",
+        "viability",
+        "confidence_label",
+        "why",
+        "assumption_id"
       ],
-      "title": "AgentTrace",
+      "title": "CircularOption",
+      "type": "object"
+    },
+    "ComparisonRow": {
+      "additionalProperties": false,
+      "properties": {
+        "option_name": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Option Name",
+          "type": "string"
+        },
+        "money_text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Money Text",
+          "type": "string"
+        },
+        "env_rating": {
+          "enum": [
+            "much_better",
+            "better",
+            "good",
+            "poor"
+          ],
+          "title": "Env Rating",
+          "type": "string"
+        },
+        "co2e_avoided_text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Co2E Avoided Text",
+          "type": "string"
+        },
+        "summary_reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Summary Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "option_name",
+        "money_text",
+        "env_rating",
+        "co2e_avoided_text",
+        "summary_reason"
+      ],
+      "title": "ComparisonRow",
+      "type": "object"
+    },
+    "DecisionOutput": {
+      "additionalProperties": false,
+      "properties": {
+        "recommended_tier": {
+          "enum": [
+            "REUSE_SELL",
+            "REUSE_DONATE",
+            "REPAIR_THEN_REUSE",
+            "RECYCLE_AUTHORIZED",
+            "HAZARDOUS_SPECIAL_HANDLING"
+          ],
+          "title": "Recommended Tier",
+          "type": "string"
+        },
+        "options": {
+          "items": {
+            "$ref": "#/$defs/CircularOption"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "comparison_table": {
+          "items": {
+            "$ref": "#/$defs/ComparisonRow"
+          },
+          "title": "Comparison Table",
+          "type": "array"
+        },
+        "hazards": {
+          "items": {
+            "$ref": "#/$defs/LocalizedHazard"
+          },
+          "title": "Hazards",
+          "type": "array"
+        },
+        "safety_gate_triggered": {
+          "title": "Safety Gate Triggered",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "recommended_tier",
+        "options",
+        "comparison_table",
+        "hazards",
+        "safety_gate_triggered"
+      ],
+      "title": "DecisionOutput",
       "type": "object"
     },
     "DeviceSummary": {
@@ -85,20 +247,37 @@
         },
         "condition": {
           "enum": [
-            "working",
+            "looks_intact",
             "damaged",
             "burnt",
             "unknown"
           ],
           "title": "Condition",
           "type": "string"
+        },
+        "age_band": {
+          "enum": [
+            "lt3",
+            "3to6",
+            "6to10",
+            "gt10",
+            "unknown"
+          ],
+          "title": "Age Band",
+          "type": "string"
+        },
+        "battery_present": {
+          "title": "Battery Present",
+          "type": "boolean"
         }
       },
       "required": [
         "device_type",
         "label",
         "brand",
-        "condition"
+        "condition",
+        "age_band",
+        "battery_present"
       ],
       "title": "DeviceSummary",
       "type": "object"
@@ -117,8 +296,7 @@
             "HAZ_TONER_DUST",
             "HAZ_BROKEN_GLASS_LCD",
             "HAZ_PCB_BURN_FUMES",
-            "HAZ_UNKNOWN_SEALED",
-            "HAZ_ASBESTOS_SUSPECTED"
+            "HAZ_UNKNOWN_SEALED"
           ],
           "title": "Hazard Id",
           "type": "string"
@@ -234,6 +412,7 @@
         "kind": {
           "enum": [
             "retake_photo",
+            "arrange_pickup",
             "find_recycler",
             "contact_recycler"
           ],
@@ -246,7 +425,7 @@
           "title": "Label",
           "type": "string"
         },
-        "recycler_id": {
+        "target_id": {
           "anyOf": [
             {
               "maxLength": 500,
@@ -257,97 +436,15 @@
               "type": "null"
             }
           ],
-          "title": "Recycler Id"
+          "title": "Target Id"
         }
       },
       "required": [
         "kind",
         "label",
-        "recycler_id"
+        "target_id"
       ],
       "title": "NextAction",
-      "type": "object"
-    },
-    "PartAppraisal": {
-      "additionalProperties": false,
-      "properties": {
-        "part_id": {
-          "enum": [
-            "pcb_low_grade",
-            "pcb_mid_grade",
-            "pcb_high_grade",
-            "copper_wire",
-            "copper_winding_motor",
-            "copper_transformer",
-            "aluminium_heatsink",
-            "aluminium_body",
-            "steel_frame",
-            "brass_fitting",
-            "plastic_abs",
-            "li_ion_cell",
-            "lead_acid_cell",
-            "compressor_unit",
-            "crt_tube",
-            "lcd_panel",
-            "ram_chip",
-            "cpu_chip",
-            "hdd_drive",
-            "capacitor_large",
-            "magnet_neodymium",
-            "toner_cartridge",
-            "unknown_part",
-            "mercury_lamp",
-            "suspect_insulation",
-            "sealed_container"
-          ],
-          "title": "Part Id",
-          "type": "string"
-        },
-        "label": {
-          "maxLength": 500,
-          "minLength": 1,
-          "title": "Label",
-          "type": "string"
-        },
-        "weight_g_min": {
-          "minimum": 0,
-          "title": "Weight G Min",
-          "type": "number"
-        },
-        "weight_g_max": {
-          "minimum": 0,
-          "title": "Weight G Max",
-          "type": "number"
-        },
-        "value_range": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/MoneyRange"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "pricing_status": {
-          "enum": [
-            "priced",
-            "illustrative",
-            "unpriced"
-          ],
-          "title": "Pricing Status",
-          "type": "string"
-        }
-      },
-      "required": [
-        "part_id",
-        "label",
-        "weight_g_min",
-        "weight_g_max",
-        "value_range",
-        "pricing_status"
-      ],
-      "title": "PartAppraisal",
       "type": "object"
     }
   },
@@ -370,12 +467,8 @@
     "device": {
       "$ref": "#/$defs/DeviceSummary"
     },
-    "parts": {
-      "items": {
-        "$ref": "#/$defs/PartAppraisal"
-      },
-      "title": "Parts",
-      "type": "array"
+    "decision": {
+      "$ref": "#/$defs/DecisionOutput"
     },
     "hazards": {
       "items": {
@@ -383,47 +476,6 @@
       },
       "title": "Hazards",
       "type": "array"
-    },
-    "value_range": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/MoneyRange"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "valuation_complete": {
-      "title": "Valuation Complete",
-      "type": "boolean"
-    },
-    "confidence_label": {
-      "enum": [
-        "High",
-        "Medium",
-        "Low"
-      ],
-      "title": "Confidence Label",
-      "type": "string"
-    },
-    "price_source": {
-      "maxLength": 500,
-      "minLength": 1,
-      "title": "Price Source",
-      "type": "string"
-    },
-    "price_last_updated": {
-      "anyOf": [
-        {
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Price Last Updated"
     },
     "is_demo": {
       "title": "Is Demo",
@@ -458,39 +510,19 @@
       },
       "title": "Next Actions",
       "type": "array"
-    },
-    "agent_trace": {
-      "anyOf": [
-        {
-          "items": {
-            "$ref": "#/$defs/AgentTrace"
-          },
-          "type": "array"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Agent Trace"
     }
   },
   "required": [
     "scan_id",
     "lang",
     "device",
-    "parts",
+    "decision",
     "hazards",
-    "value_range",
-    "valuation_complete",
-    "confidence_label",
-    "price_source",
-    "price_last_updated",
     "is_demo",
     "needs_more_photos",
     "suggested_angle",
     "audio_script",
-    "next_actions",
-    "agent_trace"
+    "next_actions"
   ],
   "title": "AppraisalResponse",
   "type": "object"

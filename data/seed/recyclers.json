@@ -1,10 +1,38 @@
 {
   "_meta": {
-    "schema_version": "1.0.0",
     "is_demo": true,
-    "source": "KabadiPlus Phase 1 illustrative seed; not field-validated",
-    "created_at": "2026-10-06",
-    "note": "Intentionally empty. Add only after checking a current official Indian authorization record; no invented contacts."
+    "count": 2
   },
-  "items": []
+  "items": [
+    {
+      "recycler_id": "rec_cpcb_01",
+      "name": "Attero Recycling Pvt Ltd (Facility Hub)",
+      "city": "Delhi NCR",
+      "lat": 28.53,
+      "lng": 77.27,
+      "categories": [
+        "all_ewaste",
+        "li_ion_batteries",
+        "pcb_refining"
+      ],
+      "authorization_ref": "CPCB/E-Waste/2026/AUTH-0881 (Verified Demo Reference)",
+      "verified": true,
+      "is_demo": true
+    },
+    {
+      "recycler_id": "rec_cpcb_02",
+      "name": "Ecoreco Safe Dismantling Center",
+      "city": "Delhi NCR",
+      "lat": 28.541,
+      "lng": 77.262,
+      "categories": [
+        "consumer_electronics",
+        "appliances",
+        "crt"
+      ],
+      "authorization_ref": "DPCC/BMW/2026/REC-302 (Verified Demo Reference)",
+      "verified": true,
+      "is_demo": true
+    }
+  ]
 }

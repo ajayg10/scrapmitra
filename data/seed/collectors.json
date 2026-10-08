@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "is_demo": true,
+    "count": 3
+  },
+  "items": [
+    {
+      "collector_id": "col_delhi_01",
+      "name": "Ramesh Kumar (KabadiPlus Green Rider)",
+      "base_lat": 28.538,
+      "base_lng": 77.255,
+      "vehicle_type": "three_wheeler_cng",
+      "authorized_categories": [
+        "mobile_phone",
+        "laptop",
+        "appliances",
+        "metals"
+      ],
+      "is_hazard_authorized": true,
+      "verified": true,
+      "is_demo": true
+    },
+    {
+      "collector_id": "col_delhi_02",
+      "name": "Surender Scrap Traders",
+      "base_lat": 28.545,
+      "base_lng": 77.268,
+      "vehicle_type": "three_wheeler_cng",
+      "authorized_categories": [
+        "metals",
+        "plastic",
+        "cables"
+      ],
+      "is_hazard_authorized": false,
+      "verified": true,
+      "is_demo": true
+    },
+    {
+      "collector_id": "col_delhi_03",
+      "name": "Mohd. Aslam E-Waste Express",
+      "base_lat": 28.528,
+      "base_lng": 77.249,
+      "vehicle_type": "two_wheeler_electric",
+      "authorized_categories": [
+        "mobile_phone",
+        "laptop",
+        "router_modem"
+      ],
+      "is_hazard_authorized": false,
+      "verified": true,
+      "is_demo": true
+    }
+  ]
+}

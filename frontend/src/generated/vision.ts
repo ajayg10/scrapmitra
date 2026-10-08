@@ -27,22 +27,28 @@ export type DeviceType =
   | "speaker_audio"
   | "unknown";
 export type BrandGuess = string | null;
-export type Condition = "working" | "damaged" | "burnt" | "unknown";
+export type Condition = "looks_intact" | "damaged" | "burnt" | "unknown";
+export type AgeBand = "lt3" | "3to6" | "6to10" | "gt10" | "unknown";
+/**
+ * @maxItems 10
+ */
+export type VisibleDamage = (
+  "cracked_screen" | "bent_frame" | "burn_marks" | "swollen_battery" | "water_damage" | "missing_parts" | "corrosion"
+)[];
+export type BatteryPresent = boolean;
 export type PartId =
-  | "pcb_low_grade"
-  | "pcb_mid_grade"
-  | "pcb_high_grade"
+  | "pcb_low"
+  | "pcb_mid"
+  | "pcb_high"
   | "copper_wire"
-  | "copper_winding_motor"
-  | "copper_transformer"
-  | "aluminium_heatsink"
-  | "aluminium_body"
-  | "steel_frame"
-  | "brass_fitting"
+  | "copper_winding"
+  | "aluminium"
+  | "steel"
+  | "brass"
   | "plastic_abs"
   | "li_ion_cell"
   | "lead_acid_cell"
-  | "compressor_unit"
+  | "compressor"
   | "crt_tube"
   | "lcd_panel"
   | "ram_chip"
@@ -51,15 +57,9 @@ export type PartId =
   | "capacitor_large"
   | "magnet_neodymium"
   | "toner_cartridge"
-  | "unknown_part"
-  | "mercury_lamp"
-  | "suspect_insulation"
-  | "sealed_container";
-export type Name = string;
-export type MaterialClass =
-  "copper" | "aluminium" | "brass" | "steel" | "pcb" | "battery_cell" | "plastic" | "compressor" | "other";
-export type Grade = "low" | "mid" | "high" | "na";
-export type EstWeightG = number;
+  | "unknown_part";
+export type EstWeightGMin = number;
+export type EstWeightGMax = number;
 export type Confidence = number;
 /**
  * @maxItems 32
@@ -79,7 +79,6 @@ export type HazardsDetected = (
   | "HAZ_BROKEN_GLASS_LCD"
   | "HAZ_PCB_BURN_FUMES"
   | "HAZ_UNKNOWN_SEALED"
-  | "HAZ_ASBESTOS_SUSPECTED"
 )[];
 export type OverallConfidence = number;
 export type NeedsMorePhotos = boolean;
@@ -93,6 +92,9 @@ export interface VisionOutput {
   device_type: DeviceType;
   brand_guess: BrandGuess;
   condition: Condition;
+  age_band: AgeBand;
+  visible_damage: VisibleDamage;
+  battery_present: BatteryPresent;
   parts: Parts;
   hazards_detected: HazardsDetected;
   overall_confidence: OverallConfidence;
@@ -102,9 +104,7 @@ export interface VisionOutput {
 }
 export interface VisionPart {
   part_id: PartId;
-  name: Name;
-  material_class: MaterialClass;
-  grade: Grade;
-  est_weight_g: EstWeightG;
+  est_weight_g_min: EstWeightGMin;
+  est_weight_g_max: EstWeightGMax;
   confidence: Confidence;
 }

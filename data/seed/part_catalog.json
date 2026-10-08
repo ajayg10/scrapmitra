@@ -1,13 +1,13 @@
 {
   "_meta": {
-    "schema_version": "1.0.0",
+    "schema_version": "2.0.0",
     "is_demo": true,
-    "source": "KabadiPlus Phase 1 illustrative seed; not field-validated",
-    "created_at": "2026-10-06"
+    "source": "KabadiPlus v2 canonical part catalog; illustrative seed",
+    "created_at": "2026-10-09"
   },
   "items": [
     {
-      "part_id": "pcb_low_grade",
+      "part_id": "pcb_low",
       "label": {
         "en": "Low grade circuit board",
         "hi": "कम ग्रेड सर्किट बोर्ड"
@@ -22,7 +22,7 @@
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "pcb_mid_grade",
+      "part_id": "pcb_mid",
       "label": {
         "en": "Mid grade circuit board",
         "hi": "मध्यम ग्रेड सर्किट बोर्ड"
@@ -37,7 +37,7 @@
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "pcb_high_grade",
+      "part_id": "pcb_high",
       "label": {
         "en": "High grade circuit board",
         "hi": "उच्च ग्रेड सर्किट बोर्ड"
@@ -61,105 +61,79 @@
       "vision_grade": "na",
       "price_grade": "insulated",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.4,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "copper_winding_motor",
+      "part_id": "copper_winding",
       "label": {
-        "en": "Motor copper winding",
-        "hi": "मोटर की तांबे की वाइंडिंग"
+        "en": "Copper motor/transformer winding",
+        "hi": "तांबे की वाइंडिंग"
       },
       "material_class": "copper",
       "vision_grade": "na",
-      "price_grade": "insulated",
+      "price_grade": "bare_bright",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.35,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "copper_transformer",
+      "part_id": "aluminium",
       "label": {
-        "en": "Transformer copper winding",
-        "hi": "ट्रांसफॉर्मर की तांबे की वाइंडिंग"
-      },
-      "material_class": "copper",
-      "vision_grade": "na",
-      "price_grade": "insulated",
-      "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
-      "uncertainty_status": "illustrative_not_calibrated"
-    },
-    {
-      "part_id": "aluminium_heatsink",
-      "label": {
-        "en": "Aluminium heatsink",
-        "hi": "एल्युमिनियम हीटसिंक"
+        "en": "Aluminium casing / heatsink",
+        "hi": "एल्युमीनियम धातु"
       },
       "material_class": "aluminium",
       "vision_grade": "na",
       "price_grade": "clean",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.35,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "aluminium_body",
+      "part_id": "steel",
       "label": {
-        "en": "Aluminium body",
-        "hi": "एल्युमिनियम का ढांचा"
-      },
-      "material_class": "aluminium",
-      "vision_grade": "na",
-      "price_grade": "mixed",
-      "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
-      "uncertainty_status": "illustrative_not_calibrated"
-    },
-    {
-      "part_id": "steel_frame",
-      "label": {
-        "en": "Steel frame",
-        "hi": "स्टील का ढांचा"
+        "en": "Steel frame / enclosure",
+        "hi": "स्टील / लोहे का ढांचा"
       },
       "material_class": "steel",
       "vision_grade": "na",
       "price_grade": "na",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.3,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "brass_fitting",
+      "part_id": "brass",
       "label": {
-        "en": "Brass fitting",
-        "hi": "पीतल की फिटिंग"
+        "en": "Brass fittings / pins",
+        "hi": "पीतल के पुर्जे"
       },
       "material_class": "brass",
       "vision_grade": "na",
       "price_grade": "na",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.4,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "plastic_abs",
       "label": {
-        "en": "ABS plastic",
-        "hi": "एबीएस प्लास्टिक"
+        "en": "Rigid engineering plastic (ABS)",
+        "hi": "इंजीनियरिंग प्लास्टिक"
       },
       "material_class": "plastic",
       "vision_grade": "na",
       "price_grade": "na",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.3,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "li_ion_cell",
       "label": {
-        "en": "Lithium battery cell",
-        "hi": "लिथियम बैटरी सेल"
+        "en": "Lithium-ion battery cell / pack",
+        "hi": "लिथियम-आयन बैटरी"
       },
       "material_class": "battery_cell",
       "vision_grade": "na",
@@ -167,14 +141,14 @@
       "possible_hazards": [
         "HAZ_LI_ION"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.25,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "lead_acid_cell",
       "label": {
-        "en": "Lead acid battery",
-        "hi": "लेड एसिड बैटरी"
+        "en": "Lead-acid battery cell",
+        "hi": "लेड-एसिड बैटरी"
       },
       "material_class": "battery_cell",
       "vision_grade": "na",
@@ -182,14 +156,14 @@
       "possible_hazards": [
         "HAZ_LEAD_ACID"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.2,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
-      "part_id": "compressor_unit",
+      "part_id": "compressor",
       "label": {
-        "en": "Sealed compressor",
-        "hi": "बंद कंप्रेसर"
+        "en": "Sealed compressor unit",
+        "hi": "कंप्रेसर यूनिट"
       },
       "material_class": "compressor",
       "vision_grade": "na",
@@ -197,30 +171,29 @@
       "possible_hazards": [
         "HAZ_REFRIGERANT"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.25,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "crt_tube",
       "label": {
-        "en": "CRT glass tube",
-        "hi": "सीआरटी काँच की ट्यूब"
+        "en": "Cathode ray tube (CRT glass)",
+        "hi": "सीआरटी पिक्चर ट्यूब"
       },
       "material_class": "other",
       "vision_grade": "na",
       "price_grade": "na",
       "possible_hazards": [
-        "HAZ_CRT_LEAD",
-        "HAZ_CAPACITOR_CHARGE"
+        "HAZ_CRT_LEAD"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.2,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "lcd_panel",
       "label": {
-        "en": "LCD or LED panel",
-        "hi": "एलसीडी या एलईडी पैनल"
+        "en": "Flat panel display (LCD/LED)",
+        "hi": "एलसीडी/एलईडी स्क्रीन"
       },
       "material_class": "other",
       "vision_grade": "na",
@@ -229,14 +202,14 @@
         "HAZ_BROKEN_GLASS_LCD",
         "HAZ_MERCURY"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.3,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "ram_chip",
       "label": {
-        "en": "RAM module",
-        "hi": "रैम मॉड्यूल"
+        "en": "Gold-finger RAM module",
+        "hi": "रैम मेमोरी मॉड्यूल"
       },
       "material_class": "pcb",
       "vision_grade": "high",
@@ -244,14 +217,14 @@
       "possible_hazards": [
         "HAZ_PCB_BURN_FUMES"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.3,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "cpu_chip",
       "label": {
-        "en": "Processor chip",
-        "hi": "प्रोसेसर चिप"
+        "en": "CPU / processor package",
+        "hi": "सीपीयू प्रोसेसर चिप"
       },
       "material_class": "pcb",
       "vision_grade": "high",
@@ -259,27 +232,27 @@
       "possible_hazards": [
         "HAZ_PCB_BURN_FUMES"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.3,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "hdd_drive",
       "label": {
-        "en": "Hard drive assembly",
-        "hi": "हार्ड ड्राइव"
+        "en": "Hard disk drive (mechanical)",
+        "hi": "हार्ड डिस्क ड्राइव"
       },
-      "material_class": "other",
+      "material_class": "aluminium",
       "vision_grade": "na",
-      "price_grade": "na",
+      "price_grade": "clean",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.2,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "capacitor_large",
       "label": {
-        "en": "Large capacitor",
-        "hi": "बड़ा कैपेसिटर"
+        "en": "High voltage capacitor",
+        "hi": "हाई-वोल्टेज कैपेसिटर"
       },
       "material_class": "other",
       "vision_grade": "na",
@@ -287,87 +260,42 @@
       "possible_hazards": [
         "HAZ_CAPACITOR_CHARGE"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.4,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "magnet_neodymium",
       "label": {
-        "en": "Neodymium magnet",
+        "en": "Neodymium rare-earth magnet",
         "hi": "नियोडिमियम चुंबक"
       },
       "material_class": "other",
       "vision_grade": "na",
       "price_grade": "na",
       "possible_hazards": [],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.4,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "toner_cartridge",
       "label": {
-        "en": "Toner or ink cartridge",
-        "hi": "टोनर या स्याही कार्ट्रिज"
+        "en": "Toner / ink cartridge assembly",
+        "hi": "प्रिंटर टोनर कार्ट्रिज"
       },
-      "material_class": "other",
+      "material_class": "plastic",
       "vision_grade": "na",
       "price_grade": "na",
       "possible_hazards": [
         "HAZ_TONER_DUST"
       ],
-      "weight_uncertainty_fraction": 0.5,
+      "weight_uncertainty_fraction": 0.35,
       "uncertainty_status": "illustrative_not_calibrated"
     },
     {
       "part_id": "unknown_part",
       "label": {
-        "en": "Unknown part",
-        "hi": "अज्ञात पुर्जा"
-      },
-      "material_class": "other",
-      "vision_grade": "na",
-      "price_grade": "na",
-      "possible_hazards": [
-        "HAZ_UNKNOWN_SEALED"
-      ],
-      "weight_uncertainty_fraction": 0.5,
-      "uncertainty_status": "illustrative_not_calibrated"
-    },
-    {
-      "part_id": "mercury_lamp",
-      "label": {
-        "en": "Mercury-containing lamp",
-        "hi": "पारा वाली लाइट"
-      },
-      "material_class": "other",
-      "vision_grade": "na",
-      "price_grade": "na",
-      "possible_hazards": [
-        "HAZ_MERCURY"
-      ],
-      "weight_uncertainty_fraction": 0.5,
-      "uncertainty_status": "illustrative_not_calibrated"
-    },
-    {
-      "part_id": "suspect_insulation",
-      "label": {
-        "en": "Suspect old insulation",
-        "hi": "पुराना संदिग्ध इन्सुलेशन"
-      },
-      "material_class": "other",
-      "vision_grade": "na",
-      "price_grade": "na",
-      "possible_hazards": [
-        "HAZ_ASBESTOS_SUSPECTED"
-      ],
-      "weight_uncertainty_fraction": 0.5,
-      "uncertainty_status": "illustrative_not_calibrated"
-    },
-    {
-      "part_id": "sealed_container",
-      "label": {
-        "en": "Unknown sealed container",
-        "hi": "अज्ञात बंद डिब्बा"
+        "en": "Unidentified electronic component",
+        "hi": "अज्ञात इलेक्ट्रॉनिक पुर्जा"
       },
       "material_class": "other",
       "vision_grade": "na",
