@@ -57,5 +57,21 @@
   "inspectNow": "Inspect Device Now",
   "imageReady": "Compressed · EXIF Stripped (<300KB)",
   "sampleDevices": "Or Test with Sample E-Waste:",
-  "webcamDenied": "Could not access camera. Please select a photo from your device."
+  "webcamDenied": "Could not access camera. Please select a photo from your device.",
+  "signIn": "Sign In",
+  "signOut": "Sign Out",
+  "householdLogin": "Household Login",
+  "collectorLogin": "Collector Login",
+  "collectorPortal": "Collector Portal",
+  "applyAsCollector": "Apply as Collector",
+  "pendingReview": "Application Under Review",
+  "claimScanPrompt": "Sign in to claim this scan and arrange doorstep pickup",
+  "displayName": "Display Name (Pseudonym)",
+  "email": "Email Address",
+  "password": "Password",
+  "phone": "Phone Number",
+  "createAccount": "Create Account",
+  "googleSignIn": "Continue with Google (Cognito)",
+  "adminApprove": "Approve Collector",
+  "hazardAuth": "Authorize Hazardous Handling"
 }

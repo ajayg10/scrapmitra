@@ -108,7 +108,9 @@ def find_eligible_collector(
     for c in collectors:
         if has_hazard and not c.get("is_hazard_authorized", False):
             continue
-        dist = haversine_km(avg_lat, avg_lng, c["base_lat"], c["base_lng"])
+        base_lat = c.get("base_lat", c.get("current_lat", 28.5355))
+        base_lng = c.get("base_lng", c.get("current_lng", 77.2610))
+        dist = haversine_km(avg_lat, avg_lng, base_lat, base_lng)
         eligible.append((dist, c))
 
     if not eligible:

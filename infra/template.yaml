@@ -214,3 +214,81 @@ Resources:
           ExpirationInDays: 30
           AbortIncompleteMultipartUpload:
             DaysAfterInitiation: 1
+
+  Profiles:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: user_id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: user_id
+        KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  CollectorApplications:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: application_id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: application_id
+        KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: KabadiPlusUserPool
+      UsernameAttributes:
+      - email
+      - phone_number
+      AutoVerifiedAttributes:
+      - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+          RequireUppercase: false
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: KabadiPlusWebClient
+      UserPoolId: !Ref UserPool
+      ExplicitAuthFlows:
+      - ALLOW_USER_PASSWORD_AUTH
+      - ALLOW_REFRESH_TOKEN_AUTH
+      - ALLOW_USER_SRP_AUTH
+
+  UserPoolGroupHousehold:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: household
+      UserPoolId: !Ref UserPool
+      Description: Registered household members
+
+  UserPoolGroupCollector:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: collector
+      UserPoolId: !Ref UserPool
+      Description: Authorized informal e-waste collectors
+
+  UserPoolGroupAdmin:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: admin
+      UserPoolId: !Ref UserPool
+      Description: Municipal and system administrators

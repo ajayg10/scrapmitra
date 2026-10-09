@@ -6,6 +6,7 @@
   "items": [
     {
       "collector_id": "col_delhi_01",
+      "cognito_sub": "sub_col_delhi_01",
       "name": "Ramesh Kumar (KabadiPlus Green Rider)",
       "base_lat": 28.538,
       "base_lng": 77.255,
@@ -22,6 +23,7 @@
     },
     {
       "collector_id": "col_delhi_02",
+      "cognito_sub": "sub_col_delhi_02",
       "name": "Surender Scrap Traders",
       "base_lat": 28.545,
       "base_lng": 77.268,
@@ -37,6 +39,7 @@
     },
     {
       "collector_id": "col_delhi_03",
+      "cognito_sub": "sub_col_delhi_03",
       "name": "Mohd. Aslam E-Waste Express",
       "base_lat": 28.528,
       "base_lng": 77.249,

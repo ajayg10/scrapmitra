@@ -64,32 +64,44 @@ def test_voice_intent_endpoint(client):
 
 
 def test_pickup_and_handover_flow(client):
-    # 1. Create pickup request
-    res = client.post("/v1/pickups", json={
-        "device_type": "laptop",
-        "approx_lat": 28.5355,
-        "approx_lng": 77.2610,
-    })
+    # 1. Create pickup request (household authenticated)
+    res = client.post(
+        "/v1/pickups",
+        headers={"Authorization": "Bearer demo-token-household-1"},
+        json={
+            "device_type": "laptop",
+            "approx_lat": 28.5355,
+            "approx_lng": 77.2610,
+        },
+    )
     assert res.status_code == 200
     pickup_data = res.get_json()
     assert pickup_data["pickup"]["request_id"]
     qr_token = pickup_data["qr_tokens"][0]
 
-    # 2. Collector scan
-    scan_res = client.post("/v1/handover/scan", json={
-        "qr_token": qr_token,
-        "collector_id": "col_delhi_01",
-        "entered_weight_kg": 2.1,
-        "category_confirmed": "laptop",
-    })
+    # 2. Collector scan (collector authenticated)
+    scan_res = client.post(
+        "/v1/handover/scan",
+        headers={"Authorization": "Bearer demo-token-collector-1"},
+        json={
+            "qr_token": qr_token,
+            "collector_id": "col_delhi_01",
+            "entered_weight_kg": 2.1,
+            "category_confirmed": "laptop",
+        },
+    )
     assert scan_res.status_code == 200
     assert scan_res.get_json()["status"] == "HANDOVER_PENDING"
 
-    # 3. Household confirm
-    confirm_res = client.post("/v1/handover/confirm", json={
-        "qr_token": qr_token,
-        "confirmed": True,
-    })
+    # 3. Household confirm (household authenticated)
+    confirm_res = client.post(
+        "/v1/handover/confirm",
+        headers={"Authorization": "Bearer demo-token-household-1"},
+        json={
+            "qr_token": qr_token,
+            "confirmed": True,
+        },
+    )
     assert confirm_res.status_code == 200
     confirm_data = confirm_res.get_json()
     assert confirm_data["status"] == "VERIFIED"
@@ -97,7 +109,10 @@ def test_pickup_and_handover_flow(client):
 
 
 def test_collector_route_endpoint(client):
-    res = client.get("/v1/collector/route?collector_id=col_delhi_01")
+    res = client.get(
+        "/v1/collector/route?collector_id=col_delhi_01",
+        headers={"Authorization": "Bearer demo-token-collector-1"},
+    )
     assert res.status_code == 200
     data = res.get_json()
     assert "baseline_km" in data
@@ -106,7 +121,10 @@ def test_collector_route_endpoint(client):
 
 
 def test_admin_run_aggregation(client):
-    res = client.post("/v1/admin/demo/run-aggregation")
+    res = client.post(
+        "/v1/admin/demo/run-aggregation",
+        headers={"Authorization": "Bearer demo-token-admin"},
+    )
     assert res.status_code == 200
     data = res.get_json()
     assert data["status"] == "DISPATCHED"

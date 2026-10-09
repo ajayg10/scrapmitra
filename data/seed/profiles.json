@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "is_demo": true,
+    "count": 6
+  },
+  "items": [
+    {
+      "user_id": "sub_hh_01",
+      "role": "household",
+      "display_name": "EcoPioneer_MayurVihar",
+      "email_or_phone": "household1@demo.kabadiplus.in",
+      "created_at": "2026-10-09T08:00:00Z",
+      "is_demo": true
+    },
+    {
+      "user_id": "sub_hh_02",
+      "role": "household",
+      "display_name": "GreenHero_Saket",
+      "email_or_phone": "household2@demo.kabadiplus.in",
+      "created_at": "2026-10-09T08:15:00Z",
+      "is_demo": true
+    },
+    {
+      "user_id": "sub_col_delhi_01",
+      "role": "collector",
+      "display_name": "Ramesh Kumar",
+      "collector_id": "col_delhi_01",
+      "email_or_phone": "+919876543210",
+      "created_at": "2026-10-09T07:30:00Z",
+      "is_demo": true
+    },
+    {
+      "user_id": "sub_col_delhi_02",
+      "role": "collector",
+      "display_name": "Surender Scrap",
+      "collector_id": "col_delhi_02",
+      "email_or_phone": "+919876543211",
+      "created_at": "2026-10-09T07:45:00Z",
+      "is_demo": true
+    },
+    {
+      "user_id": "sub_col_delhi_03",
+      "role": "collector",
+      "display_name": "Mohd. Aslam",
+      "collector_id": "col_delhi_03",
+      "email_or_phone": "+919876543212",
+      "created_at": "2026-10-09T08:00:00Z",
+      "is_demo": true
+    },
+    {
+      "user_id": "sub_admin_01",
+      "role": "admin",
+      "display_name": "Delhi Waste Commissioner",
+      "email_or_phone": "admin@kabadiplus.gov.in",
+      "created_at": "2026-10-01T00:00:00Z",
+      "is_demo": true
+    }
+  ]
+}

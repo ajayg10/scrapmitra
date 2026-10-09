@@ -20,8 +20,8 @@ const registry = {
 
 export type IconName = keyof typeof registry;
 
-export function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
+export function Icon({ name, size = 24, className }: { name: IconName; size?: number; className?: string }) {
   const Component = registry[name];
   if (!Component) return null;
-  return <Component size={size} strokeWidth={1.7} aria-hidden="true" />;
+  return <Component size={size} strokeWidth={1.7} aria-hidden="true" className={className} />;
 }

@@ -31,6 +31,7 @@ def generate_demo_dataset():
     collectors = [
         {
             "collector_id": "col_delhi_01",
+            "cognito_sub": "sub_col_delhi_01",
             "name": "Ramesh Kumar (KabadiPlus Green Rider)",
             "base_lat": 28.5380,
             "base_lng": 77.2550,
@@ -42,6 +43,7 @@ def generate_demo_dataset():
         },
         {
             "collector_id": "col_delhi_02",
+            "cognito_sub": "sub_col_delhi_02",
             "name": "Surender Scrap Traders",
             "base_lat": 28.5450,
             "base_lng": 77.2680,
@@ -53,6 +55,7 @@ def generate_demo_dataset():
         },
         {
             "collector_id": "col_delhi_03",
+            "cognito_sub": "sub_col_delhi_03",
             "name": "Mohd. Aslam E-Waste Express",
             "base_lat": 28.5280,
             "base_lng": 77.2490,
@@ -124,6 +127,79 @@ def generate_demo_dataset():
         },
     ]
 
+    # 4. User Profiles (2 demo households, 3 demo collectors, 1 admin)
+    profiles = [
+        {
+            "user_id": "sub_hh_01",
+            "role": "household",
+            "display_name": "EcoPioneer_MayurVihar",
+            "email_or_phone": "household1@demo.kabadiplus.in",
+            "created_at": "2026-10-09T08:00:00Z",
+            "is_demo": True,
+        },
+        {
+            "user_id": "sub_hh_02",
+            "role": "household",
+            "display_name": "GreenHero_Saket",
+            "email_or_phone": "household2@demo.kabadiplus.in",
+            "created_at": "2026-10-09T08:15:00Z",
+            "is_demo": True,
+        },
+        {
+            "user_id": "sub_col_delhi_01",
+            "role": "collector",
+            "display_name": "Ramesh Kumar",
+            "collector_id": "col_delhi_01",
+            "email_or_phone": "+919876543210",
+            "created_at": "2026-10-09T07:30:00Z",
+            "is_demo": True,
+        },
+        {
+            "user_id": "sub_col_delhi_02",
+            "role": "collector",
+            "display_name": "Surender Scrap",
+            "collector_id": "col_delhi_02",
+            "email_or_phone": "+919876543211",
+            "created_at": "2026-10-09T07:45:00Z",
+            "is_demo": True,
+        },
+        {
+            "user_id": "sub_col_delhi_03",
+            "role": "collector",
+            "display_name": "Mohd. Aslam",
+            "collector_id": "col_delhi_03",
+            "email_or_phone": "+919876543212",
+            "created_at": "2026-10-09T08:00:00Z",
+            "is_demo": True,
+        },
+        {
+            "user_id": "sub_admin_01",
+            "role": "admin",
+            "display_name": "Delhi Waste Commissioner",
+            "email_or_phone": "admin@kabadiplus.gov.in",
+            "created_at": "2026-10-01T00:00:00Z",
+            "is_demo": True,
+        },
+    ]
+
+    # 5. Collector Applications (1 pending for admin approval demo)
+    applications = [
+        {
+            "application_id": "app_demo_01",
+            "name": "Vikram Singh",
+            "phone": "+919811223344",
+            "vehicle_type": "three_wheeler_electric",
+            "service_area": "Dwarka Sector 10 & 11",
+            "categories": ["mobile_phone", "laptop", "battery_pack", "appliances"],
+            "authorization_ref": "DPCC/PENDING/2026/04",
+            "status": "pending",
+            "reviewed_by": None,
+            "reviewed_at": None,
+            "created_at": "2026-10-09T09:00:00Z",
+            "is_demo": True,
+        }
+    ]
+
     # Save to disk
     (ROOT / "data/seed/collectors.json").write_text(
         json.dumps({"_meta": {"is_demo": True, "count": len(collectors)}, "items": collectors}, indent=2),
@@ -137,7 +213,15 @@ def generate_demo_dataset():
         json.dumps({"_meta": {"is_demo": True, "count": len(recyclers)}, "items": recyclers}, indent=2),
         encoding="utf-8",
     )
-    print(f"Generated {len(households)} demo households, {len(collectors)} collectors, and {len(recyclers)} recyclers.")
+    (ROOT / "data/seed/profiles.json").write_text(
+        json.dumps({"_meta": {"is_demo": True, "count": len(profiles)}, "items": profiles}, indent=2),
+        encoding="utf-8",
+    )
+    (ROOT / "data/seed/collector_applications.json").write_text(
+        json.dumps({"_meta": {"is_demo": True, "count": len(applications)}, "items": applications}, indent=2),
+        encoding="utf-8",
+    )
+    print(f"Generated {len(households)} demo households, {len(collectors)} collectors, {len(recyclers)} recyclers, {len(profiles)} profiles, and {len(applications)} applications.")
 
 
 if __name__ == "__main__":

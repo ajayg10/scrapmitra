@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "is_demo": true,
+    "count": 1
+  },
+  "items": [
+    {
+      "application_id": "app_demo_01",
+      "name": "Vikram Singh",
+      "phone": "+919811223344",
+      "vehicle_type": "three_wheeler_electric",
+      "service_area": "Dwarka Sector 10 & 11",
+      "categories": [
+        "mobile_phone",
+        "laptop",
+        "battery_pack",
+        "appliances"
+      ],
+      "authorization_ref": "DPCC/PENDING/2026/04",
+      "status": "pending",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "created_at": "2026-10-09T09:00:00Z",
+      "is_demo": true
+    }
+  ]
+}
