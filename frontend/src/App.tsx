@@ -83,8 +83,49 @@ export default function App() {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  const DEMO_PROFILES: Record<string, UserProfile> = {
+    'demo-token-household-1': {
+      user_id: 'sub_hh_01',
+      role: 'household',
+      display_name: 'EcoPioneer_MayurVihar',
+      email_or_phone: 'household1@demo.kabadiplus.in',
+    },
+    'demo-token-household-2': {
+      user_id: 'sub_hh_02',
+      role: 'household',
+      display_name: 'GreenHero_Saket',
+      email_or_phone: 'household2@demo.kabadiplus.in',
+    },
+    'demo-token-collector-1': {
+      user_id: 'sub_col_delhi_01',
+      role: 'collector',
+      display_name: 'Ramesh Kumar',
+      email_or_phone: '+919876543210',
+      collector_id: 'col_delhi_01',
+      is_hazard_authorized: true,
+    },
+    'demo-token-collector-2': {
+      user_id: 'sub_col_delhi_02',
+      role: 'collector',
+      display_name: 'Surender Scrap',
+      email_or_phone: '+919876543211',
+      collector_id: 'col_delhi_02',
+      is_hazard_authorized: false,
+    },
+    'demo-token-admin': {
+      user_id: 'sub_admin_01',
+      role: 'admin',
+      display_name: 'Delhi Waste Commissioner',
+      email_or_phone: 'admin@kabadiplus.gov.in',
+    },
+  };
+
   // Authenticate user on load
   const fetchMe = async (token: string): Promise<UserProfile | null> => {
+    if (token in DEMO_PROFILES) {
+      const fallback = DEMO_PROFILES[token];
+      setCurrentUser(fallback);
+    }
     try {
       const res = await fetch('/v1/me', {
         headers: { Authorization: `Bearer ${token}` },
@@ -93,14 +134,18 @@ export default function App() {
         const user = await res.json();
         setCurrentUser(user);
         return user;
-      } else {
-        localStorage.removeItem('kabadiplus_auth_token');
-        setAuthToken(null);
-        setCurrentUser(null);
       }
     } catch {
       // Offline fallback
     }
+
+    if (token in DEMO_PROFILES) {
+      return DEMO_PROFILES[token];
+    }
+
+    localStorage.removeItem('kabadiplus_auth_token');
+    setAuthToken(null);
+    setCurrentUser(null);
     return null;
   };
 
@@ -201,10 +246,12 @@ export default function App() {
     localStorage.setItem('kabadiplus_auth_token', token);
     setAuthToken(token);
     setAuthError(null);
-    let user = overrideUser;
-    if (!user) {
-      user = (await fetchMe(token)) || undefined;
-    } else {
+    const resolvedUser = overrideUser || DEMO_PROFILES[token];
+    if (resolvedUser) {
+      setCurrentUser(resolvedUser);
+    }
+    const user = (await fetchMe(token)) || resolvedUser;
+    if (user) {
       setCurrentUser(user);
     }
 
@@ -229,11 +276,15 @@ export default function App() {
     // Redirect after login by role
     if (user?.role === 'collector') {
       setActiveTab('collector');
+      void loadCollectorRoute(token);
     } else if (user?.role === 'admin') {
       setActiveTab('admin');
       void loadAdminCollectors(token);
-    } else if (pendingScanToClaim) {
-      setActiveTab('pickup');
+    } else if (user?.role === 'household') {
+      if (pendingScanToClaim) {
+        setActiveTab('pickup');
+      }
+      void loadPersonalImpact(token);
     }
   };
 
@@ -721,6 +772,35 @@ export default function App() {
 
         {/* User Identity Pill / Sign-in Actions */}
         <div className="auth-header-actions">
+          {/* Quick Demo Switcher */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+            <span className="text-[10px] font-bold text-slate-500 uppercase px-1">Demo:</span>
+            <button
+              type="button"
+              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_hh_01' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-emerald-50 text-emerald-800 border-slate-300'}`}
+              onClick={() => void loginWithToken('demo-token-household-1')}
+              title="Sign in as Demo Household (EcoPioneer)"
+            >
+              Household
+            </button>
+            <button
+              type="button"
+              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_col_delhi_01' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white hover:bg-amber-50 text-amber-800 border-slate-300'}`}
+              onClick={() => void loginWithToken('demo-token-collector-1')}
+              title="Sign in as Demo Collector (Ramesh Kumar)"
+            >
+              Collector
+            </button>
+            <button
+              type="button"
+              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_admin_01' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white hover:bg-purple-50 text-purple-800 border-slate-300'}`}
+              onClick={() => void loginWithToken('demo-token-admin')}
+              title="Sign in as Municipal Admin (Delhi Waste Commissioner)"
+            >
+              Admin
+            </button>
+          </div>
+
           {currentUser ? (
             <div className="auth-user-pill">
               <span className={`role-badge ${currentUser.role}`}>{currentUser.role}</span>
