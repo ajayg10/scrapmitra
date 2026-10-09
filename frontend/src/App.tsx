@@ -162,7 +162,7 @@ export default function App() {
     const activeDev = overrideDev || selectedPreset;
     // Call backend API if available, else local deterministic calculation
     try {
-      const res = await fetch('http://127.0.0.1:5001/v1/scan', {
+      const res = await fetch('/v1/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -288,7 +288,7 @@ export default function App() {
 
   const handleRunAdminAggregation = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:5001/v1/admin/demo/run-aggregation', { method: 'POST' });
+      const res = await fetch('/v1/admin/demo/run-aggregation', { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         setAdminReport(data);
