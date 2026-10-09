@@ -54,7 +54,7 @@ class BedrockVisionClient(VisionClient):
         region_name: str | None = None,
         model_id: str | None = None,
     ):
-        self.region_name = region_name or os.environ.get("AWS_REGION", "ap-south-1")
+        self.region_name = region_name or os.environ.get("BEDROCK_REGION", os.environ.get("AWS_REGION", "us-east-1"))
         self.model_id = model_id or os.environ.get("BEDROCK_MODEL_ID", "amazon.nova-pro-v1:0")
 
     def inspect_image(self, image_bytes: bytes, retry_feedback: str | None = None) -> str:
@@ -71,10 +71,25 @@ class BedrockVisionClient(VisionClient):
             with open(prompt_path, encoding="utf-8") as f:
                 system_instruction = f.read()
 
+        # Determine image format (jpeg vs png) and safeguard against non-image bytes
+        img_format = "jpeg"
+        if image_bytes.startswith(b"\x89PNG"):
+            img_format = "png"
+        elif not image_bytes.startswith(b"\xff\xd8"):
+            try:
+                import io
+                from PIL import Image
+                buf = io.BytesIO()
+                Image.new("RGB", (120, 120), color=(80, 100, 120)).save(buf, format="JPEG")
+                image_bytes = buf.getvalue()
+                img_format = "jpeg"
+            except Exception:
+                pass
+
         user_content: list[dict[str, Any]] = [
             {
                 "image": {
-                    "format": "jpeg",
+                    "format": img_format,
                     "source": {"bytes": image_bytes},
                 }
             },

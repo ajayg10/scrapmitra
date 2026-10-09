@@ -1057,7 +1057,35 @@ export default function App() {
             </div>
 
             {/* Scan Results & Decision Engine */}
-            {scanResult && (
+            {scanResult && scanResult.needs_more_photos && (
+              <div className="mt-8 bg-amber-50 border border-amber-300 rounded-2xl p-6 text-center max-w-xl mx-auto shadow-sm">
+                <div className="w-14 h-14 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Icon name="CircleAlert" size={30} />
+                </div>
+                <h3 className="text-lg font-bold text-amber-900 mb-1">Clearer Photo Required</h3>
+                <p className="text-sm text-amber-800 mb-3">{scanResult.message || 'Confidence is below threshold. For safety and pricing accuracy, please capture another angle.'}</p>
+                {scanResult.suggested_angle && (
+                  <div className="bg-white border border-amber-200 rounded-xl p-3 text-xs text-slate-700 font-semibold mb-4 inline-block">
+                    💡 Suggestion: {scanResult.suggested_angle}
+                  </div>
+                )}
+                <div>
+                  <button
+                    type="button"
+                    className="camera-button mx-auto"
+                    onClick={() => {
+                      setImagePreview(null);
+                      setScanResult(null);
+                    }}
+                  >
+                    <Icon name="RefreshCw" size={18} />
+                    Retake / Choose Another Photo
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {scanResult && !scanResult.needs_more_photos && scanResult.device && (
               <div className="mt-8">
                 {scanResult.hazards?.length > 0 && (
                   <div className="hazard-banner" role="alert">

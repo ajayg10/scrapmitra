@@ -29,6 +29,12 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv(REPO_ROOT / ".env")
+except ImportError:
+    pass
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -163,6 +169,8 @@ def require_auth(allowed_roles: list[str] | None = None):
 
 
 def get_vision_client():
+    if app.config.get("TESTING"):
+        return MockVisionClient()
     mode = os.environ.get("VISION_MODE", "mock").lower()
     if mode == "bedrock":
         return BedrockVisionClient()
@@ -345,13 +353,16 @@ def scan():
 
     # If low confidence, request re-shoot directly
     if vision_output.needs_more_photos or vision_output.overall_confidence < 0.6:
-        return jsonify({
-            "scan_id": f"scan_{uuid.uuid4().hex[:8]}",
+        scan_id = f"scan_{uuid.uuid4().hex[:8]}"
+        res_data = {
+            "scan_id": scan_id,
             "needs_more_photos": True,
             "suggested_angle": vision_output.suggested_angle or "Please place the device flat and take a clear, well-lit photo.",
             "confidence": vision_output.overall_confidence,
             "message": "Confidence is below 0.6. For safety and pricing accuracy, please capture another angle.",
-        })
+        }
+        SCANS[scan_id] = res_data
+        return jsonify(res_data)
 
     # 2. Hazard Guard
     hazards = resolve_hazards_for_scan(
