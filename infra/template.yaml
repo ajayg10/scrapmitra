@@ -6,8 +6,8 @@ Description: KabadiPlus Phase 1 storage scaffold only. No API, IAM roles, model,
 Parameters:
   AppOrigin:
     Type: String
-    Description: Exact HTTPS frontend origin; no trailing slash. Confirm at deployment.
-    AllowedPattern: ^https://[a-zA-Z0-9.-]+(:[0-9]+)?$
+    Default: "*"
+    Description: Allowed HTTP/HTTPS frontend origin or wildcard.
 Resources:
   ScrapPrices:
     Type: AWS::DynamoDB::Table
@@ -292,3 +292,114 @@ Resources:
       GroupName: admin
       UserPoolId: !Ref UserPool
       Description: Municipal and system administrators
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+          - X-Amz-Date
+          - X-Api-Key
+          - X-Amz-Security-Token
+        MaxAge: 300
+
+  KabadiPlusApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend
+      Handler: functions.app.lambda_handler
+      Runtime: python3.11
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          VISION_MODE: bedrock
+          BEDROCK_MODEL_ID: amazon.nova-pro-v1:0
+          UPLOADS_BUCKET: !Ref UploadsBucket
+          AUDIO_CACHE_BUCKET: !Ref AudioCacheBucket
+          DYNAMO_TABLE_SCANS: !Ref Scans
+          DYNAMO_TABLE_PROFILES: !Ref Profiles
+          DYNAMO_TABLE_COLLECTOR_APPS: !Ref CollectorApplications
+          COGNITO_USER_POOL_ID: !Ref UserPool
+          COGNITO_CLIENT_ID: !Ref UserPoolClient
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:DeleteObject
+              Resource:
+                - !Sub "${UploadsBucket.Arn}/*"
+                - !Sub "${AudioCacheBucket.Arn}/*"
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource:
+                - !GetAtt Scans.Arn
+                - !GetAtt Profiles.Arn
+                - !GetAtt CollectorApplications.Arn
+                - !GetAtt ScrapPrices.Arn
+                - !GetAtt HazardRules.Arn
+                - !GetAtt Recyclers.Arn
+                - !GetAtt DismantleGuides.Arn
+                - !GetAtt Corrections.Arn
+                - !GetAtt ImpactAgg.Arn
+                - !GetAtt OfferChecks.Arn
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminCreateUser
+                - cognito-idp:AdminAddUserToGroup
+                - cognito-idp:AdminGetUser
+                - cognito-idp:AdminInitiateAuth
+              Resource: !GetAtt UserPool.Arn
+      Events:
+        ApiProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /{proxy+}
+            Method: ANY
+        ApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /
+            Method: ANY
+
+Outputs:
+  HttpApiUrl:
+    Description: API Gateway HTTP API endpoint URL
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref UserPoolClient
+  UploadsBucketName:
+    Description: S3 Uploads Bucket Name
+    Value: !Ref UploadsBucket
+  AudioCacheBucketName:
+    Description: S3 Audio Cache Bucket Name
+    Value: !Ref AudioCacheBucket

@@ -535,9 +535,11 @@ export default function App() {
       });
       if (res.ok) {
         const data = await res.json();
-        setScanResult(data);
-        setIsScanning(false);
-        return;
+        if (!data.needs_more_photos || !activeDev) {
+          setScanResult(data);
+          setIsScanning(false);
+          return;
+        }
       }
     } catch {
       // Fallback

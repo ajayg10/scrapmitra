@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Any
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+if not DATA_DIR.exists():
+    DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
 
 def load_data(relative_path: str) -> Any:

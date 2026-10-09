@@ -24,10 +24,20 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-# Ensure project root is in sys.path so app.py can be run directly from any directory
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+# Ensure project root, backend package, and function directory are in sys.path
+CURRENT_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = CURRENT_DIR.parent
+REPO_ROOT = BACKEND_DIR.parent
+
+for p in [str(REPO_ROOT), str(BACKEND_DIR), str(CURRENT_DIR)]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+if "backend" not in sys.modules:
+    import types
+    backend_pkg = types.ModuleType("backend")
+    backend_pkg.__path__ = [str(BACKEND_DIR)]
+    sys.modules["backend"] = backend_pkg
 
 try:
     from dotenv import load_dotenv
@@ -1154,6 +1164,75 @@ def admin_run_aggregation():
         "message": f"Clustered into {len(clusters)} routes! Saved {tot_saved_km} km ({tot_co2_saved} kg CO₂e) vs separate trips.",
     })
 
+
+
+def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
+    """AWS Lambda entrypoint supporting API Gateway HTTP API (v2) and REST API (v1)."""
+    import base64
+    import io
+    import urllib.parse
+
+    # 1. Resolve HTTP method, path, query
+    http_ctx = event.get("requestContext", {}).get("http", {})
+    method = http_ctx.get("method") or event.get("httpMethod", "GET")
+    path = event.get("rawPath") or event.get("path", "/")
+    query_string = event.get("rawQueryString") or ""
+    if not query_string and "queryStringParameters" in event and event["queryStringParameters"]:
+        query_string = urllib.parse.urlencode(event["queryStringParameters"])
+
+    # 2. Resolve body
+    body_bytes = b""
+    raw_body = event.get("body")
+    if raw_body:
+        if event.get("isBase64Encoded", False):
+            body_bytes = base64.b64decode(raw_body)
+        else:
+            body_bytes = raw_body.encode("utf-8")
+
+    # 3. Headers & WSGI environ
+    headers = event.get("headers") or {}
+    environ = {
+        "REQUEST_METHOD": method,
+        "SCRIPT_NAME": "",
+        "PATH_INFO": path,
+        "QUERY_STRING": query_string,
+        "SERVER_NAME": headers.get("host", "localhost"),
+        "SERVER_PORT": "443",
+        "SERVER_PROTOCOL": "HTTP/1.1",
+        "wsgi.version": (1, 0),
+        "wsgi.url_scheme": "https",
+        "wsgi.input": io.BytesIO(body_bytes),
+        "wsgi.errors": sys.stderr,
+        "wsgi.multithread": False,
+        "wsgi.multiprocess": False,
+        "wsgi.run_once": False,
+        "CONTENT_LENGTH": str(len(body_bytes)),
+        "CONTENT_TYPE": headers.get("content-type", headers.get("Content-Type", "")),
+    }
+
+    for k, v in headers.items():
+        key = "HTTP_" + k.upper().replace("-", "_")
+        environ[key] = str(v)
+
+    # 4. Invoke Flask WSGI application
+    response_headers: list[tuple[str, str]] = []
+    response_status: list[int] = [200]
+
+    def start_response(status: str, headers_list: list[tuple[str, str]], exc_info: Any = None) -> None:
+        code = int(status.split()[0])
+        response_status[0] = code
+        response_headers.extend(headers_list)
+
+    response_body = b"".join(app(environ, start_response))
+
+    # 5. Format API Gateway response
+    out_headers = {k: v for k, v in response_headers}
+    return {
+        "statusCode": response_status[0],
+        "headers": out_headers,
+        "body": response_body.decode("utf-8", errors="replace"),
+        "isBase64Encoded": False,
+    }
 
 
 if __name__ == "__main__":
