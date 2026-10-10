@@ -546,6 +546,67 @@ def auth_signup():
     }), 201
 
 
+@app.route("/v1/auth/google", methods=["POST"])
+def auth_google():
+    """Google OAuth sign-in / registration for household users."""
+    body = request.get_json() or {}
+    email = body.get("email", "").strip().lower()
+    display_name = body.get("name") or body.get("display_name", "")
+    credential = body.get("credential")
+
+    if credential:
+        try:
+            import base64
+            import json
+            parts = str(credential).split(".")
+            if len(parts) >= 2:
+                padded = parts[1] + "=" * ((4 - len(parts[1]) % 4) % 4)
+                payload = json.loads(base64.urlsafe_b64decode(padded).decode("utf-8"))
+                email = payload.get("email", email).lower()
+                display_name = display_name or payload.get("name") or payload.get("given_name") or email.split("@")[0]
+        except Exception:
+            pass
+
+    if not email:
+        return jsonify({
+            "error_code": "VALIDATION_ERROR",
+            "message": "Valid Google email is required.",
+        }), 400
+
+    if not display_name:
+        display_name = email.split("@")[0].replace(".", " ").capitalize()
+
+    # Find existing user by email
+    user = None
+    for p in PROFILES.values():
+        if p.get("email_or_phone", "").lower() == email:
+            user = p
+            break
+
+    if not user:
+        user_id = f"sub_google_{uuid.uuid4().hex[:8]}"
+        user = {
+            "user_id": user_id,
+            "role": "household",
+            "display_name": display_name,
+            "email_or_phone": email,
+            "auth_provider": "google",
+            "created_at": datetime.now(UTC).isoformat(),
+            "is_demo": False,
+        }
+        PROFILES[user_id] = user
+        status_code = 201
+    else:
+        status_code = 200
+
+    token = f"token_{user['user_id']}"
+    return jsonify({
+        "token": token,
+        "user": user,
+        "message": f"Welcome, {user['display_name']}! Signed in with Google.",
+    }), status_code
+
+
 @app.route("/v1/auth/login", methods=["POST"])
 def auth_login():
     """Sign-in endpoint for household, collector, or admin."""

@@ -153,4 +153,6 @@
 
 .google-auth-btn{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#1e293b;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px}
 .google-auth-btn:hover{background:#f8fafc}
+.google-auth-box{background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;padding:16px;margin-bottom:16px;text-align:left}
+.google-auth-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 

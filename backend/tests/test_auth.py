@@ -193,3 +193,27 @@ def test_leaderboard_display_name_privacy(client):
         # Ensure never email, phone or real name
         assert "@" not in h["display_name"]
         assert "+91" not in h["display_name"]
+
+
+# 9. Google Auth registers new user and retrieves existing user
+def test_google_auth_endpoint(client):
+    # New user with Google email
+    res1 = client.post("/v1/auth/google", json={
+        "email": "priya.citizen@gmail.com",
+        "name": "Priya Citizen",
+    })
+    assert res1.status_code == 201
+    data1 = res1.get_json()
+    assert data1["token"].startswith("token_")
+    assert data1["user"]["email_or_phone"] == "priya.citizen@gmail.com"
+    assert data1["user"]["role"] == "household"
+    assert data1["user"]["display_name"] == "Priya Citizen"
+
+    # Existing user logs in again
+    res2 = client.post("/v1/auth/google", json={
+        "email": "priya.citizen@gmail.com",
+    })
+    assert res2.status_code == 200
+    data2 = res2.get_json()
+    assert data2["token"] == data1["token"]
+    assert data2["user"]["user_id"] == data1["user"]["user_id"]
