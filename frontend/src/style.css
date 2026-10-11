@@ -371,7 +371,7 @@ button:focus-visible, a:focus-visible {
   grid-template-columns: 1.25fr 1fr;
   align-items: center;
   padding: 10px 0 36px;
-  gap: 40px;
+  gap: 32px;
 }
 
 .hero-content {
