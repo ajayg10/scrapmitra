@@ -1002,16 +1002,16 @@ export default function App() {
 
                     <div className="upload-actions">
                       <button type="button" className="btn-camera" onClick={() => cameraInputRef.current?.click()}>
-                        <Icon name="Camera" size={18} />
-                        {t('takePhoto')}
+                        <Icon name="Camera" size={17} />
+                        <span>{t('takePhoto')}</span>
                       </button>
                       <button type="button" className="btn-upload" onClick={() => fileInputRef.current?.click()}>
-                        <Icon name="Upload" size={18} />
-                        {t('uploadPhoto')}
+                        <Icon name="Upload" size={17} />
+                        <span>{t('uploadPhoto')}</span>
                       </button>
                       <button type="button" className="btn-webcam" onClick={() => void startWebcam()}>
                         <Icon name="RefreshCw" size={16} />
-                        {t('openWebcam')}
+                        <span>{t('openWebcam')}</span>
                       </button>
                     </div>
 

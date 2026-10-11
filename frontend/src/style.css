@@ -490,10 +490,10 @@ h1 {
    UPLOAD DROP ZONE & ACTION BUTTONS
    ========================================================================== */
 .drop-zone {
-  border: 2px dashed var(--lb-sage);
+  border: 2px dashed #0F3D33;
   border-radius: 12px;
   padding: 24px 20px;
-  background: #FAF9F5;
+  background: #faf8f2;
   text-align: center;
   transition: all 0.2s ease;
   margin: 6px 0 16px;
@@ -502,15 +502,16 @@ h1 {
   align-items: center;
   justify-content: center;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .drop-zone:hover {
-  border-color: var(--lb-forest);
+  border-color: #0F1A17;
   background: #f4f6f0;
 }
 
 .drop-zone.drag-over {
-  border-color: var(--lb-forest);
+  border-color: #0F1A17;
   background: #eaf1e8;
   transform: scale(1.005);
 }
@@ -520,7 +521,7 @@ h1 {
   height: 52px;
   border-radius: 50%;
   background: var(--lb-sage-light);
-  color: var(--lb-forest);
+  color: #0F3D33;
   display: grid;
   place-items: center;
   margin-bottom: 10px;
@@ -539,62 +540,84 @@ h1 {
 
 .upload-actions {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
   width: 100%;
+  box-sizing: border-box;
   margin-bottom: 20px;
 }
 
-.btn-camera {
+.btn-camera, .btn-upload, .btn-webcam {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   min-height: 48px;
-  padding: 0 18px;
-  background: var(--lb-coral);
-  color: var(--lb-white);
-  border: 2px solid var(--lb-forest-dark);
-  border-radius: 10px;
-  font-family: var(--lb-font-head);
-  font-size: 13.5px;
-  font-weight: 700;
-  box-shadow: 3px 3px 0 var(--lb-forest-dark);
-  transition: all 0.15s ease;
+  padding: 6px 8px;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  border: 2px solid #0F1A17;
+  border-radius: 4px;
+  font-family: var(--lb-font-bricolage), var(--lb-font-head);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
   cursor: pointer;
-  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-camera svg, .btn-upload svg, .btn-webcam svg {
+  flex-shrink: 0;
+}
+
+.btn-camera span, .btn-upload span, .btn-webcam span {
+  display: block;
+  min-width: 0;
+  line-height: 1.25;
+  text-align: center;
+}
+
+/* Primary Action: Take Photo with Camera */
+.btn-camera {
+  background: #0F3D33;
+  color: #F6F3E9 !important;
+  box-shadow: 4px 4px 0 #F0A530;
 }
 
 .btn-camera:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 4px 4px 0 var(--lb-forest-dark);
-  background: #e04d32;
+  box-shadow: 4px 6px 0 #F0A530;
+  background: #144f43;
 }
 
+.btn-camera:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 2px 2px 0 #F0A530;
+}
+
+/* Secondary Actions: Upload from Device / Gallery & Open Live Webcam */
 .btn-upload, .btn-webcam {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 48px;
-  padding: 0 16px;
-  background: var(--lb-white);
-  color: var(--lb-forest);
-  border: 2px solid var(--lb-forest-dark);
-  border-radius: 10px;
-  font-family: var(--lb-font-body);
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: 3px 3px 0 var(--lb-forest-dark);
-  transition: all 0.15s ease;
-  cursor: pointer;
-  white-space: nowrap;
+  background: #F6F3E9;
+  color: #172722 !important;
+  box-shadow: 4px 4px 0 #0F1A17;
 }
 
 .btn-upload:hover, .btn-webcam:hover {
-  background: var(--lb-ivory);
+  background: #FAF8F2;
   transform: translateY(-2px);
-  box-shadow: 4px 4px 0 var(--lb-forest-dark);
+  box-shadow: 4px 6px 0 #0F1A17;
+}
+
+.btn-upload:active, .btn-webcam:active {
+  transform: translateY(1px);
+  box-shadow: 2px 2px 0 #0F1A17;
+}
+
+.btn-camera:focus-visible, .btn-upload:focus-visible, .btn-webcam:focus-visible {
+  outline: 2px solid var(--lb-coral);
+  outline-offset: 2px;
 }
 
 /* Sample presets */
@@ -1753,6 +1776,12 @@ footer p {
   }
 }
 
+@media (max-width: 680px) {
+  .upload-actions {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
 
 @media (max-width: 540px) {
   .catalog-grid {
