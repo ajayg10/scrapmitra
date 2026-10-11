@@ -373,6 +373,49 @@ def transcribe_audio(audio_key: str, lang_hint: str = "en") -> tuple[str, str]:
         return "", lang_hint
 
 
+def _parse_agent_response(raw_text: str) -> tuple[str, str, list[str], list[str]]:
+    """Robustly parse display_text, speech_text, followups, sources from model output.
+    Guarantees raw JSON or markdown code fences are never exposed in user chat bubbles.
+    """
+    display_text = ""
+    speech_text = ""
+    followups: list[str] = []
+    sources: list[str] = []
+
+    # 1. Search for fenced ```json ... ```
+    fence = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", raw_text)
+    candidate = fence.group(1) if fence else None
+
+    # 2. Search for outermost {...}
+    if not candidate:
+        brace = re.search(r"(\{[\s\S]*\})", raw_text)
+        if brace:
+            candidate = brace.group(1)
+
+    if candidate:
+        try:
+            parsed = json.loads(candidate)
+            if isinstance(parsed, dict) and "display_text" in parsed:
+                display_text = str(parsed["display_text"]).strip()
+                speech_text = str(parsed.get("speech_text", display_text)).strip()
+                followups = parsed.get("followups", [])
+                sources = parsed.get("sources", [])
+        except Exception:
+            pass
+
+    if not display_text:
+        # Strip all code blocks completely
+        cleaned = re.sub(r"```(?:json)?[\s\S]*?```", "", raw_text).strip()
+        display_text = cleaned or raw_text
+        speech_text = display_text
+
+    # Final cleanup: remove any remaining code fences from display text
+    display_text = re.sub(r"```(?:json)?[\s\S]*?```", "", display_text).strip()
+    speech_text = re.sub(r"```(?:json)?[\s\S]*?```", "", speech_text).strip()
+
+    return display_text, speech_text, followups, sources
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Main Agent Entry Point
 # ─────────────────────────────────────────────────────────────────────────────
@@ -430,7 +473,47 @@ def run_voice_agent(
     current_message = {"role": "user", "content": [{"text": user_input}]}
     messages = history_messages + [current_message]
 
+    scan_id = context.get("scan_id")
+    scans = context.get("scans", {})
+    image_uploaded = context.get("image_uploaded", False)
+    device_hint = context.get("device_hint", "device")
+
+    device_context_block = ""
+    if scan_id and scan_id in scans:
+        scan_data = scans[scan_id]
+        dev = scan_data.get("device", {})
+        dec = scan_data.get("decision", {})
+        hazards = [h.get("hazard_id") for h in scan_data.get("hazards", [])]
+        opts = dec.get("options", [])
+        best = opts[0] if opts else {}
+        p_min = best.get("money_range", {}).get("min")
+        p_max = best.get("money_range", {}).get("max")
+        pr_str = f"₹{p_min} to ₹{p_max}" if p_min and p_max else "Social credit"
+
+        device_context_block = f"""
+## ACTIVE SCANNED ITEM CONTEXT (CRITICAL):
+- The user has already uploaded and inspected a photo of their item!
+- Active Scan ID: {scan_id}
+- Device: {dev.get('label', dev.get('device_type', 'Smartphone'))} ({dev.get('device_type', 'unknown')})
+- Condition: {dev.get('condition', 'unknown')}
+- Age: {dev.get('age_band', 'unknown')}
+- Hazards detected: {', '.join(hazards) if hazards else 'None'}
+- Recommended Action: {best.get('title')} ({pr_str})
+- Available options: {', '.join(o.get('title', '') for o in opts)}
+CRITICAL RULE: NEVER ask the user for their scan ID! You ALREADY HAVE IT ({scan_id}).
+When the user asks 'Where can I sell it?', 'Why this price?', 'Is it safe?', or 'Is this offer fair?', you already know it is this {dev.get('label', 'device')}. Immediately call the appropriate tool (like `find_collectors` with scan_id '{scan_id}') or answer directly with the verified details above.
+"""
+    elif image_uploaded or (device_hint and device_hint != "device"):
+        device_context_block = f"""
+## UPLOADED IMAGE STATUS:
+- The user has uploaded an image of their {device_hint} on the screen (inspection pending or in progress).
+- Acknowledge that you see they uploaded a photo of their {device_hint}.
+- If they ask about value or safety, give general expectations for a {device_hint} and guide them to tap 'Inspect Device Now' for the exact verified appraisal.
+"""
+
     system_prompt = _load_system_prompt()
+    if device_context_block:
+        system_prompt += "\n" + device_context_block
 
     # Bedrock Converse tool-use loop
     try:
@@ -481,6 +564,12 @@ def run_voice_agent(
                 for tool_call in tool_calls_in_response:
                     tool_name = tool_call["name"]
                     tool_input = tool_call.get("input", {})
+                    # If tool requires scan_id and it's missing, inject active scan_id
+                    if "scan_id" in tool_input and not tool_input["scan_id"] and scan_id:
+                        tool_input["scan_id"] = scan_id
+                    elif tool_name in ("get_scan_result", "get_price_breakdown", "explain_decision", "what_if_value", "check_offer", "find_collectors") and "scan_id" not in tool_input and scan_id:
+                        tool_input["scan_id"] = scan_id
+
                     tool_id = tool_call["toolUseId"]
 
                     result = _dispatch_tool(tool_name, tool_input, context)
@@ -505,23 +594,13 @@ def run_voice_agent(
                 continue
 
             else:
-                # Final text response — parse JSON if model wrapped it
+                # Final text response — parse robustly without leaking raw JSON
                 raw_text = raw_text.strip()
-
-                # Try to parse structured response
-                try:
-                    # Strip markdown code fences if present
-                    cleaned = re.sub(r"```(?:json)?\s*", "", raw_text).strip().rstrip("`").strip()
-                    parsed = json.loads(cleaned)
-                    display_text = parsed.get("display_text", raw_text)
-                    speech_text = parsed.get("speech_text", display_text)
-                    followups = parsed.get("followups", [])
-                    if parsed.get("sources"):
-                        sources.extend([s for s in parsed["sources"] if s not in sources])
-                except (json.JSONDecodeError, AttributeError):
-                    display_text = raw_text
-                    speech_text = raw_text
-
+                display_text, speech_text, parsed_followups, parsed_sources = _parse_agent_response(raw_text)
+                followups = parsed_followups
+                for s in parsed_sources:
+                    if s not in sources:
+                        sources.append(s)
                 break
 
         if not display_text:

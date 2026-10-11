@@ -20,13 +20,25 @@ interface VoiceAgentProps {
   authToken?: string | null;
   lang?: 'en' | 'hi';
   apiBase?: string;
+  imageUploaded?: boolean;
+  deviceHint?: string;
 }
 
-// ── Quick-chip labels by language ─────────────────────────────────────────────
+// ── Quick-chip labels by language & context ───────────────────────────────────
 
-const QUICK_CHIPS: Record<string, string[]> = {
+const QUICK_CHIPS_SCAN: Record<string, string[]> = {
   en: ['Why this price?', 'Is it safe?', 'Where can I sell it?', 'Is this offer fair?'],
   hi: ['यह कीमत क्यों?', 'क्या यह सुरक्षित है?', 'इसे कहाँ बेचूँ?', 'क्या यह ऑफर ठीक है?'],
+};
+
+const QUICK_CHIPS_UPLOAD: Record<string, string[]> = {
+  en: ['What is this device worth?', 'Is it safe?', 'Where can I sell it?', 'How does pickup work?'],
+  hi: ['इसकी क्या कीमत मिलेगी?', 'क्या यह सुरक्षित है?', 'इसे कहाँ बेचूँ?', 'पिकअप कैसे होगा?'],
+};
+
+const QUICK_CHIPS_MAIN: Record<string, string[]> = {
+  en: ['What devices can I sell?', 'How does pickup work?', 'Is swollen battery dangerous?', 'How are eco points earned?'],
+  hi: ['मैं क्या बेच सकता हूँ?', 'पिकअप कैसे काम करता है?', 'क्या फूली बैटरी खतरनाक है?', 'इको पॉइंट्स कैसे मिलते हैं?'],
 };
 
 const STATE_LABELS: Record<VoiceState, Record<string, string>> = {
@@ -49,6 +61,8 @@ export default function VoiceAgent({
   authToken,
   lang = 'en',
   apiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, ''),
+  imageUploaded = false,
+  deviceHint,
 }: VoiceAgentProps) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle');
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -57,16 +71,54 @@ export default function VoiceAgent({
   const [showOfferInput, setShowOfferInput] = useState(false);
   const [offerAmount, setOfferAmount] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
+  const lastScanIdRef = useRef<string | undefined>(undefined);
+  const lastUploadRef = useRef<boolean>(false);
+
   // Auto-scroll chat to bottom
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [turns]);
+
+  // React to new image upload
+  useEffect(() => {
+    if (imageUploaded && !lastUploadRef.current && !scanId) {
+      lastUploadRef.current = true;
+      setIsMinimized(false);
+      setTurns((prev) => [
+        ...prev,
+        {
+          role: 'agent',
+          text: lang === 'hi'
+            ? `📷 फोटो मिल गई (${deviceHint || 'डिवाइस'})! पूरी कीमत और सुरक्षा रिपोर्ट देखने के लिए 'Inspect Device Now' दबाएँ, या मुझसे कोई भी सवाल पूछें।`
+            : `📷 Photo detected (${deviceHint || 'device'})! Tap 'Inspect Device Now' to calculate circular value, or ask me any question.`,
+        },
+      ]);
+    }
+  }, [imageUploaded, scanId, deviceHint, lang]);
+
+  // React to new scan completed
+  useEffect(() => {
+    if (scanId && scanId !== lastScanIdRef.current) {
+      lastScanIdRef.current = scanId;
+      setIsMinimized(false);
+      setTurns((prev) => [
+        ...prev,
+        {
+          role: 'agent',
+          text: lang === 'hi'
+            ? `📸 स्कैन सत्यापित हुआ (${deviceHint || 'डिवाइस'})! आप अनुमानित मूल्य, सुरक्षा या कहाँ बेचना है, इसके बारे में पूछ सकते हैं।`
+            : `📸 Scan verified (${deviceHint || 'Device'})! I'm ready to answer questions about price, safety, or where to sell it.`,
+        },
+      ]);
+    }
+  }, [scanId, deviceHint, lang]);
 
   // ── Ask the agent ──────────────────────────────────────────────────────────
 
@@ -86,6 +138,8 @@ export default function VoiceAgent({
       scan_id: scanId,
       request_id: requestId,
       lang_hint: lang,
+      image_uploaded: Boolean(imageUploaded),
+      device_hint: deviceHint,
       input: audioKey ? { audio_key: audioKey } : { text: userText },
     };
 
@@ -415,31 +469,53 @@ export default function VoiceAgent({
     </svg>
   );
 
-  const chips = QUICK_CHIPS[lang] || QUICK_CHIPS.en;
+  const chips = scanId
+    ? (QUICK_CHIPS_SCAN[lang] || QUICK_CHIPS_SCAN.en)
+    : imageUploaded
+      ? (QUICK_CHIPS_UPLOAD[lang] || QUICK_CHIPS_UPLOAD.en)
+      : (QUICK_CHIPS_MAIN[lang] || QUICK_CHIPS_MAIN.en);
 
   return (
     <div className="voice-agent-container" role="region" aria-label="Voice Assistant">
       {/* Header */}
       <div className="voice-agent-header">
         <span style={{ fontSize: '1.1rem' }}>🎙️</span>
-        <span className="voice-agent-title">Ask the Agent</span>
+        <span className="voice-agent-title">
+          {scanId
+            ? (lang === 'hi' ? 'डिवाइस वॉइस एजेंट' : 'Device Voice Assistant')
+            : imageUploaded
+              ? (lang === 'hi' ? 'फोटो पहचानी गई' : 'Assistant (Photo Detected)')
+              : (lang === 'hi' ? 'स्क्रैपमित्र वॉइस एजेंट' : 'Ask the Voice Agent')}
+        </span>
         <span className={`voice-state-label ${voiceState}`}>
           {STATE_LABELS[voiceState][lang] || STATE_LABELS[voiceState].en}
         </span>
+        <button
+          type="button"
+          className="voice-toggle-btn"
+          onClick={() => setIsMinimized((prev) => !prev)}
+          title={isMinimized ? 'Expand' : 'Collapse'}
+        >
+          {isMinimized ? (lang === 'hi' ? '▲ खोलें' : '▲ Expand') : (lang === 'hi' ? '▼ छोटा करें' : '▼ Minimize')}
+        </button>
       </div>
 
-      {/* Chat Window */}
-      <div className="voice-chat-window" role="log" aria-live="polite">
-        {turns.length === 0 && (
-          <div className="voice-empty-hint">
-            <span style={{ fontSize: '1.5rem' }}>💬</span>
-            <span>
-              {lang === 'hi'
-                ? 'कीमत, सुरक्षा या पिकअप के बारे में पूछें।'
-                : 'Ask about price, safety, or pickup.'}
-            </span>
-          </div>
-        )}
+      {!isMinimized && (
+        <>
+          {/* Chat Window */}
+          <div className="voice-chat-window" role="log" aria-live="polite">
+            {turns.length === 0 && (
+              <div className="voice-empty-hint">
+                <span style={{ fontSize: '1.5rem' }}>💬</span>
+                <span>
+                  {scanId
+                    ? (lang === 'hi' ? 'इस स्कैन के मूल्य, सुरक्षा या खरीदार ऑफर के बारे में पूछें।' : 'Ask about price breakdown, safety, or where to sell.')
+                    : imageUploaded
+                      ? (lang === 'hi' ? 'फोटो मिल गई! जाँच करने से पहले कुछ भी पूछें।' : 'Photo detected! Ask about this item or tap Inspect.')
+                      : (lang === 'hi' ? 'ई-कचरा, मूल्य, सुरक्षा या पिकअप के बारे में बोलकर पूछें।' : 'Ask by voice or text about e-waste price, safety, or pickup.')}
+                </span>
+              </div>
+            )}
 
         {turns.map((turn, idx) => (
           <div key={idx} className={`voice-bubble ${turn.role}`}>
@@ -520,6 +596,8 @@ export default function VoiceAgent({
             {lang === 'hi' ? 'जाँचें' : 'Check'}
           </button>
         </div>
+      )}
+        </>
       )}
 
       {/* Input Row */}

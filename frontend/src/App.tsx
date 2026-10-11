@@ -1126,6 +1126,17 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
               </div>
             </div>
 
+            {/* Voice Assistant — Always Available on the Main Screen */}
+            <div className="max-w-4xl mx-auto px-4 mt-6">
+              <VoiceAgent
+                scanId={scanResult?.scan_id}
+                imageUploaded={Boolean(imagePreview || selectedPreset)}
+                deviceHint={selectedPreset || scanResult?.device?.label || scanResult?.device?.device_type}
+                authToken={authToken}
+                lang={lang}
+              />
+            </div>
+
             {/* Scan Results & Decision Engine */}
             {scanResult && scanResult.needs_more_photos && (
               <div className="mt-8 bg-amber-50 border border-amber-300 rounded-2xl p-6 text-center max-w-xl mx-auto shadow-sm">
@@ -1257,13 +1268,6 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     </tbody>
                   </table>
                 </div>
-
-                {/* Conversational Voice Agent */}
-                <VoiceAgent
-                  scanId={scanResult.scan_id}
-                  authToken={authToken}
-                  lang={lang}
-                />
               </div>
             )}
 

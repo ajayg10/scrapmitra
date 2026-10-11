@@ -1287,6 +1287,8 @@ def voice_ask():
     scan_id = body.get("scan_id")
     request_id = body.get("request_id")
     lang_hint = body.get("lang_hint", "en")
+    image_uploaded = body.get("image_uploaded", False)
+    device_hint = body.get("device_hint")
     user_input_block = body.get("input", {})
 
     # Resolve caller identity (guest allowed for scan-level questions)
@@ -1327,6 +1329,8 @@ def voice_ask():
         "user": current_user,
         "scan_id": scan_id,
         "request_id": request_id,
+        "image_uploaded": image_uploaded,
+        "device_hint": device_hint,
     }
 
     # ── Run agent ────────────────────────────────────────────────────────────
