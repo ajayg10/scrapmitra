@@ -78,7 +78,7 @@ export default function Navbar() {
               className="hidden sm:inline-flex items-center gap-[calc(4*var(--u))] bg-[#0F3D33] text-[#F4F1E8] font-spacemono font-bold text-[calc(14*var(--u))] max-[767px]:text-xs px-[calc(14*var(--u))] py-[calc(10*var(--u))] max-[767px]:px-2.5 max-[767px]:py-1.5 rounded-[calc(6*var(--u))] max-[767px]:rounded-md border-[calc(2*var(--u))] max-[767px]:border-2 border-[#0F1A17] transition-transform hover:-translate-y-px"
               title="Hackathon Evaluation & Demo Mode"
             >
-              Demo ⚡
+              Demo
             </a>
             <a
               href="/app"
