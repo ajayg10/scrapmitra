@@ -5,6 +5,7 @@ import { device_type, type Language } from './generated/taxonomy';
 import { iconMap } from './generated/icons';
 import deviceCatalog from '../../data/seed/device_catalog.json';
 import VoiceAgent from './components/VoiceAgent';
+import QRCode from 'qrcode';
 
 type ActiveTab = 'scan' | 'pickup' | 'collector' | 'impact' | 'leaderboard' | 'admin';
 
@@ -33,6 +34,12 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
   const [collectorNotice, setCollectorNotice] = useState<string | null>(null);
   const [adminReport, setAdminReport] = useState<any | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [householdAddress, setHouseholdAddress] = useState<string>(
+    'Flat 402, Pocket 1, Mayur Vihar Phase 1, East Delhi - 110091'
+  );
+  const [householdPhone, setHouseholdPhone] = useState<string>('+91 98101 44220');
+  const [isEditingAddress, setIsEditingAddress] = useState<boolean>(false);
+  const [pickupQrDataUrl, setPickupQrDataUrl] = useState<string>('');
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -316,6 +323,94 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       void loadPersonalImpact();
     }
   }, [activeTab, authToken, currentUser]);
+
+  // Sync default household address based on authenticated profile
+  useEffect(() => {
+    if (currentUser?.display_name?.includes('GreenHero')) {
+      setHouseholdAddress('B-12, Saket Residential Enclave, South Delhi - 110017');
+      setHouseholdPhone('+91 98234 55190');
+    } else if (currentUser?.display_name?.includes('EcoPioneer')) {
+      setHouseholdAddress('Flat 402, Pocket 1, Mayur Vihar Phase 1, East Delhi - 110091');
+      setHouseholdPhone('+91 98101 44220');
+    } else if (currentUser?.email_or_phone && currentUser.email_or_phone.startsWith('+91')) {
+      setHouseholdPhone(currentUser.email_or_phone);
+    }
+  }, [currentUser]);
+
+  // Compute items summary for handover QR code
+  const getHandoverItems = () => {
+    if (scanResult?.device?.device_type) {
+      const type = scanResult.device.device_type.replace(/_/g, ' ');
+      const formattedType = type.charAt(0).toUpperCase() + type.slice(1);
+      const wt = scanResult.device.estimated_weight_kg ? `${scanResult.device.estimated_weight_kg} kg` : '0.45 kg';
+      const val = scanResult.valuation?.best_tier_payout_inr ? `₹${scanResult.valuation.best_tier_payout_inr}` : '₹350';
+      return {
+        summary: `1x ${formattedType}`,
+        weight: wt,
+        estValue: val,
+        hazards: scanResult.hazards?.map((h: any) => h.hazard_id).join(', ') || 'None (Safe)',
+      };
+    }
+    if (activePickup?.device_type) {
+      const type = activePickup.device_type.replace(/_/g, ' ');
+      const formattedType = type.charAt(0).toUpperCase() + type.slice(1);
+      return {
+        summary: `1x ${formattedType}`,
+        weight: '1.2 kg',
+        estValue: '₹420',
+        hazards: 'None (Safe)',
+      };
+    }
+    return {
+      summary: '1x Smartphone (Lithium Battery Inspected) + 1x PCB Scrap',
+      weight: '0.65 kg',
+      estValue: '₹380',
+      hazards: 'Li-ion Safe Handover',
+    };
+  };
+
+  const handoverItems = getHandoverItems();
+  const currentPickupToken = qrToken || 'qr_demo_token_9412';
+  const qrVerificationPayload = [
+    `=== SCRAPMITRA VERIFIED E-WASTE HANDOVER ===`,
+    `Pickup ID: SM-${currentPickupToken.toUpperCase()}`,
+    `Household: ${currentUser?.display_name || 'Verified Citizen'}`,
+    `Phone: ${householdPhone}`,
+    `Address: ${householdAddress}`,
+    `Cluster: ${currentUser?.display_name?.includes('GreenHero') ? 'Cluster #DEL-07 (Saket - South Delhi)' : 'Cluster #DEL-02 (Mayur Vihar - East Delhi)'}`,
+    `Items for Sale: ${handoverItems.summary}`,
+    `Est. Weight: ${handoverItems.weight}`,
+    `Est. Buyback Payout: ${handoverItems.estValue}`,
+    `Hazards: ${handoverItems.hazards}`,
+    `Status: READY_FOR_COLLECTOR_VERIFICATION`,
+    `Token: ${currentPickupToken}`,
+  ].join('\n');
+
+  useEffect(() => {
+    let isMounted = true;
+    const generateQr = async () => {
+      try {
+        const url = await QRCode.toDataURL(qrVerificationPayload, {
+          width: 250,
+          margin: 2,
+          color: {
+            dark: '#064e3b',
+            light: '#ffffff',
+          },
+          errorCorrectionLevel: 'M',
+        });
+        if (isMounted) {
+          setPickupQrDataUrl(url);
+        }
+      } catch (err) {
+        console.error('Failed to generate pickup QR code', err);
+      }
+    };
+    void generateQr();
+    return () => {
+      isMounted = false;
+    };
+  }, [qrVerificationPayload]);
 
   // Login handler
   const loginWithToken = async (token: string, overrideUser?: UserProfile) => {
@@ -991,7 +1086,14 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
   // Confirm Handover (Household confirms, points credited)
   const handleConfirmHandover = async () => {
-    if (!activePickup) return;
+    const basePickup = activePickup || {
+      request_id: 'req_demo_9412',
+      status: 'CLUSTERED',
+      device_type: scanResult?.device?.device_type || 'mobile_phone',
+      cluster_info: 'Grouped with nearby households in cluster',
+      points_earned: 90,
+      kg_diverted: 0.45,
+    };
     try {
       if (authToken && qrToken) {
         const res = await fetch('/v1/handover/confirm', {
@@ -1028,10 +1130,10 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       // fallback
     }
 
-    const earned = activePickup?.points_earned || 90;
-    const kg = activePickup?.kg_diverted || 0.22;
+    const earned = basePickup?.points_earned || 90;
+    const kg = basePickup?.kg_diverted || 0.45;
     setActivePickup({
-      ...activePickup,
+      ...basePickup,
       status: 'VERIFIED',
       points_earned: earned,
       kg_diverted: kg,
@@ -1631,8 +1733,16 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 </div>
 
                 <div className="qr-frame">
-                  <Icon name="QrCode" size={140} />
-                  <p className="text-xs font-mono font-bold mt-2 text-slate-700">{qrToken || 'qr_demo_token_9412'}</p>
+                  {pickupQrDataUrl ? (
+                    <img
+                      src={pickupQrDataUrl}
+                      alt="ScrapMitra Handover QR Code"
+                      className="w-48 h-48 rounded-xl shadow-sm bg-white p-2 border border-emerald-100"
+                    />
+                  ) : (
+                    <Icon name="QrCode" size={140} />
+                  )}
+                  <p className="text-xs font-mono font-bold mt-2 text-slate-700">{currentPickupToken}</p>
                   {activePickup?.status === 'VERIFIED' ? (
                     <span className="text-[10px] text-white font-bold bg-emerald-600 px-3 py-1 rounded-full mt-1 inline-flex items-center gap-1 shadow-sm">
                       ✓ Handover Completed & Verified
@@ -1640,6 +1750,94 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   ) : (
                     <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded mt-1">Single-Use Token</span>
                   )}
+                  <span className="text-[10px] text-slate-500 mt-1 block">
+                    {lang === 'hi' ? 'कबाड़ीवाला मोबाइल कैमरे से स्कैन कर सकता है' : 'Scannable by collector phone camera'}
+                  </span>
+                </div>
+
+                {/* Household Address & Verification Details Manifest Card */}
+                <div className="pickup-manifest-card bg-emerald-50/80 border border-emerald-200 rounded-2xl p-4 text-left mb-4 shadow-sm">
+                  <div className="flex justify-between items-center mb-2.5 pb-2 border-b border-emerald-200">
+                    <h3 className="text-xs font-bold text-emerald-950 uppercase tracking-wide flex items-center gap-1.5 m-0">
+                      <Icon name="QrCode" size={16} className="text-emerald-700" />
+                      <span>{lang === 'hi' ? 'सत्यापन विवरण (क्यूआर कोड में एन्कोडेड)' : 'Collector Verification Details (Encoded in QR)'}</span>
+                    </h3>
+                    <button
+                      type="button"
+                      className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 underline cursor-pointer"
+                      onClick={() => setIsEditingAddress(!isEditingAddress)}
+                    >
+                      {isEditingAddress ? (lang === 'hi' ? 'पूर्ण' : 'Done') : (lang === 'hi' ? 'पता बदलें' : 'Edit Address')}
+                    </button>
+                  </div>
+
+                  {isEditingAddress ? (
+                    <div className="mb-3 p-3 bg-white border border-emerald-300 rounded-xl space-y-2">
+                      <div>
+                        <label className="text-xs font-semibold text-slate-700 block mb-1">
+                          {lang === 'hi' ? 'घर का पता दर्ज करें:' : 'Household Doorstep Address:'}
+                        </label>
+                        <textarea
+                          className="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500"
+                          rows={2}
+                          value={householdAddress}
+                          onChange={(e) => setHouseholdAddress(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-slate-700 block mb-1">
+                          {lang === 'hi' ? 'संपर्क नंबर:' : 'Contact Phone:'}
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full text-xs p-2 border border-slate-300 rounded-lg"
+                          value={householdPhone}
+                          onChange={(e) => setHouseholdPhone(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-start gap-2 bg-white/90 p-2.5 rounded-xl border border-emerald-100 shadow-2xs">
+                        <span className="text-base leading-none">📍</span>
+                        <div className="flex-1">
+                          <strong className="text-emerald-950 block text-[11px] uppercase tracking-wider">{lang === 'hi' ? 'पिकअप का पता' : 'Pickup Address'}</strong>
+                          <span className="text-slate-800 font-medium">{householdAddress}</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-white/90 p-2.5 rounded-xl border border-emerald-100 shadow-2xs">
+                          <strong className="text-emerald-950 block text-[10px] uppercase tracking-wider">{lang === 'hi' ? 'नागरिक / विक्रेता' : 'Household Seller'}</strong>
+                          <span className="text-slate-800 font-semibold">{currentUser.display_name}</span>
+                          <span className="block text-[11px] text-slate-500">{householdPhone}</span>
+                        </div>
+                        <div className="bg-white/90 p-2.5 rounded-xl border border-emerald-100 shadow-2xs">
+                          <strong className="text-emerald-950 block text-[10px] uppercase tracking-wider">{lang === 'hi' ? 'अनुमानित भुगतान' : 'Est. Buyback Value'}</strong>
+                          <span className="text-emerald-700 font-bold text-sm block">{handoverItems.estValue}</span>
+                          <span className="text-[11px] text-slate-500">Weight: ~{handoverItems.weight}</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-white/90 p-2.5 rounded-xl border border-emerald-100 shadow-2xs">
+                        <strong className="text-emerald-950 block text-[10px] uppercase tracking-wider">{lang === 'hi' ? 'ई-कचरा उपकरण' : 'E-Waste Items to Sell'}</strong>
+                        <div className="flex justify-between items-center mt-0.5">
+                          <span className="text-slate-800 font-medium">{handoverItems.summary}</span>
+                          {handoverItems.hazards && handoverItems.hazards !== 'None (Safe)' && (
+                            <span className="text-[10px] bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded-md">
+                              ⚠️ {handoverItems.hazards}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-emerald-900/80 mt-3 m-0 italic bg-emerald-100/50 p-2 rounded-lg border border-emerald-200/50">
+                    ℹ️ {lang === 'hi'
+                      ? 'कबाड़ीवाला आपके घर पहुँचकर इस क्यूआर कोड को स्कैन करेगा ताकि पता, ई-कचरा और पहचान तुरंत सत्यापित हो सके।'
+                      : 'The collector scans this QR code upon arrival to verify the household identity, doorstep address, and device condition.'}
+                  </p>
                 </div>
 
                 {handoverSuccessMsg && (
