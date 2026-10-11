@@ -68,7 +68,14 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex items-center gap-[calc(16*var(--u))]">
+          <div className="flex items-center gap-[calc(12*var(--u))]">
+            <a
+              href="/app/demo"
+              className="inline-flex items-center gap-[calc(4*var(--u))] bg-[#0F3D33] text-[#F4F1E8] font-spacemono font-bold text-[calc(14*var(--u))] px-[calc(14*var(--u))] py-[calc(10*var(--u))] rounded-[calc(6*var(--u))] border-[calc(2*var(--u))] border-[#0F1A17] transition-transform hover:-translate-y-px"
+              title="Hackathon Evaluation & Demo Mode"
+            >
+              Demo ⚡
+            </a>
             <a
               href="/app"
               className="btn-primary flex items-center gap-[calc(4*var(--u))] bg-[#F4623A] font-spacemono font-bold text-[calc(16*var(--u))] px-[calc(20*var(--u))] py-[calc(12*var(--u))] rounded-[calc(6*var(--u))] border-[calc(2*var(--u))] border-[#0F1A17] nav-btn-shadow transition-transform hover:-translate-y-px"

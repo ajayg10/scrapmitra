@@ -17,7 +17,10 @@ export interface UserProfile {
   created_at?: string;
 }
 
-export default function App() {
+export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
+  const isDemo = typeof propIsDemo === 'boolean'
+    ? propIsDemo
+    : (typeof window !== 'undefined' && window.location.pathname.startsWith('/app/demo'));
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<ActiveTab>('scan');
   const [showCatalog, setShowCatalog] = useState(false);
@@ -806,52 +809,87 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#main">{t('skip')}</a>
+
+      {isDemo && (
+        <div className="bg-amber-100 border-b border-amber-300 text-amber-950 text-xs px-4 py-2 flex items-center justify-between shadow-sm">
+          <div className="mx-auto flex items-center gap-2 font-medium">
+            <span>⚡ <strong>Hackathon Demo Mode (/app/demo):</strong> Use the 1-click role switcher in the header to evaluate Household, Collector, and Municipal Admin views.</span>
+          </div>
+          <a href="/app" className="text-amber-900 hover:text-amber-950 font-bold underline whitespace-nowrap text-xs ml-3">
+            Real User Mode (/app) →
+          </a>
+        </div>
+      )}
+
       <header className="app-header">
-        <a className="brand" href="/" aria-label="Loopback">
-          <span className="brand-icon">
-            <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M26 4C13.85 4 4 13.85 4 26C4 38.15 13.85 48 26 48C38.15 48 48 38.15 48 26" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeDasharray="16 8"/>
-              <path d="M48 26L42 20M48 26L54 20" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M26 36C26 36 16 28 16 20C16 14.477 20.477 10 26 10C31.523 10 36 14.477 36 20C36 28 26 36 26 36Z" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M26 36V22" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <span className="brand-copy">
-            <strong className="brand-title">loopback</strong>
-            <small className="brand-subtitle">v2 · Circular Decision &amp; Pickup</small>
-          </span>
-        </a>
+        <div className="flex items-center gap-3">
+          <a href="/" className="btn-nav-auth text-xs flex items-center gap-1 font-semibold" title="Return to Landing Page">
+            ← Home
+          </a>
+          <a className="brand" href={isDemo ? "/app/demo" : "/app"} aria-label="Loopback">
+            <span className="brand-icon">
+              <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M26 4C13.85 4 4 13.85 4 26C4 38.15 13.85 48 26 48C38.15 48 48 38.15 48 26" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeDasharray="16 8"/>
+                <path d="M48 26L42 20M48 26L54 20" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M26 36C26 36 16 28 16 20C16 14.477 20.477 10 26 10C31.523 10 36 14.477 36 20C36 28 26 36 26 36Z" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M26 36V22" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round"/>
+              </svg>
+            </span>
+            <span className="brand-copy">
+              <strong className="brand-title">loopback</strong>
+              <small className="brand-subtitle">{isDemo ? '⚡ Hackathon Demo' : 'v2 · Circular Decision & Pickup'}</small>
+            </span>
+          </a>
+        </div>
 
         {/* User Identity Pill / Sign-in Actions */}
         <div className="auth-header-actions">
-          {/* Quick Demo Switcher */}
-          <div className="demo-switcher">
-            <span className="demo-switcher-label">Demo:</span>
-            <button
-              type="button"
-              className={`demo-role-btn ${currentUser?.user_id === 'sub_hh_01' ? 'active' : ''}`}
-              onClick={() => void loginWithToken('demo-token-household-1')}
-              title="Sign in as Demo Household (EcoPioneer)"
+          {/* Quick Demo Switcher - Shown ONLY in Hackathon Demo Mode */}
+          {isDemo ? (
+            <div className="demo-switcher">
+              <span className="demo-switcher-label">Demo:</span>
+              <button
+                type="button"
+                className={`demo-role-btn ${currentUser?.user_id === 'sub_hh_01' ? 'active' : ''}`}
+                onClick={() => void loginWithToken('demo-token-household-1')}
+                title="Sign in as Demo Household (EcoPioneer)"
+              >
+                Household
+              </button>
+              <button
+                type="button"
+                className={`demo-role-btn ${currentUser?.user_id === 'sub_col_delhi_01' ? 'active' : ''}`}
+                onClick={() => void loginWithToken('demo-token-collector-1')}
+                title="Sign in as Demo Collector (Ramesh Kumar)"
+              >
+                Collector
+              </button>
+              <button
+                type="button"
+                className={`demo-role-btn ${currentUser?.user_id === 'sub_admin_01' ? 'active' : ''}`}
+                onClick={() => void loginWithToken('demo-token-admin')}
+                title="Sign in as Municipal Admin (Delhi Waste Commissioner)"
+              >
+                Admin
+              </button>
+              <a
+                href="/app"
+                className="text-[10px] text-slate-500 hover:text-slate-800 underline ml-1 font-semibold"
+                title="Switch to Real User App"
+              >
+                Real Mode →
+              </a>
+            </div>
+          ) : (
+            <a
+              href="/app/demo"
+              className="btn-nav-auth"
+              style={{ borderColor: '#F4623A', color: '#F4623A', fontWeight: 600 }}
+              title="Open Hackathon Demo & Evaluator Controls"
             >
-              Household
-            </button>
-            <button
-              type="button"
-              className={`demo-role-btn ${currentUser?.user_id === 'sub_col_delhi_01' ? 'active' : ''}`}
-              onClick={() => void loginWithToken('demo-token-collector-1')}
-              title="Sign in as Demo Collector (Ramesh Kumar)"
-            >
-              Collector
-            </button>
-            <button
-              type="button"
-              className={`demo-role-btn ${currentUser?.user_id === 'sub_admin_01' ? 'active' : ''}`}
-              onClick={() => void loginWithToken('demo-token-admin')}
-              title="Sign in as Municipal Admin (Delhi Waste Commissioner)"
-            >
-              Admin
-            </button>
-          </div>
+              ⚡ Demo Mode
+            </a>
+          )}
 
           {currentUser ? (
             <div className="auth-user-pill">
@@ -1784,19 +1822,21 @@ export default function App() {
                 </form>
               </div>
 
-              <div className="demo-login-box">
-                <h4>⚡ Demo 1-Click Household Sign-In</h4>
-                <div className="demo-btn-group">
-                  <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-household-1')}>
-                    EcoPioneer
-                    <span>household1@demo</span>
-                  </button>
-                  <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-household-2')}>
-                    GreenHero
-                    <span>household2@demo</span>
-                  </button>
+              {isDemo && (
+                <div className="demo-login-box">
+                  <h4>⚡ Demo 1-Click Household Sign-In</h4>
+                  <div className="demo-btn-group">
+                    <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-household-1')}>
+                      EcoPioneer
+                      <span>household1@demo</span>
+                    </button>
+                    <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-household-2')}>
+                      GreenHero
+                      <span>household2@demo</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

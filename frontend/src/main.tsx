@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './i18n';
 import './style.css';
 import App from './App';
@@ -22,8 +22,10 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/app" element={<App />} />
-        <Route path="/app/*" element={<App />} />
+        <Route path="/app" element={<App isDemo={false} />} />
+        <Route path="/app/demo" element={<App isDemo={true} />} />
+        <Route path="/demo" element={<Navigate to="/app/demo" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

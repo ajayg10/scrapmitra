@@ -154,26 +154,22 @@ export default function HeroSection() {
               Find its next life <svg className="w-[calc(16*var(--u))] h-[calc(16*var(--u))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 19.5l15-15m0 0H8.25m10.75 0v10.75" /></svg>
             </a>
             <a 
-              href="#how-it-works"
+              href="/app/demo"
               className="inline-flex items-center justify-center whitespace-nowrap flex-none font-bricolage font-[600] leading-none transition-transform hover:-translate-y-px"
               style={{ 
                 height: 'calc(54*var(--u))', 
-                padding: '0 calc(28*var(--u))', 
-                gap: 'calc(10*var(--u))', 
-                fontSize: 'calc(18*var(--u))', 
+                padding: '0 calc(24*var(--u))', 
+                gap: 'calc(8*var(--u))', 
+                fontSize: 'calc(17*var(--u))', 
                 border: 'calc(2*var(--u)) solid #0F1A17', 
                 borderRadius: 'calc(4*var(--u))',
-                width: 'calc(236*var(--u))',
-                background: '#F4F1E8',
+                background: '#F0A530',
                 color: '#0F1A17',
                 boxShadow: 'calc(4*var(--u)) calc(4*var(--u)) 0 #0F1A17'
               }}
-              onClick={e => {
-                e.preventDefault();
-                document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              title="Open Hackathon Demo & Evaluator Controls"
             >
-              See how it works <svg className="w-[calc(16*var(--u))] h-[calc(16*var(--u))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+              Demo Mode ⚡
             </a>
           </div>
 
