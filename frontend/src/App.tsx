@@ -386,19 +386,24 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     setActiveTab('scan');
   };
 
-  // Household / Citizen Sign-In Handler
+  // Household / Google OAuth Sign-In Handler
   const handleHouseholdAuthSubmit = async (credentialOrEmail?: string, overrideName?: string) => {
     setAuthError(null);
-    let emailToUse = (typeof credentialOrEmail === 'string' && credentialOrEmail) || googleEmail.trim();
-    const nameToUse = overrideName || googleName.trim() || emailToUse.split('@')[0] || 'Citizen';
-    if (!emailToUse) {
-      setAuthError(lang === 'hi' ? 'कृपया अपना ईमेल या संपर्क नंबर दर्ज करें।' : 'Please enter your email or contact.');
-      return;
+    let payload: any = {};
+    if (typeof credentialOrEmail === 'string' && credentialOrEmail.includes('.')) {
+      payload = { credential: credentialOrEmail };
+    } else {
+      let emailToUse = (typeof credentialOrEmail === 'string' && credentialOrEmail) || googleEmail.trim();
+      const nameToUse = overrideName || googleName.trim() || emailToUse.split('@')[0] || 'Citizen';
+      if (!emailToUse) {
+        setAuthError(lang === 'hi' ? 'कृपया अपना गूगल ईमेल दर्ज करें।' : 'Please enter your Google email.');
+        return;
+      }
+      if (!emailToUse.includes('@')) {
+        emailToUse = `${emailToUse}@gmail.com`;
+      }
+      payload = { email: emailToUse, name: nameToUse };
     }
-    if (!emailToUse.includes('@')) {
-      emailToUse = `${emailToUse}@citizen.kabadiplus.in`;
-    }
-    const payload = { email: emailToUse, name: nameToUse };
 
     try {
       const res = await fetch('/v1/auth/google', {
@@ -408,7 +413,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setAuthError(data.message || 'Household sign-in failed.');
+        setAuthError(data.message || 'Google sign-in failed.');
         return;
       }
       await loginWithToken(data.token, data.user);
@@ -416,6 +421,43 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       setAuthError('Failed to connect to authentication service.');
     }
   };
+
+  // Initialize Google Identity Services (GIS) on modal open
+  useEffect(() => {
+    if (authModal === 'household') {
+      const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '107040001907-tmf69ioebd6cf1lbikcijupgpqo37elp.apps.googleusercontent.com';
+      const initGis = () => {
+        if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleClientId) {
+          try {
+            (window as any).google.accounts.id.initialize({
+              client_id: googleClientId,
+              callback: (response: any) => {
+                if (response?.credential) {
+                  void handleHouseholdAuthSubmit(response.credential);
+                }
+              },
+            });
+            const container = document.getElementById('google-signin-btn-container');
+            if (container) {
+              container.innerHTML = '';
+              (window as any).google.accounts.id.renderButton(container, {
+                theme: 'outline',
+                size: 'large',
+                width: 320,
+                text: 'continue_with',
+                shape: 'rectangular',
+              });
+            }
+          } catch (err) {
+            console.warn('Google Identity Services notice:', err);
+          }
+        }
+      };
+
+      const timer = setTimeout(initGis, 120);
+      return () => clearTimeout(timer);
+    }
+  }, [authModal]);
 
   // Collector Sign In submission
   const handleCollectorSignIn = async (e: React.FormEvent) => {
@@ -2152,11 +2194,14 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 </div>
               )}
 
-              {/* Sign in with Google (Primary Action) */}
+              {/* Official Google Identity Services Container */}
+              <div id="google-signin-btn-container" className="flex justify-center mb-3"></div>
+
+              {/* Sign in with Google (Fast 1-Click Action) */}
               <div className="google-auth-box mb-4 bg-white border border-slate-200 rounded-xl p-4 shadow-sm text-center">
                 <p className="text-xs text-slate-600 mb-3">
                   {lang === 'hi'
-                    ? 'गूगल खाते से 1-क्लिक में सुरक्षित साइन-इन करें:'
+                    ? 'गूगल खाते से सुरक्षित साइन-इन करें:'
                     : 'Connect securely with Google to track verified circular impact & badges:'}
                 </p>
                 <button

@@ -23,6 +23,7 @@ ENV_VARS = {
     "VITE_COGNITO_USER_POOL_ID": "us-east-1_SHl0o9DDs",
     "VITE_COGNITO_CLIENT_ID": "38ujskvqqe04gpdo8hupkloqak",
     "VITE_AWS_REGION": "us-east-1",
+    "VITE_GOOGLE_CLIENT_ID": "107040001907-tmf69ioebd6cf1lbikcijupgpqo37elp.apps.googleusercontent.com",
 }
 
 CUSTOM_RULES = [
