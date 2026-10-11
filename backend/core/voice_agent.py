@@ -338,17 +338,20 @@ def transcribe_audio(audio_key: str, lang_hint: str = "en") -> tuple[str, str]:
         # Language options for Indian multilingual support
         lang_options = ["en-IN", "hi-IN", "ta-IN", "te-IN", "mr-IN"]
 
+        ext = os.path.splitext(audio_key)[1].lstrip(".").lower()
+        media_format = ext if ext in ("mp3", "mp4", "wav", "flac", "ogg", "amr", "webm") else "webm"
+
         transcribe.start_transcription_job(
             TranscriptionJobName=job_name,
             Media={"MediaFileUri": f"s3://{bucket}/{audio_key}"},
-            MediaFormat="webm",
+            MediaFormat=media_format,
             IdentifyMultipleLanguages=False,
             LanguageCode=f"{lang_hint}-IN" if lang_hint in ("en", "hi") else "hi-IN",
             Settings={"ShowSpeakerLabels": False},
         )
 
-        # Poll for up to 25 seconds (Lambda timeout budget)
-        for _ in range(25):
+        # Poll for up to 15 seconds (Lambda timeout safety budget)
+        for _ in range(15):
             _time.sleep(1)
             job = transcribe.get_transcription_job(TranscriptionJobName=job_name)
             status = job["TranscriptionJob"]["TranscriptionJobStatus"]
@@ -432,9 +435,13 @@ def run_voice_agent(
     # Bedrock Converse tool-use loop
     try:
         import boto3
-        model_id = os.environ.get("BEDROCK_MODEL_ID", "amazon.nova-pro-v1:0")
+        primary_model = os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20250929-v1:0")
         region = os.environ.get("AWS_REGION", "us-east-1")
         bedrock = boto3.client("bedrock-runtime", region_name=region)
+        models_to_try = [primary_model]
+        if "nova" not in primary_model:
+            models_to_try.append("amazon.nova-pro-v1:0")
+        model_id = models_to_try[0]
 
         tool_outputs_this_turn: list[dict[str, Any]] = []
         sources: list[str] = []

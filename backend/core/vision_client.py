@@ -47,7 +47,7 @@ class MockVisionClient(VisionClient):
 
 
 class BedrockVisionClient(VisionClient):
-    """Live Bedrock multimodal client (Amazon Nova or Anthropic Claude)."""
+    """Live Bedrock multimodal client (Anthropic Claude Sonnet 4.5 with Nova Pro fallback)."""
 
     def __init__(
         self,
@@ -55,7 +55,7 @@ class BedrockVisionClient(VisionClient):
         model_id: str | None = None,
     ):
         self.region_name = region_name or os.environ.get("BEDROCK_REGION", os.environ.get("AWS_REGION", "us-east-1"))
-        self.model_id = model_id or os.environ.get("BEDROCK_MODEL_ID", "amazon.nova-pro-v1:0")
+        self.model_id = model_id or os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-5-20250929-v1:0")
 
     def inspect_image(self, image_bytes: bytes, retry_feedback: str | None = None) -> str:
         try:
@@ -101,17 +101,27 @@ class BedrockVisionClient(VisionClient):
                 "text": f"PREVIOUS ATTEMPT FAILED VALIDATION:\n{retry_feedback}\nPlease correct the JSON strictly according to the taxonomy schema."
             })
 
-        # Using Bedrock Converse API for uniform multi-model support (Nova & Claude)
-        try:
-            response = client.converse(
-                modelId=self.model_id,
-                messages=[{"role": "user", "content": user_content}],
-                system=[{"text": system_instruction}],
-                inferenceConfig={"temperature": 0.0, "maxTokens": 2048},
-            )
-            return response["output"]["message"]["content"][0]["text"]
-        except Exception as exc:
-            return json.dumps({
+        # Try primary model (Claude Sonnet 4.5), with automatic Nova Pro fallback
+        models_to_try = [self.model_id]
+        if "nova" not in self.model_id:
+            models_to_try.append("amazon.nova-pro-v1:0")
+
+        last_exc: Exception | None = None
+        for mid in models_to_try:
+            try:
+                response = client.converse(
+                    modelId=mid,
+                    messages=[{"role": "user", "content": user_content}],
+                    system=[{"text": system_instruction}],
+                    inferenceConfig={"temperature": 0.0, "maxTokens": 2048},
+                )
+                return response["output"]["message"]["content"][0]["text"]
+            except Exception as exc:
+                last_exc = exc
+                continue
+
+        exc = last_exc or Exception("Bedrock inference failed")
+        return json.dumps({
                 "device_type": "mobile_phone",
                 "brand_guess": None,
                 "condition": "damaged",

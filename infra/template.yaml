@@ -345,7 +345,7 @@ Resources:
       Environment:
         Variables:
           VISION_MODE: bedrock
-          BEDROCK_MODEL_ID: amazon.nova-pro-v1:0
+          BEDROCK_MODEL_ID: us.anthropic.claude-sonnet-4-5-20250929-v1:0
           UPLOADS_BUCKET: !Ref UploadsBucket
           AUDIO_CACHE_BUCKET: !Ref AudioCacheBucket
           DYNAMO_TABLE_SCANS: !Ref Scans

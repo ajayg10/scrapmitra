@@ -48,7 +48,7 @@ export default function VoiceAgent({
   requestId,
   authToken,
   lang = 'en',
-  apiBase = '',
+  apiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, ''),
 }: VoiceAgentProps) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle');
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -62,7 +62,6 @@ export default function VoiceAgent({
   const audioChunksRef = useRef<Blob[]>([]);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
-  const hasMicSupport = typeof window !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
 
   // Auto-scroll chat to bottom
   useEffect(() => {
@@ -176,14 +175,122 @@ export default function VoiceAgent({
     void speakReply(turn);
   };
 
-  // ── Push-to-Talk ───────────────────────────────────────────────────────────
+  const speechRecognitionRef = useRef<any>(null);
+  const recognitionFinalRef = useRef<string>('');
 
-  const startListening = async () => {
-    if (!hasMicSupport) return;
+  // ── Speech Capture (Real-time SpeechRecognition + MediaRecorder Fallback) ──
+
+  const startListening = () => {
+    setError(null);
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (SR) {
+      try {
+        const rec = new SR();
+        speechRecognitionRef.current = rec;
+        recognitionFinalRef.current = '';
+        rec.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+        rec.interimResults = true;
+        rec.continuous = false;
+        rec.maxAlternatives = 1;
+
+        rec.onstart = () => {
+          setVoiceState('listening');
+        };
+
+        rec.onresult = (e: any) => {
+          let interim = '';
+          let final = '';
+          for (let i = 0; i < e.results.length; i++) {
+            const item = e.results[i];
+            if (item.isFinal) {
+              final += item[0].transcript;
+            } else {
+              interim += item[0].transcript;
+            }
+          }
+          if (final) {
+            recognitionFinalRef.current = final;
+          }
+          const liveText = (final || interim).trim();
+          if (liveText) {
+            setTextInput(liveText);
+          }
+        };
+
+        rec.onerror = (e: any) => {
+          console.warn('[VoiceAgent] SpeechRecognition error:', e.error);
+          if (e.error === 'not-allowed') {
+            setError(lang === 'hi' ? 'माइक्रोफ़ोन अनुमति नहीं मिली। कृपया टाइप करें।' : 'Microphone permission denied. Please allow mic access or type.');
+            setVoiceState('idle');
+          } else if (e.error === 'no-speech') {
+            setVoiceState('idle');
+          } else {
+            // Try MediaRecorder fallback on unsupported or network error
+            void startMediaRecorder();
+          }
+        };
+
+        rec.onend = () => {
+          const finalPrompt = recognitionFinalRef.current.trim() || textInput.trim();
+          if (finalPrompt) {
+            setTextInput('');
+            void askAgent(finalPrompt);
+          } else {
+            setVoiceState('idle');
+          }
+        };
+
+        rec.start();
+        return;
+      } catch (err) {
+        console.warn('[VoiceAgent] SpeechRecognition start failed, trying MediaRecorder:', err);
+      }
+    }
+
+    // Fallback: MediaRecorder with S3 upload
+    void startMediaRecorder();
+  };
+
+  const stopListening = () => {
+    if (speechRecognitionRef.current) {
+      try {
+        speechRecognitionRef.current.stop();
+      } catch {
+        // ignore
+      }
+    }
+    if (mediaRecorderRef.current?.state === 'recording') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch {
+        // ignore
+      }
+    }
+  };
+
+  const startMediaRecorder = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError(lang === 'hi' ? 'माइक्रोफ़ोन उपलब्ध नहीं है। कृपया टाइप करें।' : 'Microphone not available. Please type your question.');
+      setVoiceState('idle');
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunksRef.current = [];
-      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+      let mimeType = 'audio/webm';
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          mimeType = 'audio/webm;codecs=opus';
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          mimeType = 'audio/webm';
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4';
+        }
+      }
+
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
@@ -192,74 +299,40 @@ export default function VoiceAgent({
 
       recorder.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        void handleAudioBlob(blob);
+        const effectiveType = recorder.mimeType || mimeType || 'audio/webm';
+        const blob = new Blob(audioChunksRef.current, { type: effectiveType });
+        void handleAudioBlob(blob, effectiveType);
       };
 
       recorder.start();
       setVoiceState('listening');
     } catch {
-      // No mic permission — fall back to browser SpeechRecognition
-      startSpeechRecognition();
+      setError(lang === 'hi' ? 'माइक्रोफ़ोन अनुमति नहीं मिली।' : 'Microphone permission denied.');
+      setVoiceState('idle');
     }
   };
 
-  const stopListening = () => {
-    if (mediaRecorderRef.current?.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
-  const handleAudioBlob = async (blob: Blob) => {
+  const handleAudioBlob = async (blob: Blob, mimeType: string) => {
     setVoiceState('thinking');
     try {
-      // Get presigned upload URL
       const urlRes = await fetch(`${apiBase}/v1/voice/upload-url`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content_type: 'audio/webm' }),
+        body: JSON.stringify({ content_type: mimeType }),
       });
       const { upload_url, audio_key } = await urlRes.json();
 
-      // Upload audio
       await fetch(upload_url, {
         method: 'PUT',
         body: blob,
-        headers: { 'Content-Type': 'audio/webm' },
+        headers: { 'Content-Type': mimeType },
       });
 
       await askAgent('', audio_key);
     } catch {
       setVoiceState('idle');
-      setError('Audio upload failed. Please use the text input instead.');
+      setError(lang === 'hi' ? 'ऑडियो अपलोड विफल। कृपया टेक्स्ट टाइप करें।' : 'Audio upload failed. Please use text input instead.');
     }
-  };
-
-  // ── Browser SpeechRecognition fallback ───────────────────────────────────
-
-  const startSpeechRecognition = () => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) {
-      setError('Microphone not available. Please type your question.');
-      return;
-    }
-    const rec = new SR();
-    rec.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    setVoiceState('listening');
-    rec.onresult = (e: any) => {
-      const transcript = e.results[0][0].transcript;
-      void askAgent(transcript);
-    };
-    rec.onerror = () => {
-      setVoiceState('idle');
-      setError('Could not capture voice. Please type your question.');
-    };
-    rec.onend = () => {
-      if (voiceState === 'listening') setVoiceState('idle');
-    };
-    rec.start();
   };
 
   // ── Handle mic button ──────────────────────────────────────────────────────
