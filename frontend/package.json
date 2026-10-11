@@ -10,11 +10,13 @@
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
     "i18next": "26.4.2",
     "lucide-react": "1.52.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-i18next": "17.0.16"
+    "react-i18next": "17.0.16",
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
