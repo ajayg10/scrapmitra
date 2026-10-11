@@ -1915,7 +1915,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     <input
                       type="text"
                       required
-                      placeholder="+919876543210"
+                      placeholder="+91 98xxxxxx10"
                       value={colPhone}
                       onChange={(e) => setColPhone(e.target.value)}
                       className="form-input"
@@ -1958,7 +1958,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     <input
                       type="text"
                       required
-                      placeholder="+919876543210"
+                      placeholder="+91 98xxxxxx10"
                       value={colPhone}
                       onChange={(e) => setColPhone(e.target.value)}
                       className="form-input"

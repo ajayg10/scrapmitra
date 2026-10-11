@@ -141,7 +141,7 @@ def test_collector_cannot_verify_handover_for_self(client):
 # 7. Collector application & Admin approval flow (including hazard auth flag)
 def test_collector_apply_and_admin_approve_flow(client):
     # Public apply
-    phone = "+919999888877"
+    phone = "+91 98xxxxxx77"
     apply_res = client.post("/v1/collector/apply", json={
         "name": "Jagdish Prasad",
         "phone": phone,
