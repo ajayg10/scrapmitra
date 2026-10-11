@@ -801,23 +801,30 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#main">{t('skip')}</a>
-      <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-5 md:px-10">
-        <a className="brand" href="/" aria-label={t('brand')}>
-          <span className="brand-icon"><Icon name="Recycle" size={28} /></span>
-          <span>
-            <strong>Kabadi<span className="text-[var(--green)]">Plus</span></strong>
-            <small>v2 · Circular Decision & Pickup</small>
+      <header className="app-header">
+        <a className="brand" href="/" aria-label="Loopback">
+          <span className="brand-icon">
+            <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M26 4C13.85 4 4 13.85 4 26C4 38.15 13.85 48 26 48C38.15 48 48 38.15 48 26" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeDasharray="16 8"/>
+              <path d="M48 26L42 20M48 26L54 20" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M26 36C26 36 16 28 16 20C16 14.477 20.477 10 26 10C31.523 10 36 14.477 36 20C36 28 26 36 26 36Z" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M26 36V22" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round"/>
+            </svg>
+          </span>
+          <span className="brand-copy">
+            <strong className="brand-title">loopback</strong>
+            <small className="brand-subtitle">v2 · Circular Decision &amp; Pickup</small>
           </span>
         </a>
 
         {/* User Identity Pill / Sign-in Actions */}
         <div className="auth-header-actions">
           {/* Quick Demo Switcher */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
-            <span className="text-[10px] font-bold text-slate-500 uppercase px-1">Demo:</span>
+          <div className="demo-switcher">
+            <span className="demo-switcher-label">Demo:</span>
             <button
               type="button"
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_hh_01' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-emerald-50 text-emerald-800 border-slate-300'}`}
+              className={`demo-role-btn ${currentUser?.user_id === 'sub_hh_01' ? 'active' : ''}`}
               onClick={() => void loginWithToken('demo-token-household-1')}
               title="Sign in as Demo Household (EcoPioneer)"
             >
@@ -825,7 +832,7 @@ export default function App() {
             </button>
             <button
               type="button"
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_col_delhi_01' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white hover:bg-amber-50 text-amber-800 border-slate-300'}`}
+              className={`demo-role-btn ${currentUser?.user_id === 'sub_col_delhi_01' ? 'active' : ''}`}
               onClick={() => void loginWithToken('demo-token-collector-1')}
               title="Sign in as Demo Collector (Ramesh Kumar)"
             >
@@ -833,7 +840,7 @@ export default function App() {
             </button>
             <button
               type="button"
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_admin_01' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white hover:bg-purple-50 text-purple-800 border-slate-300'}`}
+              className={`demo-role-btn ${currentUser?.user_id === 'sub_admin_01' ? 'active' : ''}`}
               onClick={() => void loginWithToken('demo-token-admin')}
               title="Sign in as Municipal Admin (Delhi Waste Commissioner)"
             >
@@ -909,12 +916,6 @@ export default function App() {
           </button>
         </nav>
 
-        <div className="preview-note">
-          <span className="status-dot" />
-          <strong>{t('preview')}</strong>
-          <span>{t('previewNote')}</span>
-        </div>
-
         {/* TAB 1: SCAN & DECIDE (Guest-First) */}
         {activeTab === 'scan' && (
           <section>
@@ -937,7 +938,16 @@ export default function App() {
             <div className="hero">
               <div className="hero-content">
                 <span className="eyebrow">{t('eyebrow')}</span>
-                <h1>{t('title')}</h1>
+                <h1>
+                  {lang === 'en' ? (
+                    <>
+                      Avoid throwing it away.<br />
+                      Choose <span className="text-[#F15B40]">circular value.</span>
+                    </>
+                  ) : (
+                    t('title')
+                  )}
+                </h1>
                 <p className="hero-subtitle">{t('subtitle')}</p>
 
                 {/* Pre-inference condition question */}
@@ -992,30 +1002,45 @@ export default function App() {
 
                     <div className="upload-actions">
                       <button type="button" className="btn-camera" onClick={() => cameraInputRef.current?.click()}>
-                        <Icon name="Camera" size={18} />
-                        {t('takePhoto')}
+                        <Icon name="Camera" size={17} />
+                        <span>{t('takePhoto')}</span>
                       </button>
                       <button type="button" className="btn-upload" onClick={() => fileInputRef.current?.click()}>
-                        <Icon name="Upload" size={18} />
-                        {t('uploadPhoto')}
+                        <Icon name="Upload" size={17} />
+                        <span>{t('uploadPhoto')}</span>
                       </button>
                       <button type="button" className="btn-webcam" onClick={() => void startWebcam()}>
                         <Icon name="RefreshCw" size={16} />
-                        {t('openWebcam')}
+                        <span>{t('openWebcam')}</span>
                       </button>
                     </div>
 
                     <div className="sample-presets">
                       <span className="sample-title">{t('sampleDevices')}</span>
                       <div className="sample-buttons">
-                        <button type="button" onClick={() => loadPresetDevice('mobile_phone', 'Damaged Smartphone')}>
-                          📱 {lang === 'hi' ? 'स्मार्टफ़ोन' : 'Smartphone'}
+                        <button
+                          type="button"
+                          className={`sample-btn ${selectedPreset === 'mobile_phone' ? 'active' : ''}`}
+                          onClick={() => loadPresetDevice('mobile_phone', 'Damaged Smartphone')}
+                        >
+                          <Icon name="Smartphone" size={16} />
+                          <span>{lang === 'hi' ? 'स्मार्टफ़ोन' : 'Smartphone'}</span>
                         </button>
-                        <button type="button" onClick={() => loadPresetDevice('laptop', 'Used Laptop')}>
-                          💻 {lang === 'hi' ? 'लैपटॉप' : 'Laptop'}
+                        <button
+                          type="button"
+                          className={`sample-btn ${selectedPreset === 'laptop' ? 'active' : ''}`}
+                          onClick={() => loadPresetDevice('laptop', 'Used Laptop')}
+                        >
+                          <Icon name="Laptop" size={16} />
+                          <span>{lang === 'hi' ? 'लैपटॉप' : 'Laptop'}</span>
                         </button>
-                        <button type="button" onClick={() => loadPresetDevice('crt_television', 'CRT Television')}>
-                          📺 {lang === 'hi' ? 'CRT टीवी' : 'CRT TV'}
+                        <button
+                          type="button"
+                          className={`sample-btn ${selectedPreset === 'crt_television' ? 'active' : ''}`}
+                          onClick={() => loadPresetDevice('crt_television', 'CRT Television')}
+                        >
+                          <Icon name="Tv" size={16} />
+                          <span>{lang === 'hi' ? 'CRT टीवी' : 'CRT TV'}</span>
                         </button>
                       </div>
                     </div>
@@ -1088,10 +1113,10 @@ export default function App() {
 
               <div className="device-illustration" aria-hidden="true">
                 <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-                <div className="device-tile tile-laptop"><Icon name="Laptop" size={80} /></div>
-                <div className="device-tile tile-phone"><Icon name="Smartphone" size={62} /></div>
-                <div className="device-tile tile-circuit"><Icon name="CircuitBoard" size={42} /></div>
-                <div className="recycle-circle"><Icon name="Recycle" size={36} /></div>
+                <div className="device-tile tile-laptop"><Icon name="Laptop" size={56} /></div>
+                <div className="device-tile tile-phone"><Icon name="Smartphone" size={44} /></div>
+                <div className="device-tile tile-circuit"><Icon name="CircuitBoard" size={32} /></div>
+                <div className="recycle-circle"><Icon name="Recycle" size={26} /></div>
               </div>
             </div>
 
