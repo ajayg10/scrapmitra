@@ -27,13 +27,13 @@ $$\text{Reuse (Secondary Market)} > \text{Repair-then-Reuse} > \text{Authorized 
 
 ## 2. The Core Engineering Rule
 
-> **"The Multimodal LLM perceives and describes. Deterministic code and audited data tables decide value, occupational hazards, ranking, spatial clustering, routing, and reward points."**
+> **"The Multimodal LLM perceives and describes. Deterministic code and configured data tables decide illustrative value estimates, occupational hazards, ranking, spatial clustering, routing, and reward points."**
 
 - **Why this matters**: A naive LLM wrapper hallucinating device prices or safety rules is dangerous. In KabadiPlus v2:
   - **Amazon Bedrock (Nova Pro)** extracts structured hardware traits from messy real-world photos.
-  - **Deterministic Circular Decision Engine** calculates real INR secondary valuations and avoided embodied carbon based on vetted hardware priors (`device_catalog.json`).
+  - **Deterministic Circular Decision Engine** calculates illustrative INR ranges and CO₂e estimates from prototype rules and factor bands; these are not live market quotes or audited impact measurements. See [`docs/ASSUMPTIONS.md`](docs/ASSUMPTIONS.md).
   - **Deterministic Hazard Guard** acts as an unbreakable safety circuit: swollen batteries or burnt devices are locked out of informal reuse or open dismantling.
-  - **DBSCAN Clustering + 2-Opt TSP Router** batches doorstep pickups into optimized loops, measuring exact kilometres saved and fuel emissions avoided.
+  - **DBSCAN Clustering + 2-Opt TSP Router** batches doorstep pickups into optimized loops and estimates kilometres and fuel emissions saved from approximate coordinates and configured factors.
   - **Single-Use QR Handover Ledger** requires mutual two-party physical sign-off and scale weight checks before any impact points are credited.
 
 ---
@@ -117,10 +117,10 @@ flowchart TD
 ### ⚖️ 2. Deterministic Circular Decision Engine
 * **Strict Circular Hierarchy**:
   * Ranks options deterministically: **Reuse > Repair-then-Reuse > Authorized Recycling > Safe Hazardous Disposal**.
-* **Fair Market Valuation (INR)**:
-  * Computes secondary market values based on canonical device priors, age band depreciation, and damage penalties. No LLM price hallucinations.
+* **Illustrative Value Estimates (INR)**:
+  * Computes prototype resale, repair-cost, and recycling-recovery ranges from static device rules. They are not live dealer quotes and do not account for exact model/grade or local demand.
 * **Embodied Carbon ($\text{CO}_2\text{e}$) Avoided**:
-  * Calculates avoided mineral extraction and manufacturing footprint using vetted LCA GHG emission factors (`emission_factors.json`).
+  * Estimates avoided manufacturing/material impacts using provisional device-category factors and explicit reuse/repair/recycling credits (`data/emission_factors.json`). These are not measured or audited results.
 * **Side-by-Side Trade-off Table**:
   * Transparently compares each option's financial return, environmental impact, and turnaround time against throwing it in the dustbin.
 * **Bilingual Speech Synthesis**:

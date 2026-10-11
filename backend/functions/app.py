@@ -1160,7 +1160,11 @@ def impact_me():
         "co2e_avoided_kg": round(tot_co2, 1),
         "eco_points": tot_pts,
         "items_diverted": max(len(user_entries), 3),
-        "footnote": "Estimates based on device category and documented lifecycle assumptions in ASSUMPTIONS.md",
+        "footnote": (
+            "CO₂e is illustrative: ledger entries currently use a fixed 3.5 kg CO₂e/kg heuristic; "
+            "accounts without handovers receive a 29.8 kg CO₂e demo baseline. Neither is a "
+            "device-specific LCA result. See docs/ASSUMPTIONS.md."
+        ),
     })
 
 

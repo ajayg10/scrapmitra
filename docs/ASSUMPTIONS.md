@@ -1,6 +1,17 @@
-# Lifecycle & Environmental Impact Assumptions
+# Prototype Lifecycle & Environmental Impact Assumptions
 
-KabadiPlus v2 follows strict environmental accounting standards based on peer-reviewed life cycle assessments (LCA) and documented benchmarks.
+This document describes the prototype's configured assumptions; it is not evidence of independently validated or audited impact. Public estimates must be presented as illustrative until the source data and applicability are verified.
+
+## 0. Reading Estimate Sources
+
+- **Money:** `data/decision_rules.json` contains static demo resale, repair-cost, and recycling-recovery ranges. Its source fields describe broad Indian-market benchmark categories, not dated dealer quotes or an actively refreshed price feed. The rule bands do not model exact model/grade, locality, buyer demand, or repair scope. For repair, the engine displays estimated net resale as the resale range less the repair-cost range.
+- **Device CO₂e:** `data/emission_factors.json` contains broad device-category factor ranges with assumption IDs. Its metadata names ITU-T L.1410, Fraunhofer IZM, and ecoinvent as benchmark references, but the file does not provide item-level citations, publication details, geography, or a verified system boundary for each value. Treat these as provisional assumptions, not measured footprints.
+- **Offline scan fallback:** the sample INR and CO₂e values in `frontend/src/App.tsx` are hard-coded demo examples. They are not generated from the decision-rule or factor files.
+- **Decision-engine credits:** the implementation credits 100% of the factor band for reuse, 85% for repair, and 25–35% for recycling. These are model assumptions, not guarantees that replacement production or virgin-material production was actually displaced.
+- **Personal impact endpoint:** verified ledger entries currently use a fixed `3.5 kg CO₂e per kg` heuristic. The empty-ledger starting value (`29.8 kg CO₂e`) is seeded demo data. Neither value is calculated from the device factor table or supported by a device-specific source.
+- **Route impact:** estimated CO₂e is calculated as modelled saved kilometres multiplied by the default three-wheeler CNG factor (`0.095 kg CO₂e/km`). Stop coordinates are approximate and the factor is a prototype assumption; actual routes, vehicles, fuel use, and emissions may differ. The collector earnings range is also fixed demo content, not a sourced wage or payout estimate.
+
+Do not describe these estimates as live prices, verified emissions savings, or audited impact. A production estimate needs traceable source citations and dates, geography, technology, unit, system boundary, applicability limits, and uncertainty for each factor; unavailable inputs must remain unavailable rather than being presented as zero or as precise fact.
 
 ## 1. Waste Hierarchy Principles
 KabadiPlus applies the European and Indian waste hierarchies:
@@ -8,7 +19,7 @@ $$\text{Reuse (Resell / Donate)} > \text{Repair-then-Reuse} > \text{Authorized R
 Plain landfilling, burning, or drain dumping is **never** offered as a legitimate pathway.
 
 ## 2. Embodied Carbon (CO₂e) Avoidance
-When a device is reused or refurbished, it displaces the demand for manufacturing a new replacement device.
+The following are the prototype's broad factor bands for illustrative estimates. Reuse or refurbishment is assumed to displace some demand for a new replacement device; actual displacement is not measured.
 
 | Device Category | Embodied Footprint (kg CO₂e) | Assumption ID | Reference Baseline |
 | :--- | :--- | :--- | :--- |
@@ -22,12 +33,12 @@ When a device is reused or refurbished, it displaces the demand for manufacturin
 | **Air Conditioner** | 350.0 - 700.0 kg | `LCA_SPLIT_AC` | Refrigerant charge + copper/aluminium coils |
 | **Ceiling Fan** | 45.0 - 90.0 kg | `LCA_DOMESTIC_FAN` | Copper winding + electrical steel stamping |
 
-- **Reuse Offset**: 100% of embodied carbon is credited.
-- **Repair Offset**: 85% of embodied carbon is credited (accounting for ~15% spare-part supply chain footprint).
-- **Recycle Offset**: 25% - 35% of embodied carbon is credited based on virgin ore mining displacement (avoiding bauxite smelting for aluminium, blast furnaces for steel, and copper smelting).
+- **Reuse credit assumption**: 100% of the factor band.
+- **Repair credit assumption**: 85% of the factor band.
+- **Recycle credit assumption**: 25% - 35% of the factor band. This is a coarse prototype proxy; it is not tied to measured recovery yields or a specific recycler's process.
 
 ## 3. Transit Emission Factors (Collector Fleet)
-Route optimization measures transit kilometres saved by clustering pickup requests into shared loops rather than separate round-trips.
+Route optimization estimates transit kilometres saved by clustering pickup requests into shared loops rather than separate round-trips. Distances use approximate coordinates and modelled routes, not odometer readings.
 
 | Vehicle Type | Emission Factor (kg CO₂e / km) | Fuel / Source |
 | :--- | :--- | :--- |

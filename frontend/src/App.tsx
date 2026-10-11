@@ -611,6 +611,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     setTimeout(() => {
       setScanResult({
         scan_id: 'scan_demo_4412',
+        is_demo: true,
         device: {
           device_type: 'mobile_phone',
           label: lang === 'hi' ? 'स्मार्टफोन (सैमसंग)' : 'Smartphone (Samsung)',
@@ -1226,7 +1227,9 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   <div className="result-top">
                     <div>
                       <h2>{scanResult.device.label}</h2>
-                      <span className="badge-demo">VERIFIED DECISION · SOURCED OCT 2026</span>
+                      <span className="badge-demo">
+                        {scanResult.is_demo ? 'DEMO ESTIMATE · SOURCES & ASSUMPTIONS BELOW' : 'ESTIMATE · SOURCES & ASSUMPTIONS BELOW'}
+                      </span>
                     </div>
                     <button type="button" className="listen-button" onClick={() => speakText(scanResult.audio_script)}>
                       <Icon name="Volume2" size={20} />
@@ -1250,6 +1253,9 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                           <Icon name="Zap" size={14} />
                           {opt.co2e_avoided_min_kg} - {opt.co2e_avoided_max_kg} kg CO₂e saved
                         </span>
+                        {opt.assumption_id && (
+                          <p className="text-xs text-slate-500 mt-1">CO₂e factor assumption: {opt.assumption_id}</p>
+                        )}
                         <p className="option-why">{opt.why}</p>
                       </div>
                       {idx === 0 && (
@@ -1286,6 +1292,17 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     </tbody>
                   </table>
                 </div>
+                <aside className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950 leading-relaxed">
+                  <strong>Estimate sources &amp; assumptions:</strong> API-backed INR ranges use the static demo rules in
+                  {' '}<code>data/decision_rules.json</code>; the file labels them as secondary-market benchmarks,
+                  but this prototype has no live price feed or linked, current dealer quotes. Offline fallback values are
+                  fixed examples in the frontend, not fetched market data. Actual offers vary with condition, age, repair
+                  scope, locality, and buyer demand. API-backed CO₂e bands use device-type factors in
+                  {' '}<code>data/emission_factors.json</code> and the listed assumption ID; the engine credits 100% of
+                  the factor for reuse, 85% for repair, and 25–35% for recycling. Offline fallback CO₂e values are also
+                  fixed examples, not factor-table calculations. None are measured device footprints or audited savings.
+                  See <code>docs/ASSUMPTIONS.md</code>.
+                </aside>
               </div>
             )}
 
@@ -1465,14 +1482,20 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   <div className="metric-box">
                     <span className="metric-label">CO₂e Emissions Saved</span>
                     <p className="metric-val">{collectorRouteData?.est_co2e_saved_kg || '2.7'} kg</p>
-                    <span className="metric-sub">avoided fuel burn in city transit</span>
+                    <span className="metric-sub">modelled from saved route km</span>
                   </div>
                   <div className="metric-box">
                     <span className="metric-label">Estimated Day Earnings</span>
                     <p className="metric-val">₹1,850 - ₹2,400</p>
-                    <span className="metric-sub">{collectorRouteData?.stops?.length || 5} pooled stops scheduled</span>
+                    <span className="metric-sub">illustrative demo range; no payout model</span>
                   </div>
                 </div>
+                <p className="mb-4 text-xs text-slate-600 leading-relaxed">
+                  Route CO₂e is an estimate: saved km are calculated from approximate stop coordinates using the route model,
+                  then multiplied by the default three-wheeler CNG factor (0.095 kg CO₂e/km) in
+                  {' '}<code>data/emission_factors.json</code>. Actual distance, vehicle, fuel use, and emissions can differ.
+                  Day earnings are fixed demo data, not a market or wage estimate.
+                </p>
 
                 {/* Stops list */}
                 <div className="stops-list mb-6">
@@ -1556,7 +1579,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
               <div className="metric-box">
                 <span className="metric-label">Embodied CO₂e Avoided</span>
                 <p className="metric-val">{impactData?.co2e_avoided_kg || '29.8'} kg</p>
-                <span className="metric-sub">equivalent to ~120 km car emissions</span>
+                <span className="metric-sub">illustrative; calculation note below</span>
               </div>
               <div className="metric-box">
                 <span className="metric-label">Eco Points Earned</span>
@@ -1569,8 +1592,12 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
               <strong>Impact Accounting Standards:</strong>
               <p className="m-0 mt-1">
                 Points and diversion statistics are credited strictly on two-party verified physical handovers.
-                CO₂e avoidance is calculated based on life cycle assessment (LCA) embodied carbon factors for device reuse and secondary metal smelting offsets.
+                CO₂e is currently illustrative, not an audited LCA result: this endpoint applies a fixed 3.5 kg CO₂e per kg
+                handed over, while the no-handover starting value is seeded demo data. The 3.5 factor is a prototype
+                heuristic, not a sourced device-specific factor. See <code>docs/ASSUMPTIONS.md</code> for boundaries and
+                known limitations.
               </p>
+              {impactData?.footnote && <p className="m-0 mt-2">{impactData.footnote}</p>}
             </div>
           </section>
         )}
