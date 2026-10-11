@@ -102,6 +102,8 @@ export default function VoiceAgent({
             : `📷 Photo detected (${deviceHint || 'device'})! Tap 'Inspect Device Now' to calculate circular value, or ask me any question.`,
         },
       ]);
+    } else if (!imageUploaded) {
+      lastUploadRef.current = false;
     }
   }, [imageUploaded, scanId, deviceHint, lang]);
 
@@ -119,6 +121,8 @@ export default function VoiceAgent({
             : `📸 Scan verified (${deviceHint || 'Device'})! I'm ready to answer questions about price, safety, or where to sell it.`,
         },
       ]);
+    } else if (!scanId) {
+      lastScanIdRef.current = undefined;
     }
   }, [scanId, deviceHint, lang]);
 
