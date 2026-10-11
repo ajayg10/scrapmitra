@@ -1018,14 +1018,29 @@ export default function App() {
                     <div className="sample-presets">
                       <span className="sample-title">{t('sampleDevices')}</span>
                       <div className="sample-buttons">
-                        <button type="button" onClick={() => loadPresetDevice('mobile_phone', 'Damaged Smartphone')}>
-                          📱 {lang === 'hi' ? 'स्मार्टफ़ोन' : 'Smartphone'}
+                        <button
+                          type="button"
+                          className={`sample-btn ${selectedPreset === 'mobile_phone' ? 'active' : ''}`}
+                          onClick={() => loadPresetDevice('mobile_phone', 'Damaged Smartphone')}
+                        >
+                          <Icon name="Smartphone" size={16} />
+                          <span>{lang === 'hi' ? 'स्मार्टफ़ोन' : 'Smartphone'}</span>
                         </button>
-                        <button type="button" onClick={() => loadPresetDevice('laptop', 'Used Laptop')}>
-                          💻 {lang === 'hi' ? 'लैपटॉप' : 'Laptop'}
+                        <button
+                          type="button"
+                          className={`sample-btn ${selectedPreset === 'laptop' ? 'active' : ''}`}
+                          onClick={() => loadPresetDevice('laptop', 'Used Laptop')}
+                        >
+                          <Icon name="Laptop" size={16} />
+                          <span>{lang === 'hi' ? 'लैपटॉप' : 'Laptop'}</span>
                         </button>
-                        <button type="button" onClick={() => loadPresetDevice('crt_television', 'CRT Television')}>
-                          📺 {lang === 'hi' ? 'CRT टीवी' : 'CRT TV'}
+                        <button
+                          type="button"
+                          className={`sample-btn ${selectedPreset === 'crt_television' ? 'active' : ''}`}
+                          onClick={() => loadPresetDevice('crt_television', 'CRT Television')}
+                        >
+                          <Icon name="Tv" size={16} />
+                          <span>{lang === 'hi' ? 'CRT टीवी' : 'CRT TV'}</span>
                         </button>
                       </div>
                     </div>
@@ -1098,10 +1113,10 @@ export default function App() {
 
               <div className="device-illustration" aria-hidden="true">
                 <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-                <div className="device-tile tile-laptop"><Icon name="Laptop" size={80} /></div>
-                <div className="device-tile tile-phone"><Icon name="Smartphone" size={62} /></div>
-                <div className="device-tile tile-circuit"><Icon name="CircuitBoard" size={42} /></div>
-                <div className="recycle-circle"><Icon name="Recycle" size={36} /></div>
+                <div className="device-tile tile-laptop"><Icon name="Laptop" size={56} /></div>
+                <div className="device-tile tile-phone"><Icon name="Smartphone" size={44} /></div>
+                <div className="device-tile tile-circuit"><Icon name="CircuitBoard" size={32} /></div>
+                <div className="recycle-circle"><Icon name="Recycle" size={26} /></div>
               </div>
             </div>
 
