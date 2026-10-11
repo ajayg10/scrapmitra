@@ -801,23 +801,30 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#main">{t('skip')}</a>
-      <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-5 md:px-10">
-        <a className="brand" href="/" aria-label={t('brand')}>
-          <span className="brand-icon"><Icon name="Recycle" size={28} /></span>
-          <span>
-            <strong>Kabadi<span className="text-[var(--green)]">Plus</span></strong>
-            <small>v2 · Circular Decision & Pickup</small>
+      <header className="app-header">
+        <a className="brand" href="/" aria-label="Loopback">
+          <span className="brand-icon">
+            <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M26 4C13.85 4 4 13.85 4 26C4 38.15 13.85 48 26 48C38.15 48 48 38.15 48 26" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeDasharray="16 8"/>
+              <path d="M48 26L42 20M48 26L54 20" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M26 36C26 36 16 28 16 20C16 14.477 20.477 10 26 10C31.523 10 36 14.477 36 20C36 28 26 36 26 36Z" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M26 36V22" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round"/>
+            </svg>
+          </span>
+          <span className="brand-copy">
+            <strong className="brand-title">loopback</strong>
+            <small className="brand-subtitle">v2 · Circular Decision &amp; Pickup</small>
           </span>
         </a>
 
         {/* User Identity Pill / Sign-in Actions */}
         <div className="auth-header-actions">
           {/* Quick Demo Switcher */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
-            <span className="text-[10px] font-bold text-slate-500 uppercase px-1">Demo:</span>
+          <div className="demo-switcher">
+            <span className="demo-switcher-label">Demo:</span>
             <button
               type="button"
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_hh_01' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-emerald-50 text-emerald-800 border-slate-300'}`}
+              className={`demo-role-btn ${currentUser?.user_id === 'sub_hh_01' ? 'active' : ''}`}
               onClick={() => void loginWithToken('demo-token-household-1')}
               title="Sign in as Demo Household (EcoPioneer)"
             >
@@ -825,7 +832,7 @@ export default function App() {
             </button>
             <button
               type="button"
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_col_delhi_01' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white hover:bg-amber-50 text-amber-800 border-slate-300'}`}
+              className={`demo-role-btn ${currentUser?.user_id === 'sub_col_delhi_01' ? 'active' : ''}`}
               onClick={() => void loginWithToken('demo-token-collector-1')}
               title="Sign in as Demo Collector (Ramesh Kumar)"
             >
@@ -833,7 +840,7 @@ export default function App() {
             </button>
             <button
               type="button"
-              className={`px-2 py-0.5 text-[11px] font-semibold rounded border ${currentUser?.user_id === 'sub_admin_01' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white hover:bg-purple-50 text-purple-800 border-slate-300'}`}
+              className={`demo-role-btn ${currentUser?.user_id === 'sub_admin_01' ? 'active' : ''}`}
               onClick={() => void loginWithToken('demo-token-admin')}
               title="Sign in as Municipal Admin (Delhi Waste Commissioner)"
             >
@@ -909,12 +916,6 @@ export default function App() {
           </button>
         </nav>
 
-        <div className="preview-note">
-          <span className="status-dot" />
-          <strong>{t('preview')}</strong>
-          <span>{t('previewNote')}</span>
-        </div>
-
         {/* TAB 1: SCAN & DECIDE (Guest-First) */}
         {activeTab === 'scan' && (
           <section>
@@ -937,7 +938,16 @@ export default function App() {
             <div className="hero">
               <div className="hero-content">
                 <span className="eyebrow">{t('eyebrow')}</span>
-                <h1>{t('title')}</h1>
+                <h1>
+                  {lang === 'en' ? (
+                    <>
+                      Avoid throwing it away.<br />
+                      Choose <span className="text-[#F15B40]">circular value.</span>
+                    </>
+                  ) : (
+                    t('title')
+                  )}
+                </h1>
                 <p className="hero-subtitle">{t('subtitle')}</p>
 
                 {/* Pre-inference condition question */}
