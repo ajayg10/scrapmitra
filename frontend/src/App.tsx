@@ -6,6 +6,9 @@ import { iconMap } from './generated/icons';
 import deviceCatalog from '../../data/seed/device_catalog.json';
 import VoiceAgent from './components/VoiceAgent';
 import QRCode from 'qrcode';
+import AwsArchitectureModal from './components/AwsArchitectureModal';
+import CircularCertificateModal from './components/CircularCertificateModal';
+import CollectorRouteMap from './components/CollectorRouteMap';
 
 type ActiveTab = 'scan' | 'pickup' | 'collector' | 'impact' | 'leaderboard' | 'admin';
 
@@ -40,6 +43,8 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
   const [householdPhone, setHouseholdPhone] = useState<string>('+91 98101 44220');
   const [isEditingAddress, setIsEditingAddress] = useState<boolean>(false);
   const [pickupQrDataUrl, setPickupQrDataUrl] = useState<string>('');
+  const [showAwsModal, setShowAwsModal] = useState<boolean>(false);
+  const [showCertModal, setShowCertModal] = useState<boolean>(false);
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -1257,6 +1262,16 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
             </a>
           )}
 
+          {/* AWS Cloud Architecture Modal Button */}
+          <button
+            type="button"
+            className="btn-nav-auth text-amber-900 border-amber-300 bg-amber-50/90 hover:bg-amber-100 flex items-center gap-1 font-bold text-xs shadow-2xs"
+            onClick={() => setShowAwsModal(true)}
+            title="Inspect AWS Cloud Serverless & AI Architecture"
+          >
+            ⚡ AWS Architecture
+          </button>
+
           {currentUser ? (
             <div className="auth-user-pill">
               <span className={`role-badge ${currentUser.role}`}>{currentUser.role}</span>
@@ -1857,9 +1872,17 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     <strong className="block text-base text-emerald-900 mb-1">
                       {lang === 'hi' ? 'हैंडओवर सत्यापित हुआ!' : 'Physical Handover Verified!'}
                     </strong>
-                    <p className="text-xs text-emerald-800 m-0">
+                    <p className="text-xs text-emerald-800 m-0 mb-3">
                       +{activePickup.points_earned} Eco Points & {activePickup.kg_diverted} kg e-waste credited to your impact ledger.
                     </p>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                      onClick={() => setShowCertModal(true)}
+                    >
+                      <Icon name="Award" size={16} />
+                      <span>{lang === 'hi' ? 'सत्यापित प्रभाव प्रमाणपत्र देखें एवं डाउनलोड करें' : 'View & Download Circular Impact Certificate'}</span>
+                    </button>
                   </div>
                 ) : (
                   <button type="button" className="camera-button w-full" onClick={handleConfirmHandover}>
@@ -1965,6 +1988,12 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   {' '}<code>data/emission_factors.json</code>. Actual distance, vehicle, fuel use, and emissions can differ.
                   Day earnings are fixed demo data, not a market or wage estimate.
                 </p>
+
+                {/* WOW Feature 3: Interactive Clustered Route Map */}
+                <CollectorRouteMap
+                  onVerifyStop={(stopId, wt) => setCollectorNotice(`✓ Stop ${stopId.replace('stop-', '#')} physical handover verified (${wt}). Ledger updated.`)}
+                  lang={lang}
+                />
 
                 {/* Stops list */}
                 <div className="stops-list mb-6">
@@ -2619,6 +2648,24 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
           <p>{t('footer')}</p>
           <span>{t('status')}</span>
         </footer>
+
+        {/* WOW Feature 1: AWS Cloud Architecture Modal */}
+        <AwsArchitectureModal
+          isOpen={showAwsModal}
+          onClose={() => setShowAwsModal(false)}
+          lang={lang}
+        />
+
+        {/* WOW Feature 2: Downloadable Circular Impact Certificate Modal */}
+        <CircularCertificateModal
+          isOpen={showCertModal}
+          onClose={() => setShowCertModal(false)}
+          citizenName={currentUser?.display_name || 'EcoPioneer Citizen'}
+          kgDiverted={activePickup?.kg_diverted || 0.45}
+          pointsEarned={activePickup?.points_earned || 90}
+          requestId={activePickup?.request_id || '9412'}
+          lang={lang}
+        />
       </main>
     </>
   );

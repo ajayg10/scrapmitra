@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AwsArchitectureModal from '../AwsArchitectureModal';
 
 const LogoMark = () => (
   <svg
@@ -22,6 +23,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showAwsModal, setShowAwsModal] = useState(false);
 
   return (
     <>
@@ -73,6 +75,14 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-[calc(12*var(--u))] max-[767px]:gap-2">
+            <button
+              type="button"
+              onClick={() => setShowAwsModal(true)}
+              className="hidden sm:inline-flex items-center gap-[calc(4*var(--u))] bg-[#0F3D33] text-[#F4F1E8] font-spacemono font-bold text-[calc(14*var(--u))] max-[767px]:text-xs px-[calc(14*var(--u))] py-[calc(10*var(--u))] max-[767px]:px-2.5 max-[767px]:py-1.5 rounded-[calc(6*var(--u))] max-[767px]:rounded-md border-[calc(2*var(--u))] max-[767px]:border-2 border-[#0F1A17] transition-transform hover:-translate-y-px cursor-pointer"
+              title="AWS Serverless & GenAI Cloud Architecture"
+            >
+              ⚡ AWS Stack
+            </button>
             <a
               href="/app/demo"
               className="hidden sm:inline-flex items-center gap-[calc(4*var(--u))] bg-[#0F3D33] text-[#F4F1E8] font-spacemono font-bold text-[calc(14*var(--u))] max-[767px]:text-xs px-[calc(14*var(--u))] py-[calc(10*var(--u))] max-[767px]:px-2.5 max-[767px]:py-1.5 rounded-[calc(6*var(--u))] max-[767px]:rounded-md border-[calc(2*var(--u))] max-[767px]:border-2 border-[#0F1A17] transition-transform hover:-translate-y-px"
@@ -116,6 +126,13 @@ export default function Navbar() {
               ))}
             </div>
             <div className="pt-1.5 flex items-center justify-between text-[#A9C2B8] font-spacemono text-[11px] tracking-wider uppercase">
+              <button
+                type="button"
+                onClick={() => { setMobileOpen(false); setShowAwsModal(true); }}
+                className="text-amber-400 font-bold"
+              >
+                AWS Stack ⚡
+              </button>
               <a href="/app/demo" onClick={() => setMobileOpen(false)} className="text-[#F0A530] font-bold">
                 Demo Mode ⚡
               </a>
@@ -126,6 +143,12 @@ export default function Navbar() {
           </div>
         )}
       </header>
+
+      {/* AWS Cloud Architecture Modal on Landing Page */}
+      <AwsArchitectureModal
+        isOpen={showAwsModal}
+        onClose={() => setShowAwsModal(false)}
+      />
     </>
   );
 }
