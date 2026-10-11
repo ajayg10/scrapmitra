@@ -40,7 +40,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     if (typeof window === 'undefined') return null;
     if (!isDemo) {
       const stored = localStorage.getItem('kabadiplus_auth_token');
-      if (stored && stored.startsWith('demo-token-')) {
+      if (stored && (stored === 'demo-token-admin' || stored.startsWith('demo-token-collector'))) {
         localStorage.removeItem('kabadiplus_auth_token');
         return null;
       }
@@ -150,12 +150,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
   // Authenticate user on load
   const fetchMe = async (token: string): Promise<UserProfile | null> => {
-    if (!isDemo && token.startsWith('demo-token-')) {
-      localStorage.removeItem('kabadiplus_auth_token');
-      setAuthToken(null);
-      setCurrentUser(null);
-      return null;
-    }
+
     if (token in DEMO_PROFILES) {
       const fallback = DEMO_PROFILES[token];
       setCurrentUser(fallback);
@@ -327,9 +322,6 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     if (isDemo) {
       localStorage.setItem('kabadiplus_demo_auth_token', token);
     } else {
-      if (token.startsWith('demo-token-')) {
-        return; // strictly disallow demo tokens in real mode
-      }
       localStorage.setItem('kabadiplus_auth_token', token);
     }
     setAuthToken(token);
