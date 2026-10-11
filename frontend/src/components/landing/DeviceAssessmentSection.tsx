@@ -76,7 +76,7 @@ export default function DeviceAssessmentSection() {
             {/* Panel header */}
             <div className="lb-panel-header">
               <div>
-                <div className="lb-panel-meta">LOOPBACK · ASSESSMENT PANEL</div>
+                <div className="lb-panel-meta">SCRAPMITRA · ASSESSMENT PANEL</div>
                 <div className="lb-panel-title">Smartphone — Example Device</div>
               </div>
               <span className="lb-chip lb-chip-illustrative">ILLUSTRATIVE</span>

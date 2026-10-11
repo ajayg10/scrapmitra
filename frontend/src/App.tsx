@@ -824,7 +824,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
           <a href="/" className="btn-nav-auth text-xs flex items-center gap-1 font-semibold" title="Return to Landing Page">
             ← Home
           </a>
-          <a className="brand" href={isDemo ? "/app/demo" : "/app"} aria-label="Loopback">
+          <a className="brand" href={isDemo ? "/app/demo" : "/app"} aria-label="ScrapMitra">
             <span className="brand-icon">
               <svg className="w-8 h-8 flex-shrink-0" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M26 4C13.85 4 4 13.85 4 26C4 38.15 13.85 48 26 48C38.15 48 48 38.15 48 26" stroke="#0B2923" strokeWidth="2.8" strokeLinecap="round" strokeDasharray="16 8"/>
@@ -834,7 +834,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
               </svg>
             </span>
             <span className="brand-copy">
-              <strong className="brand-title">loopback</strong>
+              <strong className="brand-title">scrapmitra</strong>
               <small className="brand-subtitle">{isDemo ? '⚡ Hackathon Demo' : 'v2 · Circular Decision & Pickup'}</small>
             </span>
           </a>
