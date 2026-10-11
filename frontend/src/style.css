@@ -1068,6 +1068,50 @@ h1 {
   letter-spacing: 0.05em;
 }
 
+.demo-seed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--lb-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+  border-radius: 999px;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.demo-seed-badge.compact {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  padding: 3px 6px;
+}
+
+.demo-seed-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--lb-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 999px;
+  padding: 3px 7px;
+  margin-right: 4px;
+}
+
+.metric-note {
+  display: inline-block;
+  margin-top: 6px;
+}
+
 .listen-button {
   display: inline-flex;
   align-items: center;

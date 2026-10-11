@@ -79,6 +79,23 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
   const [isDragging, setIsDragging] = useState(false);
 
   const lang: Language = i18n.resolvedLanguage === 'hi' ? 'hi' : 'en';
+  const demoSeedLabel = 'Demo seed data';
+
+  const maskPhone = (phone?: string) => {
+    if (!phone) return 'Not provided';
+    if (phone.includes('x')) return phone;
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length !== 10 && cleaned.length !== 12) return phone;
+    if (cleaned.length === 12 && cleaned.startsWith('91')) {
+      const lastTwo = cleaned.slice(-2);
+      return `+91 98xxxxxx${lastTwo}`;
+    }
+    return `+91 98xxxxxx${cleaned.slice(-2)}`;
+  };
+
+  const DemoSeedBadge = ({ compact = false }: { compact?: boolean }) => (
+    <span className={compact ? 'demo-seed-badge compact' : 'demo-seed-badge'}>{demoSeedLabel}</span>
+  );
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -101,7 +118,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       user_id: 'sub_col_delhi_01',
       role: 'collector',
       display_name: 'Ramesh Kumar',
-      email_or_phone: '+919876543210',
+      email_or_phone: '+91 98xxxxxx10',
       collector_id: 'col_delhi_01',
       is_hazard_authorized: true,
     },
@@ -109,7 +126,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       user_id: 'sub_col_delhi_02',
       role: 'collector',
       display_name: 'Surender Scrap',
-      email_or_phone: '+919876543211',
+      email_or_phone: '+91 98xxxxxx11',
       collector_id: 'col_delhi_02',
       is_hazard_authorized: false,
     },
@@ -1132,6 +1149,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 scanId={scanResult?.scan_id}
                 imageUploaded={Boolean(imagePreview || selectedPreset)}
                 deviceHint={selectedPreset || scanResult?.device?.label || scanResult?.device?.device_type}
+                scanData={scanResult}
                 authToken={authToken}
                 lang={lang}
               />
@@ -1424,7 +1442,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   <div>
                     <h2>{lang === 'hi' ? 'कबाड़ीवाला रूट और संग्रह' : "Today's Clustered Collector Route"}</h2>
                     <span className="text-xs text-emerald-800 font-semibold">
-                      {currentUser.display_name} · Phone: {currentUser.email_or_phone} · {currentUser.is_hazard_authorized ? 'Hazard Certified 🛡️' : 'Standard Scrap'}
+                      {currentUser.display_name} · Phone: {maskPhone(currentUser.email_or_phone)} · {currentUser.is_hazard_authorized ? 'Hazard Certified 🛡️' : 'Standard Scrap'}
                     </span>
                   </div>
                   <button
@@ -1560,14 +1578,17 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
         {/* TAB 5: LEADERBOARD */}
         {activeTab === 'leaderboard' && (
           <section className="py-4">
-            <div className="flex justify-between items-center mb-1">
+            <div className="flex justify-between items-center mb-1 gap-3 flex-wrap">
               <h2 className="text-2xl font-bold">Environmental Impact Leaderboard</h2>
-              <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">
-                🛡️ Verified Display Names Only
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <DemoSeedBadge />
+                <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">
+                  🛡️ Verified Display Names Only
+                </span>
+              </div>
             </div>
             <p className="text-xs text-slate-500 mb-6">
-              Verified Handover Only · Showing public display names chosen at sign-up. Sensitive identifiers (phone, email, real names) are protected.
+              Demo seed data · Verified Handover Only · Showing public display names chosen at sign-up. Sensitive identifiers (phone, email, real names) are protected.
             </p>
 
             <table className="leaderboard-table">
@@ -1586,10 +1607,15 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   { rank: 2, display_name: 'GreenHero_Saket', kg_diverted: 38.0, points: 510, items: 5 },
                   { rank: 3, display_name: 'CleanOkhla-07', kg_diverted: 29.4, points: 430, items: 4 },
                 ]).map((row: any) => (
-                  <tr key={row.rank}>
+                  <tr key={`${row.rank}-${row.display_name}`}>
                     <td><span className="rank-badge">{row.rank}</span></td>
-                    <td><strong>{row.display_name}</strong></td>
-                    <td>{row.kg_diverted} kg</td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <strong>{row.display_name}</strong>
+                        <DemoSeedBadge compact />
+                      </div>
+                    </td>
+                    <td><span className="demo-seed-inline">{row.kg_diverted} kg</span></td>
                     <td className="text-emerald-800 font-bold">{row.points}</td>
                     <td>{row.items} devices</td>
                   </tr>
@@ -1625,7 +1651,10 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 <div className="section-heading mb-4">
                   <div>
                     <h2>Admin & Municipal Oversight</h2>
-                    <span className="text-xs text-slate-500">City Aggregates & Collector Application Approvals</span>
+                    <div className="flex items-center gap-2 flex-wrap mt-1">
+                      <span className="text-xs text-slate-500">City Aggregates & Collector Application Approvals</span>
+                      <DemoSeedBadge compact />
+                    </div>
                   </div>
                 </div>
 
@@ -1634,25 +1663,31 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     <span className="metric-label">City E-Waste Diverted</span>
                     <p className="metric-val">1,485 kg</p>
                     <span className="metric-sub">verified across 4 zones</span>
+                    <span className="demo-seed-inline metric-note">Demo seed data</span>
                   </div>
                   <div className="metric-box">
                     <span className="metric-label">Transit Kilometres Saved</span>
                     <p className="metric-val highlight">386.4 km</p>
                     <span className="metric-sub">from intelligent request pooling</span>
+                    <span className="demo-seed-inline metric-note">Demo seed data</span>
                   </div>
                   <div className="metric-box">
                     <span className="metric-label">Hazardous Items Neutralized</span>
                     <p className="metric-val text-red-700">164 items</p>
                     <span className="metric-sub">diverted from open burning/landfills</span>
+                    <span className="demo-seed-inline metric-note">Demo seed data</span>
                   </div>
                 </div>
 
                 {/* Collector Application Approvals Section */}
                 <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6">
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
                     <div>
                       <h3 className="text-base font-bold text-slate-900 m-0">Informal Collector Applications (Pending Review)</h3>
-                      <p className="text-xs text-slate-500 m-0">Review kabadiwalas before creating Cognito logins and setting hazard authorizations.</p>
+                      <div className="flex items-center gap-2 flex-wrap mt-1">
+                        <p className="text-xs text-slate-500 m-0">Review kabadiwalas before creating Cognito logins and setting hazard authorizations.</p>
+                        <DemoSeedBadge compact />
+                      </div>
                     </div>
                     <button type="button" className="btn-nav-auth" onClick={() => void loadAdminCollectors()}>
                       <Icon name="RefreshCw" size={14} /> Refresh
@@ -1674,8 +1709,11 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                         .map((app) => (
                           <div key={app.application_id} className="border border-slate-200 rounded-xl p-4 bg-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
-                              <strong className="text-sm block">{app.name}</strong>
-                              <span className="text-xs text-slate-600 block">📞 {app.phone} · 🚚 {app.vehicle_type}</span>
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <strong className="text-sm block">Collector: {app.name}</strong>
+                                <DemoSeedBadge compact />
+                              </div>
+                              <span className="text-xs text-slate-600 block"><strong>Phone:</strong> {maskPhone(app.phone)} · <strong>Vehicle:</strong> {app.vehicle_type}</span>
                               <span className="text-xs text-slate-500 block">📍 Area: {app.service_area} · Ref: {app.authorization_ref}</span>
                               <div className="flex gap-1 mt-1">
                                 {app.categories?.map((cat: string) => (
@@ -1711,6 +1749,9 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 {/* Run Aggregation Engine */}
                 <div className="bg-white border-2 border-dashed border-emerald-400 rounded-2xl p-6 text-center mb-6">
                   <h3 className="text-lg font-bold mb-2">Live Demo Control: Route Clustering Engine</h3>
+                  <div className="flex justify-center mb-3">
+                    <DemoSeedBadge />
+                  </div>
                   <p className="text-xs text-slate-600 max-w-md mx-auto mb-4">
                     Trigger the scheduler to batch pending household requests in Delhi-NCR and compute measured travel kilometres saved.
                   </p>
@@ -1723,9 +1764,9 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     <div className="mt-5 p-4 bg-emerald-50 border border-emerald-300 rounded-xl text-left text-xs text-emerald-950">
                       <strong className="block text-sm font-bold text-emerald-900 mb-1">✓ Aggregation Dispatched!</strong>
                       <p className="m-0 mb-2">{adminReport.message}</p>
-                      <div className="flex gap-6 font-mono text-emerald-800">
-                        <span>Saved Distance: <strong>{adminReport.total_saved_km} km</strong></span>
-                        <span>Saved Carbon: <strong>{adminReport.total_co2e_saved_kg} kg CO₂e</strong></span>
+                      <div className="flex gap-6 font-mono text-emerald-800 flex-wrap">
+                        <span><span className="demo-seed-inline">Demo seed data</span> Saved Distance: <strong>{adminReport.total_saved_km} km</strong></span>
+                        <span><span className="demo-seed-inline">Demo seed data</span> Saved Carbon: <strong>{adminReport.total_co2e_saved_kg} kg CO₂e</strong></span>
                       </div>
                     </div>
                   )}
@@ -1992,11 +2033,11 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 <div className="demo-btn-group">
                   <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-collector-1')}>
                     Ramesh Kumar
-                    <span>+919876543210 (EV Rider)</span>
+                    <span>+91 98xxxxxx10 (EV Rider)</span>
                   </button>
                   <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-collector-2')}>
                     Surender Scrap
-                    <span>+919876543211</span>
+                    <span>+91 98xxxxxx11</span>
                   </button>
                 </div>
               </div>

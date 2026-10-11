@@ -22,6 +22,7 @@ interface VoiceAgentProps {
   apiBase?: string;
   imageUploaded?: boolean;
   deviceHint?: string;
+  scanData?: any;
 }
 
 // ── Quick-chip labels by language & context ───────────────────────────────────
@@ -63,6 +64,7 @@ export default function VoiceAgent({
   apiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, ''),
   imageUploaded = false,
   deviceHint,
+  scanData,
 }: VoiceAgentProps) {
   const [voiceState, setVoiceState] = useState<VoiceState>('idle');
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -140,6 +142,7 @@ export default function VoiceAgent({
       lang_hint: lang,
       image_uploaded: Boolean(imageUploaded),
       device_hint: deviceHint,
+      scan_data: scanData,
       input: audioKey ? { audio_key: audioKey } : { text: userText },
     };
 

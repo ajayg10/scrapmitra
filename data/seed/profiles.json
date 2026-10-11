@@ -25,7 +25,7 @@
       "role": "collector",
       "display_name": "Ramesh Kumar",
       "collector_id": "col_delhi_01",
-      "email_or_phone": "+919876543210",
+      "email_or_phone": "+91 98xxxxxx10",
       "created_at": "2026-10-09T07:30:00Z",
       "is_demo": true
     },
@@ -34,7 +34,7 @@
       "role": "collector",
       "display_name": "Surender Scrap",
       "collector_id": "col_delhi_02",
-      "email_or_phone": "+919876543211",
+      "email_or_phone": "+91 98xxxxxx11",
       "created_at": "2026-10-09T07:45:00Z",
       "is_demo": true
     },
@@ -43,7 +43,7 @@
       "role": "collector",
       "display_name": "Mohd. Aslam",
       "collector_id": "col_delhi_03",
-      "email_or_phone": "+919876543212",
+      "email_or_phone": "+91 98xxxxxx12",
       "created_at": "2026-10-09T08:00:00Z",
       "is_demo": true
     },

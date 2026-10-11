@@ -72,7 +72,56 @@ app = Flask(__name__)
 CORS(app)
 
 # In-memory runtime state for fast, deterministic demo & local testing
-SCANS: dict[str, dict[str, Any]] = {}
+SCANS: dict[str, dict[str, Any]] = {
+    "scan_demo_4412": {
+        "scan_id": "scan_demo_4412",
+        "device": {
+            "device_type": "mobile_phone",
+            "label": "Smartphone (Samsung)",
+            "condition": "damaged",
+            "age_band": "3to6",
+        },
+        "hazards": [
+            {
+                "hazard_id": "HAZ_LI_ION",
+                "severity": "HIGH",
+                "warning": "Damaged lithium battery may catch fire if punctured or heated.",
+                "do": ["Stop handling a swollen battery.", "Hand over intact to a verified collector."],
+                "dont": ["Do not puncture, hammer, or incinerate.", "Never put this in household waste."],
+            }
+        ],
+        "decision": {
+            "recommended_tier": "REPAIR_THEN_REUSE",
+            "options": [
+                {
+                    "option_id": "REPAIR_THEN_REUSE",
+                    "title": "Screen Repair & Refurbishment",
+                    "money_range": {"min": 2500, "max": 6500, "currency": "INR"},
+                    "co2e_avoided_min_kg": 35.0,
+                    "co2e_avoided_max_kg": 55.0,
+                    "why": "Repair cost is well under 50% of secondary market value.",
+                },
+                {
+                    "option_id": "RECYCLE_AUTHORIZED",
+                    "title": "Authorized Material Recycling",
+                    "money_range": {"min": 80, "max": 220, "currency": "INR"},
+                    "co2e_avoided_min_kg": 10.0,
+                    "co2e_avoided_max_kg": 18.0,
+                    "why": "Certified smelters reclaim metals safely.",
+                },
+            ],
+            "comparison_table": [
+                {
+                    "option_name": "Screen Repair & Refurbish",
+                    "money_text": "₹2,500 - ₹6,500",
+                    "env_rating": "better",
+                    "co2e_avoided_text": "35 - 55 kg CO₂e",
+                    "summary_reason": "Highest circular value",
+                }
+            ],
+        },
+    }
+}
 PICKUP_REQUESTS: dict[str, dict[str, Any]] = {}
 ITEM_TOKENS: dict[str, dict[str, Any]] = {}
 COLLECTOR_ROUTES: dict[str, dict[str, Any]] = {}
@@ -1173,6 +1222,9 @@ def leaderboard():
         "period": "October 2026",
         "households": base_households[:10],
         "collectors": collectors_board,
+        "is_demo": True,
+        "data_label": "Demo seed data",
+        "note": "These leaderboard values are illustrative demo seed records for a public prototype and should not be treated as real customer or city data.",
     })
 
 
@@ -1193,6 +1245,8 @@ def impact_summary():
         "active_collectors": len(COLLECTORS),
         "registered_households": len(DEMO_HOUSEHOLDS),
         "is_demo": True,
+        "data_label": "Demo seed data",
+        "note": "All city aggregates are seeded demo values for illustration only.",
     })
 
 
@@ -1285,6 +1339,13 @@ def voice_ask():
     body = request.get_json() or {}
     session_id = body.get("session_id") or f"sess_{uuid.uuid4().hex[:12]}"
     scan_id = body.get("scan_id")
+    scan_data_payload = body.get("scan_data")
+    if scan_data_payload and isinstance(scan_data_payload, dict):
+        sid = scan_id or scan_data_payload.get("scan_id")
+        if sid:
+            SCANS[sid] = scan_data_payload
+            scan_id = sid
+
     request_id = body.get("request_id")
     lang_hint = body.get("lang_hint", "en")
     image_uploaded = body.get("image_uploaded", False)
