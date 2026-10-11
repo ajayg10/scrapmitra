@@ -1138,10 +1138,10 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     💡 Suggestion: {scanResult.suggested_angle}
                   </div>
                 )}
-                <div>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                   <button
                     type="button"
-                    className="camera-button mx-auto"
+                    className="camera-button"
                     onClick={() => {
                       setImagePreview(null);
                       setScanResult(null);
@@ -1149,6 +1149,15 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   >
                     <Icon name="RefreshCw" size={18} />
                     Retake / Choose Another Photo
+                  </button>
+                  <button
+                    type="button"
+                    className="secondary-upload-btn"
+                    onClick={() => {
+                      void handleInspect(imagePreview || undefined, 'mobile_phone');
+                    }}
+                  >
+                    ⚡ Proceed with Best Estimate (Smartphone)
                   </button>
                 </div>
               </div>

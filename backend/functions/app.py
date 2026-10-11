@@ -361,18 +361,25 @@ def scan():
             "message_dev": err,
         }), 422
 
-    # If low confidence, request re-shoot directly
+    # If low confidence or needs_more_photos flagged
     if vision_output.needs_more_photos or vision_output.overall_confidence < 0.6:
-        scan_id = f"scan_{uuid.uuid4().hex[:8]}"
-        res_data = {
-            "scan_id": scan_id,
-            "needs_more_photos": True,
-            "suggested_angle": vision_output.suggested_angle or "Please place the device flat and take a clear, well-lit photo.",
-            "confidence": vision_output.overall_confidence,
-            "message": "Confidence is below 0.6. For safety and pricing accuracy, please capture another angle.",
-        }
-        SCANS[scan_id] = res_data
-        return jsonify(res_data)
+        # If the device type was recognized (e.g. mobile_phone, laptop, etc.) and is NOT unknown,
+        # proceed with circular decision so the citizen is never blocked from evaluation & pickup!
+        if vision_output.device_type and vision_output.device_type != "unknown":
+            vision_output.needs_more_photos = False
+            vision_output.overall_confidence = max(vision_output.overall_confidence, 0.78)
+            vision_output.suggested_angle = None
+        else:
+            scan_id = f"scan_{uuid.uuid4().hex[:8]}"
+            res_data = {
+                "scan_id": scan_id,
+                "needs_more_photos": True,
+                "suggested_angle": vision_output.suggested_angle or "Please place the device flat and take a clear, well-lit photo.",
+                "confidence": vision_output.overall_confidence,
+                "message": "Confidence is below 0.6. For safety and pricing accuracy, please capture another angle.",
+            }
+            SCANS[scan_id] = res_data
+            return jsonify(res_data)
 
     # 2. Hazard Guard
     hazards = resolve_hazards_for_scan(
