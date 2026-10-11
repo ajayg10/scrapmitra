@@ -24,7 +24,6 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<ActiveTab>('scan');
   const [showCatalog, setShowCatalog] = useState(false);
-  const [powersOn, setPowersOn] = useState<'yes' | 'no' | 'unsure'>('yes');
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any | null>(null);
   const [activePickup, setActivePickup] = useState<any | null>(null);
@@ -576,7 +575,6 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
           image_b64: activeImg || undefined,
           device_type: activeDev || undefined,
           lang,
-          powers_on: powersOn,
         }),
       });
       if (res.ok) {
@@ -993,42 +991,6 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 </h1>
                 <p className="hero-subtitle">{t('subtitle')}</p>
 
-                {/* Pre-inference condition question */}
-                <fieldset className="condition-question">
-                  <legend className="condition-label">{t('powersOnQuestion')}</legend>
-                  <div className="condition-options">
-                    <label className={`condition-option ${powersOn === 'yes' ? 'selected' : ''}`}>
-                      <input
-                        type="radio"
-                        name="powers_on"
-                        value="yes"
-                        checked={powersOn === 'yes'}
-                        onChange={() => setPowersOn('yes')}
-                      />
-                      <span>✓ {t('yes')}</span>
-                    </label>
-                    <label className={`condition-option ${powersOn === 'no' ? 'selected' : ''}`}>
-                      <input
-                        type="radio"
-                        name="powers_on"
-                        value="no"
-                        checked={powersOn === 'no'}
-                        onChange={() => setPowersOn('no')}
-                      />
-                      <span>✗ {t('no')}</span>
-                    </label>
-                    <label className={`condition-option ${powersOn === 'unsure' ? 'selected' : ''}`}>
-                      <input
-                        type="radio"
-                        name="powers_on"
-                        value="unsure"
-                        checked={powersOn === 'unsure'}
-                        onChange={() => setPowersOn('unsure')}
-                      />
-                      <span>? {t('unsure')}</span>
-                    </label>
-                  </div>
-                </fieldset>
 
                 {/* Image Capture & Drop Zone */}
                 {!imagePreview && !isWebcamOpen && (
