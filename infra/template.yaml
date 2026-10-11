@@ -159,6 +159,27 @@ Resources:
       TimeToLiveSpecification:
         AttributeName: ttl
         Enabled: true
+
+  VoiceSessions:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: session_id
+        AttributeType: S
+      - AttributeName: turn
+        AttributeType: N
+      KeySchema:
+      - AttributeName: session_id
+        KeyType: HASH
+      - AttributeName: turn
+        KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
   UploadsBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -330,6 +351,9 @@ Resources:
           DYNAMO_TABLE_SCANS: !Ref Scans
           DYNAMO_TABLE_PROFILES: !Ref Profiles
           DYNAMO_TABLE_COLLECTOR_APPS: !Ref CollectorApplications
+          VOICE_SESSIONS_TABLE: !Ref VoiceSessions
+          POLLY_VOICE_HI: Kajal
+          POLLY_VOICE_EN: Raveena
           COGNITO_USER_POOL_ID: !Ref UserPool
           COGNITO_CLIENT_ID: !Ref UserPoolClient
       Policies:
@@ -339,6 +363,17 @@ Resources:
                 - bedrock:InvokeModel
                 - bedrock:InvokeModelWithResponseStream
               Resource: "*"
+            - Effect: Allow
+              Action:
+                - transcribe:StartTranscriptionJob
+                - transcribe:GetTranscriptionJob
+                - transcribe:DeleteTranscriptionJob
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - polly:SynthesizeSpeech
+              Resource: "*"
+
             - Effect: Allow
               Action:
                 - s3:GetObject
@@ -366,6 +401,7 @@ Resources:
                 - !GetAtt Corrections.Arn
                 - !GetAtt ImpactAgg.Arn
                 - !GetAtt OfferChecks.Arn
+                - !GetAtt VoiceSessions.Arn
             - Effect: Allow
               Action:
                 - cognito-idp:AdminCreateUser

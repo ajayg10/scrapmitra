@@ -4,6 +4,7 @@ import { Icon } from './components/Icon';
 import { device_type, type Language } from './generated/taxonomy';
 import { iconMap } from './generated/icons';
 import deviceCatalog from '../../data/seed/device_catalog.json';
+import VoiceAgent from './components/VoiceAgent';
 
 type ActiveTab = 'scan' | 'pickup' | 'collector' | 'impact' | 'leaderboard' | 'admin';
 
@@ -1256,6 +1257,13 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Conversational Voice Agent */}
+                <VoiceAgent
+                  scanId={scanResult.scan_id}
+                  authToken={authToken}
+                  lang={lang}
+                />
               </div>
             )}
 
@@ -1500,6 +1508,12 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     <p className="text-xs font-semibold mt-3 p-3 rounded-lg bg-slate-50 border border-slate-200">{collectorNotice}</p>
                   )}
                 </div>
+
+                {/* Conversational Voice Agent */}
+                <VoiceAgent
+                  authToken={authToken}
+                  lang={lang}
+                />
               </div>
             )}
           </section>

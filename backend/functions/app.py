@@ -66,6 +66,7 @@ from backend.core.models import (
 from backend.core.points import compute_eco_points
 from backend.core.routing import build_optimized_route
 from backend.core.vision_client import BedrockVisionClient, MockVisionClient, inspect_with_retry
+from backend.core.voice_agent import run_voice_agent, transcribe_audio
 
 app = Flask(__name__)
 CORS(app)
@@ -1232,6 +1233,125 @@ def admin_run_aggregation():
         "message": f"Clustered into {len(clusters)} routes! Saved {tot_saved_km} km ({tot_co2_saved} kg CO₂e) vs separate trips.",
     })
 
+
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Voice Agent Routes
+# ──────────────────────────────────────────────────────────────────────────────
+
+@app.route("/v1/voice/upload-url", methods=["POST"])
+def voice_upload_url():
+    """Return presigned S3 PUT URL for an audio clip (up to 30 s, deleted after 1 day)."""
+    import mimetypes
+    body = request.get_json() or {}
+    content_type = body.get("content_type", "audio/webm")
+    ext = mimetypes.guess_extension(content_type) or ".webm"
+    file_id = f"audio_{uuid.uuid4().hex[:12]}{ext}"
+    audio_key = f"voice/clips/{file_id}"
+
+    bucket = os.environ.get("UPLOADS_BUCKET")
+    region = os.environ.get("AWS_REGION", "us-east-1")
+
+    if bucket and os.environ.get("VISION_MODE", "mock") == "bedrock":
+        try:
+            import boto3
+            s3 = boto3.client("s3", region_name=region)
+            upload_url = s3.generate_presigned_url(
+                "put_object",
+                Params={"Bucket": bucket, "Key": audio_key, "ContentType": content_type},
+                ExpiresIn=300,
+            )
+            return jsonify({"upload_url": upload_url, "audio_key": audio_key, "expires_in_seconds": 300})
+        except Exception:
+            pass
+
+    # Local mock
+    return jsonify({
+        "upload_url": f"http://127.0.0.1:5001/v1/mock-s3-upload/{file_id}",
+        "audio_key": audio_key,
+        "expires_in_seconds": 300,
+    })
+
+
+@app.route("/v1/voice/ask", methods=["POST"])
+def voice_ask():
+    """Conversational voice agent endpoint.
+
+    Accepts audio_key (S3 key) or text input.
+    Runs Bedrock tool-use loop with number/safety/scope guards.
+    Returns display_text, speech_text, audio_url, sources, followups.
+    """
+    body = request.get_json() or {}
+    session_id = body.get("session_id") or f"sess_{uuid.uuid4().hex[:12]}"
+    scan_id = body.get("scan_id")
+    request_id = body.get("request_id")
+    lang_hint = body.get("lang_hint", "en")
+    user_input_block = body.get("input", {})
+
+    # Resolve caller identity (guest allowed for scan-level questions)
+    token = get_auth_token_from_header()
+    current_user = verify_token(token)
+
+    # Rate limit: simple per-session counter (in-memory, resets on restart)
+    # For production, use DynamoDB atomic counter
+    from backend.core.voice_agent import VOICE_SESSIONS
+    session_data = VOICE_SESSIONS.get(session_id, {})
+    turn_count = len(session_data.get("turns", []))
+    if turn_count >= 50:  # Max 50 turns per session per day
+        return jsonify({"error": "rate_limit", "message": "Session turn limit reached. Start a new session."}), 429
+
+    # ── Resolve transcript ───────────────────────────────────────────────────
+    transcript = ""
+    detected_lang = lang_hint
+
+    if "text" in user_input_block:
+        transcript = str(user_input_block["text"]).strip()
+    elif "audio_key" in user_input_block:
+        audio_key = user_input_block["audio_key"]
+        transcript, detected_lang = transcribe_audio(audio_key, lang_hint)
+        if not transcript:
+            return jsonify({
+                "error": "transcription_failed",
+                "message": "Could not transcribe audio. Please try speaking more clearly or use text input.",
+            }), 422
+    else:
+        return jsonify({"error": "missing_input", "message": "Provide either 'text' or 'audio_key' in the input field."}), 400
+
+    # ── Build agent context ──────────────────────────────────────────────────
+    agent_context = {
+        "scans": SCANS,
+        "pickup_requests": PICKUP_REQUESTS,
+        "impact_ledger": IMPACT_LEDGER,
+        "collectors": COLLECTORS,
+        "user": current_user,
+        "scan_id": scan_id,
+        "request_id": request_id,
+    }
+
+    # ── Run agent ────────────────────────────────────────────────────────────
+    try:
+        result = run_voice_agent(
+            session_id=session_id,
+            user_input=transcript,
+            context=agent_context,
+            lang_hint=detected_lang,
+        )
+        result["transcript"] = transcript
+        return jsonify(result)
+    except Exception as exc:
+        import traceback
+        print(f"[voice_ask] Error: {exc}\n{traceback.format_exc()}")
+        return jsonify({
+            "session_id": session_id,
+            "transcript": transcript,
+            "display_text": "I'm having trouble right now. Please try again in a moment.",
+            "speech_text": "Please try again in a moment.",
+            "audio_url": None,
+            "sources": [],
+            "followups": [],
+            "guard_status": "server_error",
+        }), 500
 
 
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
