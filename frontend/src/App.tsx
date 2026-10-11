@@ -330,32 +330,37 @@ export default function App() {
   useEffect(() => {
     if (authModal === 'household') {
       const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleClientId) {
-        try {
-          (window as any).google.accounts.id.initialize({
-            client_id: googleClientId,
-            callback: (response: any) => {
-              if (response?.credential) {
-                void handleGoogleAuthSubmit(response.credential);
-              }
-            },
-          });
-          const container = document.getElementById('google-signin-btn-container');
-          if (container) {
-            container.innerHTML = '';
-            (window as any).google.accounts.id.renderButton(container, {
-              theme: 'outline',
-              size: 'large',
-              width: 320,
-              text: 'continue_with',
-              shape: 'rectangular',
+      const initGis = () => {
+        if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleClientId) {
+          try {
+            (window as any).google.accounts.id.initialize({
+              client_id: googleClientId,
+              callback: (response: any) => {
+                if (response?.credential) {
+                  void handleGoogleAuthSubmit(response.credential);
+                }
+              },
             });
+            const container = document.getElementById('google-signin-btn-container');
+            if (container) {
+              container.innerHTML = '';
+              (window as any).google.accounts.id.renderButton(container, {
+                theme: 'outline',
+                size: 'large',
+                width: 320,
+                text: 'continue_with',
+                shape: 'rectangular',
+              });
+            }
+            (window as any).google.accounts.id.prompt();
+          } catch (err) {
+            console.warn('Google Identity Services notice:', err);
           }
-          (window as any).google.accounts.id.prompt();
-        } catch (err) {
-          console.warn('Google Identity Services prompt notice:', err);
         }
-      }
+      };
+
+      const timer = setTimeout(initGis, 150);
+      return () => clearTimeout(timer);
     }
   }, [authModal]);
 
