@@ -173,7 +173,8 @@ export default function CircularEconomySection() {
   const reduced = usePrefersReducedMotion();
 
   return (
-    <section id="for-collectors" className="ce-section" aria-labelledby="ce-heading">
+    <section id="for-households" className="ce-section" aria-labelledby="ce-heading">
+      <div id="for-collectors" className="sr-only" />
       <style>{`
         .ce-section {
           background: #F6F3E9;
@@ -504,7 +505,7 @@ export default function CircularEconomySection() {
                 A better next step needs the right connection.
               </h2>
               <p className="ce-sub">
-                Loopback aims to help each participant in the e-waste chain discover appropriate next steps — without overpromising what's possible.
+                ScrapMitra aims to help each participant in the e-waste chain discover appropriate next steps — without overpromising what's possible.
               </p>
             </div>
           </AnimatedSection>
@@ -525,7 +526,7 @@ export default function CircularEconomySection() {
             </div>
 
             {PARTICIPANTS.map((p, i) => (
-              <div key={p.id} className={`ce-card-${p.pos} relative z-10`}>
+              <div key={p.id} id={`for-${p.id}`} className={`ce-card-${p.pos} relative z-10 scroll-mt-24`}>
                 <AnimatedSection delay={reduced ? 0 : i * 80}>
                   <div className="ce-card">
                     <img src={p.img} alt="" className="ce-card-img" />

@@ -55,10 +55,11 @@ export default function DecisionPathSection() {
 
   return (
     <section
-      id="choose"
+      id="our-approach"
       className="dp-section"
       aria-labelledby="dp-heading"
     >
+      <div id="choose" className="sr-only" />
       <style>{`
         .dp-section {
           background: #0B2923;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 const LogoMark = () => (
   <svg
-    className="w-[calc(52*var(--u))] h-[calc(52*var(--u))] flex-shrink-0"
+    className="w-[calc(52*var(--u))] h-[calc(52*var(--u))] max-[767px]:w-8 max-[767px]:h-8 flex-shrink-0"
     viewBox="0 0 52 52"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -33,16 +33,20 @@ export default function Navbar() {
         .nav-btn-shadow:hover { box-shadow: calc(4*var(--u)) calc(4*var(--u)) 0 #0B2B24; }
         .navbar nav a, .navbar a { color: #F4F1E8 !important; }
         .btn-primary, .btn-primary * { color: #F4F1E8 !important; }
+        @media(max-width: 767px) {
+          .nav-btn-shadow { box-shadow: 2px 2px 0 #0B2B24; }
+          .nav-btn-shadow:hover { box-shadow: 3px 3px 0 #0B2B24; }
+        }
       `}</style>
       
-      <header className="navbar relative z-[1000] h-[calc(78*var(--u))] flex-none bg-[var(--brand-green)] overflow-hidden w-full">
-        <nav className="relative z-10 flex h-full items-center justify-between pl-[calc(132*var(--u))] pr-[calc(84*var(--u))] max-[900px]:px-6">
+      <header className="navbar relative z-[1000] h-[calc(78*var(--u))] max-[767px]:h-16 flex-none bg-[var(--brand-green)] w-full">
+        <nav className="relative z-10 flex h-full items-center justify-between pl-[calc(132*var(--u))] pr-[calc(84*var(--u))] max-[767px]:px-4">
           
           <div className="flex items-center">
-            <a href="/" className="flex items-center gap-[calc(10*var(--u))]" aria-label="Loopback home">
+            <a href="/" className="flex items-center gap-[calc(10*var(--u))] max-[767px]:gap-2" aria-label="ScrapMitra home">
               <LogoMark />
-              <span className="font-bricolage text-[calc(38*var(--u))] font-bold tracking-[-0.02em] leading-none">
-                loopback
+              <span className="font-bricolage text-[calc(38*var(--u))] max-[767px]:text-[22px] font-bold tracking-[-0.02em] leading-none text-[#F4F1E8]">
+                scrapmitra
               </span>
             </a>
 
@@ -68,32 +72,59 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex items-center gap-[calc(12*var(--u))]">
+          <div className="flex items-center gap-[calc(12*var(--u))] max-[767px]:gap-2">
             <a
               href="/app/demo"
-              className="inline-flex items-center gap-[calc(4*var(--u))] bg-[#0F3D33] text-[#F4F1E8] font-spacemono font-bold text-[calc(14*var(--u))] px-[calc(14*var(--u))] py-[calc(10*var(--u))] rounded-[calc(6*var(--u))] border-[calc(2*var(--u))] border-[#0F1A17] transition-transform hover:-translate-y-px"
+              className="hidden sm:inline-flex items-center gap-[calc(4*var(--u))] bg-[#0F3D33] text-[#F4F1E8] font-spacemono font-bold text-[calc(14*var(--u))] max-[767px]:text-xs px-[calc(14*var(--u))] py-[calc(10*var(--u))] max-[767px]:px-2.5 max-[767px]:py-1.5 rounded-[calc(6*var(--u))] max-[767px]:rounded-md border-[calc(2*var(--u))] max-[767px]:border-2 border-[#0F1A17] transition-transform hover:-translate-y-px"
               title="Hackathon Evaluation & Demo Mode"
             >
-              Demo ⚡
+              Demo
             </a>
             <a
               href="/app"
-              className="btn-primary flex items-center gap-[calc(4*var(--u))] bg-[#F4623A] font-spacemono font-bold text-[calc(16*var(--u))] px-[calc(20*var(--u))] py-[calc(12*var(--u))] rounded-[calc(6*var(--u))] border-[calc(2*var(--u))] border-[#0F1A17] nav-btn-shadow transition-transform hover:-translate-y-px"
+              className="btn-primary flex items-center gap-[calc(4*var(--u))] bg-[#F4623A] font-spacemono font-bold text-[calc(16*var(--u))] max-[767px]:text-[13px] px-[calc(20*var(--u))] py-[calc(12*var(--u))] max-[767px]:px-3 max-[767px]:py-1.5 rounded-[calc(6*var(--u))] max-[767px]:rounded-md border-[calc(2*var(--u))] max-[767px]:border-2 border-[#0F1A17] nav-btn-shadow transition-transform hover:-translate-y-px"
             >
               Scan an item ↗
             </a>
 
             <button
-              className="min-[900px]:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5 z-20"
+              className="min-[900px]:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5 z-20 text-[#F4F1E8]"
               onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Toggle menu"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileOpen}
             >
-              <span className="block w-6 h-[2px] bg-[#F4F1E8] transition-transform" style={{ transform: mobileOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
-              <span className="block w-6 h-[2px] bg-[#F4F1E8] transition-opacity" style={{ opacity: mobileOpen ? 0 : 1 }} />
-              <span className="block w-6 h-[2px] bg-[#F4F1E8] transition-transform" style={{ transform: mobileOpen ? 'rotate(-45deg) translate(6px, -6px)' : 'none' }} />
+              <span className="block w-6 h-[2px] bg-[#F4F1E8] transition-transform duration-200" style={{ transform: mobileOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+              <span className="block w-6 h-[2px] bg-[#F4F1E8] transition-opacity duration-200" style={{ opacity: mobileOpen ? 0 : 1 }} />
+              <span className="block w-6 h-[2px] bg-[#F4F1E8] transition-transform duration-200" style={{ transform: mobileOpen ? 'rotate(-45deg) translate(6px, -6px)' : 'none' }} />
             </button>
           </div>
         </nav>
+
+        {/* Mobile Navigation Dropdown */}
+        {mobileOpen && (
+          <div className="min-[900px]:hidden absolute top-full left-0 right-0 bg-[#0F3D33] border-b-2 border-[#0B2B24] shadow-xl px-5 py-4 flex flex-col gap-3 z-[999]">
+            <div className="flex flex-col gap-2.5">
+              {NAV_LINKS.map(link => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="font-spacemono text-[14px] text-[#F4F1E8] hover:text-[#F4623A] py-1.5 border-b border-[#F4F1E8]/10 transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+            <div className="pt-1.5 flex items-center justify-between text-[#A9C2B8] font-spacemono text-[11px] tracking-wider uppercase">
+              <a href="/app/demo" onClick={() => setMobileOpen(false)} className="text-[#F0A530] font-bold">
+                Demo Mode ⚡
+              </a>
+              <a href="/app" onClick={() => setMobileOpen(false)} className="text-[#F4623A] font-bold">
+                Open App →
+              </a>
+            </div>
+          </div>
+        )}
       </header>
     </>
   );
