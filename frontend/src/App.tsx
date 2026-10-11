@@ -36,11 +36,23 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [authToken, setAuthToken] = useState<string | null>(() => localStorage.getItem('kabadiplus_auth_token'));
+  const [authToken, setAuthToken] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    if (!isDemo) {
+      const stored = localStorage.getItem('kabadiplus_auth_token');
+      if (stored && stored.startsWith('demo-token-')) {
+        localStorage.removeItem('kabadiplus_auth_token');
+        return null;
+      }
+      return stored;
+    }
+    return localStorage.getItem('kabadiplus_demo_auth_token');
+  });
   const [authModal, setAuthModal] = useState<'none' | 'household' | 'collector' | 'pending_approval'>('none');
   const [collectorMode, setCollectorMode] = useState<'signin' | 'apply'>('signin');
   const [pendingScanToClaim, setPendingScanToClaim] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [handoverSuccessMsg, setHandoverSuccessMsg] = useState<string | null>(null);
 
   // Household Google Auth State
   const [googleEmail, setGoogleEmail] = useState('');
@@ -140,6 +152,12 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
   // Authenticate user on load
   const fetchMe = async (token: string): Promise<UserProfile | null> => {
+    if (!isDemo && token.startsWith('demo-token-')) {
+      localStorage.removeItem('kabadiplus_auth_token');
+      setAuthToken(null);
+      setCurrentUser(null);
+      return null;
+    }
     if (token in DEMO_PROFILES) {
       const fallback = DEMO_PROFILES[token];
       setCurrentUser(fallback);
@@ -161,7 +179,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       return DEMO_PROFILES[token];
     }
 
-    localStorage.removeItem('kabadiplus_auth_token');
+    localStorage.removeItem(isDemo ? 'kabadiplus_demo_auth_token' : 'kabadiplus_auth_token');
     setAuthToken(null);
     setCurrentUser(null);
     return null;
@@ -261,7 +279,14 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
   // Login handler
   const loginWithToken = async (token: string, overrideUser?: UserProfile) => {
-    localStorage.setItem('kabadiplus_auth_token', token);
+    if (isDemo) {
+      localStorage.setItem('kabadiplus_demo_auth_token', token);
+    } else {
+      if (token.startsWith('demo-token-')) {
+        return; // strictly disallow demo tokens in real mode
+      }
+      localStorage.setItem('kabadiplus_auth_token', token);
+    }
     setAuthToken(token);
     setAuthError(null);
     const resolvedUser = overrideUser || DEMO_PROFILES[token];
@@ -307,27 +332,25 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('kabadiplus_auth_token');
+    localStorage.removeItem(isDemo ? 'kabadiplus_demo_auth_token' : 'kabadiplus_auth_token');
     setAuthToken(null);
     setCurrentUser(null);
     setActiveTab('scan');
   };
 
-  // Google Sign-In Handler
-  const handleGoogleAuthSubmit = async (credentialOrEmail?: string, overrideName?: string) => {
+  // Household / Citizen Sign-In Handler
+  const handleHouseholdAuthSubmit = async (credentialOrEmail?: string, overrideName?: string) => {
     setAuthError(null);
-    let payload: any = {};
-    if (typeof credentialOrEmail === 'string' && credentialOrEmail.includes('.')) {
-      payload = { credential: credentialOrEmail };
-    } else {
-      const emailToUse = (typeof credentialOrEmail === 'string' && credentialOrEmail) || googleEmail;
-      const nameToUse = overrideName || googleName || emailToUse.split('@')[0];
-      if (!emailToUse || !emailToUse.includes('@')) {
-        setAuthError('Please enter a valid Google email address.');
-        return;
-      }
-      payload = { email: emailToUse, name: nameToUse };
+    let emailToUse = (typeof credentialOrEmail === 'string' && credentialOrEmail) || googleEmail.trim();
+    const nameToUse = overrideName || googleName.trim() || emailToUse.split('@')[0] || 'Citizen';
+    if (!emailToUse) {
+      setAuthError(lang === 'hi' ? 'कृपया अपना ईमेल या संपर्क नंबर दर्ज करें।' : 'Please enter your email or contact.');
+      return;
     }
+    if (!emailToUse.includes('@')) {
+      emailToUse = `${emailToUse}@citizen.kabadiplus.in`;
+    }
+    const payload = { email: emailToUse, name: nameToUse };
 
     try {
       const res = await fetch('/v1/auth/google', {
@@ -337,7 +360,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setAuthError(data.message || 'Google sign-in failed.');
+        setAuthError(data.message || 'Household sign-in failed.');
         return;
       }
       await loginWithToken(data.token, data.user);
@@ -345,44 +368,6 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       setAuthError('Failed to connect to authentication service.');
     }
   };
-
-  // Initialize Google Identity Services (GIS) on modal open
-  useEffect(() => {
-    if (authModal === 'household') {
-      const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      const initGis = () => {
-        if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleClientId) {
-          try {
-            (window as any).google.accounts.id.initialize({
-              client_id: googleClientId,
-              callback: (response: any) => {
-                if (response?.credential) {
-                  void handleGoogleAuthSubmit(response.credential);
-                }
-              },
-            });
-            const container = document.getElementById('google-signin-btn-container');
-            if (container) {
-              container.innerHTML = '';
-              (window as any).google.accounts.id.renderButton(container, {
-                theme: 'outline',
-                size: 'large',
-                width: 320,
-                text: 'continue_with',
-                shape: 'rectangular',
-              });
-            }
-            (window as any).google.accounts.id.prompt();
-          } catch (err) {
-            console.warn('Google Identity Services notice:', err);
-          }
-        }
-      };
-
-      const timer = setTimeout(initGis, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [authModal]);
 
   // Collector Sign In submission
   const handleCollectorSignIn = async (e: React.FormEvent) => {
@@ -584,6 +569,8 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     setIsScanning(true);
     const activeImg = overrideImg || imagePreview;
     const activeDev = overrideDev || selectedPreset;
+    const normDev = (activeDev === 'crt_television' || activeDev === 'crt_tv') ? 'crt_tv' : activeDev;
+
     try {
       const res = await fetch('/v1/scan', {
         method: 'POST',
@@ -591,7 +578,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
         body: JSON.stringify({
           image_key: 'uploads/guest/device_capture.jpg',
           image_b64: activeImg || undefined,
-          device_type: activeDev || undefined,
+          device_type: normDev || undefined,
           lang,
         }),
       });
@@ -600,6 +587,9 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
         if (!data.needs_more_photos || !activeDev) {
           setScanResult(data);
           setIsScanning(false);
+          setTimeout(() => {
+            document.getElementById('scan-results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 150);
           return;
         }
       }
@@ -607,85 +597,237 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
       // Fallback
     }
 
-    // Deterministic fallback
+    // Deterministic calibrated fallback by device type
     setTimeout(() => {
-      setScanResult({
-        scan_id: 'scan_demo_4412',
-        is_demo: true,
-        device: {
-          device_type: 'mobile_phone',
-          label: lang === 'hi' ? 'स्मार्टफोन (सैमसंग)' : 'Smartphone (Samsung)',
-          condition: 'damaged',
-          age_band: '3to6',
-        },
-        hazards: [
-          {
-            hazard_id: 'HAZ_LI_ION',
-            severity: 'HIGH',
-            icon: 'BatteryWarning',
-            warning: lang === 'hi' ? 'क्षतिग्रस्त लिथियम बैटरी में आग लग सकती है।' : 'A lithium battery may catch fire or explode if punctured or heated.',
-            do: [
-              lang === 'hi' ? 'फूली या गर्म बैटरी को अलग करें।' : 'Stop handling a hot or swollen battery.',
-              lang === 'hi' ? 'अधिकृत रीसाइक्लर को ही सौंपें।' : 'Hand over intact to a verified battery handler.',
+      let fallbackData: any;
+      if (normDev === 'laptop') {
+        fallbackData = {
+          scan_id: 'scan_demo_laptop',
+          is_demo: true,
+          device: {
+            device_type: 'laptop',
+            label: lang === 'hi' ? 'लैपटॉप (डेल/एचपी)' : 'Laptop (Dell/HP)',
+            condition: 'damaged',
+            age_band: '3to6',
+          },
+          hazards: [
+            {
+              hazard_id: 'HAZ_LI_ION',
+              severity: 'HIGH',
+              icon: 'BatteryWarning',
+              warning: lang === 'hi' ? 'लैपटॉप की लिथियम बैटरी क्षतिग्रस्त है, आग लग सकती है।' : 'Damaged laptop lithium battery may catch fire if punctured or heated.',
+              do: [
+                lang === 'hi' ? 'बैटरी को सावधानी से ठंडी जगह रखें।' : 'Store in a cool dry area away from flammables.',
+                lang === 'hi' ? 'अधिकृत कबाड़ीवाले को ही सौंपें।' : 'Hand over intact to a verified handler.',
+              ],
+              dont: [
+                lang === 'hi' ? 'इसे कभी खोलें या जलाएँ नहीं।' : 'Never puncture, hammer, or incinerate.',
+                lang === 'hi' ? 'घरेलू कचरे में कभी न डालें।' : 'Never dispose in municipal waste.',
+              ],
+            },
+            {
+              hazard_id: 'HAZ_BROKEN_GLASS_LCD',
+              severity: 'MEDIUM',
+              icon: 'AlertTriangle',
+              warning: lang === 'hi' ? 'टूटी हुई एलसीडी स्क्रीन में कांच के बारीक टुकड़े हैं।' : 'Cracked LCD panel contains shattered glass shards and liquid crystals.',
+              do: [lang === 'hi' ? 'स्क्रीन को सुरक्षित रूप से ढक कर रखें।' : 'Keep panel intact; handle with care.'],
+              dont: [lang === 'hi' ? 'खुले हाथों से कांच न छुएँ।' : 'Do not touch liquid crystals directly.'],
+            },
+          ],
+          decision: {
+            recommended_tier: 'REPAIR_THEN_REUSE',
+            options: [
+              {
+                option_id: 'REPAIR_THEN_REUSE',
+                title: lang === 'hi' ? 'स्क्रीन मरम्मत और पुनः उपयोग' : 'Screen Replacement & Hardware Refurbish',
+                money_range: { min: 4500, max: 12000, currency: 'INR' },
+                env_rating: 'better',
+                co2e_avoided_min_kg: 180.0,
+                co2e_avoided_max_kg: 260.0,
+                why: lang === 'hi' ? 'मरम्मत खर्च नए लैपटॉप की तुलना में बहुत कम है। 180+ किग्रा कार्बन की बचत होती है।' : 'Repair cost (~₹2,500) is well under 50% of secondary market value (~₹22,000). Extends device lifetime.',
+              },
+              {
+                option_id: 'RECYCLE_AUTHORIZED',
+                title: lang === 'hi' ? 'अधिकृत रीसाइक्लिंग' : 'Certified High-Grade Dismantling',
+                money_range: { min: 600, max: 1400, currency: 'INR' },
+                env_rating: 'good',
+                co2e_avoided_min_kg: 40.0,
+                co2e_avoided_max_kg: 85.0,
+                why: lang === 'hi' ? 'एल्यूमिनियम केसिंग और कीमती धातुएँ सुरक्षित रूप से अलग होती हैं।' : 'Recovers aluminium chassis and precious contact metals safely.',
+              },
             ],
-            dont: [
-              lang === 'hi' ? 'इसे कभी छेदें या जलाएँ नहीं।' : 'Do not puncture, hammer, or incinerate.',
-              lang === 'hi' ? 'घरेलू कचरे में कभी न डालें।' : 'Never put this in household waste.',
+            comparison_table: [
+              {
+                option_name: lang === 'hi' ? 'कचरे में फेंकना' : 'Throw away (Landfill/Drain)',
+                money_text: '₹0',
+                env_rating: 'poor',
+                co2e_avoided_text: '0 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'भारी प्रदूषण: लिथियम आग का खतरा।' : 'Extreme pollution: lithium fire hazard and groundwater contamination.',
+              },
+              {
+                option_name: lang === 'hi' ? 'मरम्मत कर उपयोग' : 'Repair & Refurbish',
+                money_text: '₹4,500 - ₹12,000',
+                env_rating: 'better',
+                co2e_avoided_text: '180 - 260 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'उच्चतम चक्रीय मूल्य संरक्षण।' : 'Highest circular value preservation.',
+              },
+              {
+                option_name: lang === 'hi' ? 'अधिकृत रीसाइक्लिंग' : 'Authorized Recycling',
+                money_text: '₹600 - ₹1,400',
+                env_rating: 'good',
+                co2e_avoided_text: '40 - 85 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'धातुओं की पुनः प्राप्ति।' : 'Safe metal recovery.',
+              },
             ],
           },
-        ],
-        decision: {
-          recommended_tier: 'REPAIR_THEN_REUSE',
-          options: [
+          audio_script: lang === 'hi'
+            ? 'सावधानी। लैपटॉप की बैटरी और स्क्रीन का खतरा पहचाना गया है। स्क्रीन बदलने पर इसका मूल्य साढ़े चार से बारह हजार रुपये हो सकता है।'
+            : 'Caution. High severity battery hazard identified. Device qualifies for screen repair with estimated value ₹4,500 to ₹12,000.',
+        };
+      } else if (normDev === 'crt_tv') {
+        fallbackData = {
+          scan_id: 'scan_demo_crt_tv',
+          is_demo: true,
+          device: {
+            device_type: 'crt_tv',
+            label: lang === 'hi' ? 'CRT टीवी (लेडेड ग्लास)' : 'CRT Television (Heavy Lead Glass)',
+            condition: 'burnt',
+            age_band: 'gt10',
+          },
+          hazards: [
             {
-              option_id: 'REPAIR_THEN_REUSE',
-              title: lang === 'hi' ? 'स्क्रीन मरम्मत और पुनः उपयोग' : 'Screen Repair & Refurbishment',
-              money_range: { min: 2500, max: 6500, currency: 'INR' },
-              env_rating: 'better',
-              co2e_avoided_min_kg: 35.0,
-              co2e_avoided_max_kg: 55.0,
-              why: lang === 'hi' ? 'मरम्मत खर्च मूल्य के 50% से कम है। स्क्रीन बदलकर फोन को दूसरा जीवन मिलता है।' : 'Repair cost (~₹1,200) is well under 50% of secondary market value. Extends device lifetime.',
-            },
-            {
-              option_id: 'RECYCLE_AUTHORIZED',
-              title: lang === 'hi' ? 'अधिकृत रीसाइक्लिंग' : 'Authorized Material Recycling',
-              money_range: { min: 80, max: 220, currency: 'INR' },
-              env_rating: 'good',
-              co2e_avoided_min_kg: 10.0,
-              co2e_avoided_max_kg: 18.0,
-              why: lang === 'hi' ? 'पंजीकृत रिफाइनरी में सोना, तांबा और कोबाल्ट अलग किया जाता है।' : 'Certified smelters reclaim gold, copper, and cobalt while safely neutralizing battery cells.',
-            },
-          ],
-          comparison_table: [
-            {
-              option_name: lang === 'hi' ? 'कचरे में फेंकना (डंपिंग)' : 'Throw away (Landfill/Drain)',
-              money_text: '₹0',
-              env_rating: 'poor',
-              co2e_avoided_text: '0 kg CO₂e',
-              summary_reason: lang === 'hi' ? 'भारी प्रदूषण: लिथियम आग का खतरा और भूजल में तेजाब।' : 'Extreme pollution: lithium fire hazard and toxic chemicals in soil.',
-            },
-            {
-              option_name: lang === 'hi' ? 'मरम्मत कर उपयोग' : 'Repair & Refurbish',
-              money_text: '₹2,500 - ₹6,500',
-              env_rating: 'better',
-              co2e_avoided_text: '35 - 55 kg CO₂e',
-              summary_reason: lang === 'hi' ? 'नया फोन बनने का 85% कार्बन बचाता है।' : 'Restores functional life; avoids 85% of embodied manufacturing carbon.',
-            },
-            {
-              option_name: lang === 'hi' ? 'अधिकृत रीसाइक्लिंग' : 'Authorized Recycling',
-              money_text: '₹80 - ₹220',
-              env_rating: 'good',
-              co2e_avoided_text: '10 - 18 kg CO₂e',
-              summary_reason: lang === 'hi' ? 'कीमती धातुएं वापस प्राप्त होती हैं।' : 'Reclaims precious metals; avoids primary bauxite and copper mining.',
+              hazard_id: 'HAZ_CRT_LEAD',
+              severity: 'HIGH',
+              icon: 'AlertTriangle',
+              warning: lang === 'hi' ? 'CRT ट्यूब में 2-3 किलोग्राम तक विषैला लेड (सीसा) होता है।' : 'CRT funnel glass contains up to 2-3 kg of hazardous lead oxide.',
+              do: [
+                lang === 'hi' ? 'ट्यूब को सुरक्षित रखें ताकि वैक्यूम विस्फोट न हो।' : 'Handle tube with extreme care to prevent violent vacuum implosion.',
+                lang === 'hi' ? 'पूरा टीवी केवल अधिकृत रीसाइक्लर को सौंपें।' : 'Hand over whole to an authorized e-waste recycler.',
+              ],
+              dont: [
+                lang === 'hi' ? 'CRT ट्यूब को कभी न तोड़ें या फोड़ें।' : 'NEVER smash or break CRT glass tube.',
+                lang === 'hi' ? 'खुले में जलाने या कबाड़ में फेंकने से बचें।' : 'Never dump in landfills or sell to informal open-air dismantlers.',
+              ],
             },
           ],
-        },
-        audio_script: lang === 'hi'
-          ? 'सावधानी। लिथियम बैटरी का खतरा पहचाना गया है। स्क्रीन बदलने के बाद इस फोन का मूल्य लगभग ढाई से साढ़े छह हजार रुपये हो सकता है।'
-          : 'Caution. High severity lithium battery hazard detected. Device qualifies for screen repair. Tap Arrange Pickup to connect with a verified collector.',
-      });
+          decision: {
+            recommended_tier: 'RECYCLE_AUTHORIZED',
+            options: [
+              {
+                option_id: 'RECYCLE_AUTHORIZED',
+                title: lang === 'hi' ? 'अधिकृत लेड-सुरक्षित रीसाइक्लिंग' : 'Authorized Lead-Safe E-Waste Recycling',
+                money_range: { min: 150, max: 350, currency: 'INR' },
+                env_rating: 'better',
+                co2e_avoided_min_kg: 15.0,
+                co2e_avoided_max_kg: 30.0,
+                why: lang === 'hi' ? 'प्रमाणित रिफाइनरी सीसे को अलग करती है और तांबे के कॉइल को रीसायकल करती है।' : 'Certified smelters isolate lead glass safely while recovering pure copper windings.',
+              },
+            ],
+            comparison_table: [
+              {
+                option_name: lang === 'hi' ? 'कचरे में फेंकना / तोड़ना' : 'Throw away / Smash (Illegal)',
+                money_text: '₹0',
+                env_rating: 'poor',
+                co2e_avoided_text: '0 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'अत्यंत विषैला: सीसा मिट्टी और भूजल में घुलकर जहर फैलाता है।' : 'Extreme occupational hazard: toxic lead poisoning of air, soil, and groundwater.',
+              },
+              {
+                option_name: lang === 'hi' ? 'अधिकृत सुरक्षित रीसाइक्लिंग' : 'Authorized Recycling',
+                money_text: '₹150 - ₹350',
+                env_rating: 'best',
+                co2e_avoided_text: '15 - 30 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'सीसे का सुरक्षित पृथक्करण और तांबा पुनः प्राप्ति।' : 'Safely neutralizes toxic lead oxide and reclaims copper windings.',
+              },
+            ],
+          },
+          audio_script: lang === 'hi'
+            ? 'सावधानी! सीआरटी टीवी में जहरीला सीसा होता है। इसे कभी न तोड़ें। केवल अधिकृत रीसाइक्लर को ही सौंपें।'
+            : 'Caution! CRT televisions contain hazardous lead oxide in the tube glass. Never break the glass. Hand over whole to an authorized recycler.',
+        };
+      } else {
+        fallbackData = {
+          scan_id: 'scan_demo_4412',
+          is_demo: true,
+          device: {
+            device_type: 'mobile_phone',
+            label: lang === 'hi' ? 'स्मार्टफोन (सैमसंग)' : 'Smartphone (Samsung)',
+            condition: 'damaged',
+            age_band: '3to6',
+          },
+          hazards: [
+            {
+              hazard_id: 'HAZ_LI_ION',
+              severity: 'HIGH',
+              icon: 'BatteryWarning',
+              warning: lang === 'hi' ? 'क्षतिग्रस्त लिथियम बैटरी में आग लग सकती है।' : 'A lithium battery may catch fire or explode if punctured or heated.',
+              do: [
+                lang === 'hi' ? 'फूली या गर्म बैटरी को अलग करें।' : 'Stop handling a hot or swollen battery.',
+                lang === 'hi' ? 'अधिकृत रीसाइक्लर को ही सौंपें।' : 'Hand over intact to a verified battery handler.',
+              ],
+              dont: [
+                lang === 'hi' ? 'इसे कभी छेदें या जलाएँ नहीं।' : 'Do not puncture, hammer, or incinerate.',
+                lang === 'hi' ? 'घरेलू कचरे में कभी न डालें।' : 'Never put this in household waste.',
+              ],
+            },
+          ],
+          decision: {
+            recommended_tier: 'REPAIR_THEN_REUSE',
+            options: [
+              {
+                option_id: 'REPAIR_THEN_REUSE',
+                title: lang === 'hi' ? 'स्क्रीन मरम्मत और पुनः उपयोग' : 'Screen Repair & Refurbishment',
+                money_range: { min: 2500, max: 6500, currency: 'INR' },
+                env_rating: 'better',
+                co2e_avoided_min_kg: 35.0,
+                co2e_avoided_max_kg: 55.0,
+                why: lang === 'hi' ? 'मरम्मत खर्च मूल्य के 50% से कम है। स्क्रीन बदलकर फोन को दूसरा जीवन मिलता है।' : 'Repair cost (~₹1,200) is well under 50% of secondary market value. Extends device lifetime.',
+              },
+              {
+                option_id: 'RECYCLE_AUTHORIZED',
+                title: lang === 'hi' ? 'अधिकृत रीसाइक्लिंग' : 'Authorized Material Recycling',
+                money_range: { min: 80, max: 220, currency: 'INR' },
+                env_rating: 'good',
+                co2e_avoided_min_kg: 10.0,
+                co2e_avoided_max_kg: 18.0,
+                why: lang === 'hi' ? 'पंजीकृत रिफाइनरी में सोना, तांबा और कोबाल्ट अलग किया जाता है।' : 'Certified smelters reclaim gold, copper, and cobalt while safely neutralizing battery cells.',
+              },
+            ],
+            comparison_table: [
+              {
+                option_name: lang === 'hi' ? 'कचरे में फेंकना (डंपिंग)' : 'Throw away (Landfill/Drain)',
+                money_text: '₹0',
+                env_rating: 'poor',
+                co2e_avoided_text: '0 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'भारी प्रदूषण: लिथियम आग का खतरा और भूजल में तेजाब।' : 'Extreme pollution: lithium fire hazard and toxic chemicals in soil.',
+              },
+              {
+                option_name: lang === 'hi' ? 'मरम्मत कर उपयोग' : 'Repair & Refurbish',
+                money_text: '₹2,500 - ₹6,500',
+                env_rating: 'better',
+                co2e_avoided_text: '35 - 55 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'नया फोन बनने का 85% कार्बन बचाता है।' : 'Restores functional life; avoids 85% of embodied manufacturing carbon.',
+              },
+              {
+                option_name: lang === 'hi' ? 'अधिकृत रीसाइक्लिंग' : 'Authorized Recycling',
+                money_text: '₹80 - ₹220',
+                env_rating: 'good',
+                co2e_avoided_text: '10 - 18 kg CO₂e',
+                summary_reason: lang === 'hi' ? 'कीमती धातुएं वापस प्राप्त होती हैं।' : 'Reclaims precious metals; avoids primary bauxite and copper mining.',
+              },
+            ],
+          },
+          audio_script: lang === 'hi'
+            ? 'सावधानी। लिथियम बैटरी का खतरा पहचाना गया है। स्क्रीन बदलने के बाद इस फोन का मूल्य लगभग ढाई से साढ़े छह हजार रुपये हो सकता है।'
+            : 'Caution. High severity lithium battery hazard detected. Device qualifies for screen repair. Tap Arrange Pickup to connect with a verified collector.',
+        };
+      }
+
+      setScanResult(fallbackData);
       setIsScanning(false);
-    }, 500);
+      setTimeout(() => {
+        document.getElementById('scan-results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
+    }, 400);
   };
 
   // Guest-First Pickup Booking: Requires Household sign-in to attach scan
@@ -699,7 +841,15 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     }
 
     if (currentUser.role !== 'household') {
-      alert('Please sign in as a household to arrange doorstep pickup.');
+      if (scanResult?.scan_id) {
+        setPendingScanToClaim(scanResult.scan_id);
+      }
+      setAuthError(
+        lang === 'hi'
+          ? 'पिकअप केवल घरेलू नागरिक खातों (Household Accounts) के लिए उपलब्ध है। कृपया नागरिक खाते से साइन-इन करें।'
+          : 'Doorstep pickup is reserved for household citizens. Please sign in with a Household profile.'
+      );
+      setAuthModal('household');
       return;
     }
 
@@ -761,42 +911,59 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
   // Confirm Handover (Household confirms, points credited)
   const handleConfirmHandover = async () => {
-    if (!activePickup || !qrToken || !authToken) return;
+    if (!activePickup) return;
     try {
-      const res = await fetch('/v1/handover/confirm', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          qr_token: qrToken,
-          confirmed: true,
-        }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setActivePickup({
-          ...activePickup,
-          status: 'VERIFIED',
-          points_earned: data.points_earned,
-          kg_diverted: data.kg_diverted,
+      if (authToken && qrToken) {
+        const res = await fetch('/v1/handover/confirm', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            qr_token: qrToken,
+            confirmed: true,
+          }),
         });
-        void loadLeaderboard();
-        void loadPersonalImpact();
-        return;
+        if (res.ok) {
+          const data = await res.json();
+          setActivePickup({
+            ...activePickup,
+            status: 'VERIFIED',
+            points_earned: data.points_earned,
+            kg_diverted: data.kg_diverted,
+            verified_at: new Date().toLocaleTimeString(),
+          });
+          setHandoverSuccessMsg(
+            lang === 'hi'
+              ? `✓ हैंडओवर सफलतापूर्वक सत्यापित! +${data.points_earned || 90} इको पॉइंट्स जुड़े।`
+              : `✓ Handover Verified! +${data.points_earned || 90} Eco Points credited to your impact ledger.`
+          );
+          void loadLeaderboard();
+          void loadPersonalImpact();
+          return;
+        }
       }
     } catch {
       // fallback
     }
 
+    const earned = activePickup?.points_earned || 90;
+    const kg = activePickup?.kg_diverted || 0.22;
     setActivePickup({
       ...activePickup,
       status: 'VERIFIED',
-      points_earned: 90,
-      kg_diverted: 0.22,
+      points_earned: earned,
+      kg_diverted: kg,
+      verified_at: new Date().toLocaleTimeString(),
     });
+    setHandoverSuccessMsg(
+      lang === 'hi'
+        ? `✓ हैंडओवर सफलतापूर्वक सत्यापित! +${earned} इको पॉइंट्स आपके खाते में जुड़ गए।`
+        : `✓ Handover Verified! +${earned} Eco Points & ${kg} kg diverted credited to your impact ledger.`
+    );
     void loadLeaderboard();
+    void loadPersonalImpact();
   };
 
   // Admin Aggregation dispatch
@@ -1195,7 +1362,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
             )}
 
             {scanResult && !scanResult.needs_more_photos && scanResult.device && (
-              <div className="mt-8">
+              <div id="scan-results-section" className="mt-8">
                 {scanResult.hazards?.length > 0 && (
                   <div className="hazard-banner" role="alert">
                     <div className="hazard-banner-header">
@@ -1380,8 +1547,20 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 <div className="qr-frame">
                   <Icon name="QrCode" size={140} />
                   <p className="text-xs font-mono font-bold mt-2 text-slate-700">{qrToken || 'qr_demo_token_9412'}</p>
-                  <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded mt-1">Single-Use Token</span>
+                  {activePickup?.status === 'VERIFIED' ? (
+                    <span className="text-[10px] text-white font-bold bg-emerald-600 px-3 py-1 rounded-full mt-1 inline-flex items-center gap-1 shadow-sm">
+                      ✓ Handover Completed & Verified
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded mt-1">Single-Use Token</span>
+                  )}
                 </div>
+
+                {handoverSuccessMsg && (
+                  <div className="bg-emerald-50 border-2 border-emerald-400 rounded-xl p-4 text-emerald-950 mb-4 text-sm font-semibold shadow-sm text-left">
+                    {handoverSuccessMsg}
+                  </div>
+                )}
 
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-left mb-4 text-xs text-emerald-950">
                   <strong>Batched Trip Notice:</strong>
@@ -1389,8 +1568,14 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 </div>
 
                 {activePickup?.status === 'VERIFIED' ? (
-                  <div className="bg-emerald-100 border border-emerald-300 rounded-xl p-4 text-emerald-900 font-semibold">
-                    ✓ Handover Verified! +{activePickup.points_earned} Eco Points credited to your impact ledger.
+                  <div className="bg-emerald-100 border-2 border-emerald-400 rounded-xl p-5 text-emerald-950 font-semibold text-center">
+                    <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-2 text-2xl font-bold">✓</div>
+                    <strong className="block text-base text-emerald-900 mb-1">
+                      {lang === 'hi' ? 'हैंडओवर सत्यापित हुआ!' : 'Physical Handover Verified!'}
+                    </strong>
+                    <p className="text-xs text-emerald-800 m-0">
+                      +{activePickup.points_earned} Eco Points & {activePickup.kg_diverted} kg e-waste credited to your impact ledger.
+                    </p>
                   </div>
                 ) : (
                   <button type="button" className="camera-button w-full" onClick={handleConfirmHandover}>
@@ -1499,7 +1684,14 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
                 {/* Stops list */}
                 <div className="stops-list mb-6">
-                  <h3 className="text-sm font-bold mb-3">Pooled Pickup Stops (Optimized Sequence)</h3>
+                  <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+                    <h3 className="text-sm font-bold m-0">
+                      {lang === 'hi' ? '3 पूल्ड पिकअप स्टॉप निर्धारित (अनुकूलित क्रम)' : '3 Pooled Pickup Stops Scheduled (Optimized Sequence)'}
+                    </h3>
+                    <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                      3 Stops · {collectorRouteData?.saved_km || '28.4'} km Saved
+                    </span>
+                  </div>
                   {[
                     { id: 'Stop 1', citizen: 'EcoCitizen-Kalkaji-01', item: 'Laptop (Swollen Battery)', hazard: 'HAZ_LI_ION', wt: '2.1 kg' },
                     { id: 'Stop 2', citizen: 'EcoCitizen-NehruPlace-04', item: 'CRT Monitor (Intact Glass)', hazard: 'HAZ_CRT_LEAD', wt: '14.0 kg' },
@@ -1677,9 +1869,11 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
               <div>
                 <div className="section-heading mb-4">
                   <div>
-                    <h2>Admin & Municipal Oversight</h2>
+                    <h2>{lang === 'hi' ? 'प्रशासनिक एवं नगर निगम निगरानी' : 'Admin & Municipal Oversight'}</h2>
                     <div className="flex items-center gap-2 flex-wrap mt-1">
-                      <span className="text-xs text-slate-500">City Aggregates & Collector Application Approvals</span>
+                      <span className="text-xs text-slate-500">
+                        {lang === 'hi' ? 'शहरी ई-कचरा आंकड़े एवं कबाड़ीवाला आवेदन अनुमोदन' : 'City Aggregates & Collector Application Approvals'}
+                      </span>
                       <DemoSeedBadge compact />
                     </div>
                   </div>
@@ -1687,22 +1881,22 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
                 <div className="metrics-row">
                   <div className="metric-box">
-                    <span className="metric-label">City E-Waste Diverted</span>
+                    <span className="metric-label">{lang === 'hi' ? 'शहर में डायवर्ट किया गया ई-कचरा' : 'City E-Waste Diverted'}</span>
                     <p className="metric-val">1,485 kg</p>
-                    <span className="metric-sub">verified across 4 zones</span>
-                    <span className="demo-seed-inline metric-note">Demo seed data</span>
+                    <span className="metric-sub">{lang === 'hi' ? '4 क्षेत्रों में सत्यापित' : 'verified across 4 zones'}</span>
+                    <span className="demo-seed-inline metric-note">{lang === 'hi' ? 'डेमो सीड डेटा' : 'Demo seed data'}</span>
                   </div>
                   <div className="metric-box">
-                    <span className="metric-label">Transit Kilometres Saved</span>
+                    <span className="metric-label">{lang === 'hi' ? 'बचत किए गए परिवहन किलोमीटर' : 'Transit Kilometres Saved'}</span>
                     <p className="metric-val highlight">386.4 km</p>
-                    <span className="metric-sub">from intelligent request pooling</span>
-                    <span className="demo-seed-inline metric-note">Demo seed data</span>
+                    <span className="metric-sub">{lang === 'hi' ? 'स्मार्ट अनुरोध पूलिंग द्वारा' : 'from intelligent request pooling'}</span>
+                    <span className="demo-seed-inline metric-note">{lang === 'hi' ? 'डेमो सीड डेटा' : 'Demo seed data'}</span>
                   </div>
                   <div className="metric-box">
-                    <span className="metric-label">Hazardous Items Neutralized</span>
+                    <span className="metric-label">{lang === 'hi' ? 'निष्क्रिय किए गए खतरनाक उपकरण' : 'Hazardous Items Neutralized'}</span>
                     <p className="metric-val text-red-700">164 items</p>
-                    <span className="metric-sub">diverted from open burning/landfills</span>
-                    <span className="demo-seed-inline metric-note">Demo seed data</span>
+                    <span className="metric-sub">{lang === 'hi' ? 'खुले में जलाने/डंपिंग से सुरक्षित' : 'diverted from open burning/landfills'}</span>
+                    <span className="demo-seed-inline metric-note">{lang === 'hi' ? 'डेमो सीड डेटा' : 'Demo seed data'}</span>
                   </div>
                 </div>
 
@@ -1710,14 +1904,18 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-6">
                   <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
                     <div>
-                      <h3 className="text-base font-bold text-slate-900 m-0">Informal Collector Applications (Pending Review)</h3>
+                      <h3 className="text-base font-bold text-slate-900 m-0">
+                        {lang === 'hi' ? 'कबाड़ीवाला पंजीकरण आवेदन (समीक्षा लंबित)' : 'Informal Collector Applications (Pending Review)'}
+                      </h3>
                       <div className="flex items-center gap-2 flex-wrap mt-1">
-                        <p className="text-xs text-slate-500 m-0">Review kabadiwalas before creating Cognito logins and setting hazard authorizations.</p>
+                        <p className="text-xs text-slate-500 m-0">
+                          {lang === 'hi' ? 'लॉगिन और खतरनाक कचरा प्राधिकरण देने से पहले कबाड़ीवालों की समीक्षा करें।' : 'Review kabadiwalas before creating Cognito logins and setting hazard authorizations.'}
+                        </p>
                         <DemoSeedBadge compact />
                       </div>
                     </div>
                     <button type="button" className="btn-nav-auth" onClick={() => void loadAdminCollectors()}>
-                      <Icon name="RefreshCw" size={14} /> Refresh
+                      <Icon name="RefreshCw" size={14} /> {lang === 'hi' ? 'ताज़ा करें' : 'Refresh'}
                     </button>
                   </div>
 
@@ -1728,7 +1926,9 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                   )}
 
                   {adminApplications.filter((a) => a.status === 'pending').length === 0 ? (
-                    <p className="text-xs text-slate-500 italic py-4">No pending collector applications currently awaiting review.</p>
+                    <p className="text-xs text-slate-500 italic py-4">
+                      {lang === 'hi' ? 'वर्तमान में समीक्षा के लिए कोई लंबित कबाड़ीवाला आवेदन नहीं है।' : 'No pending collector applications currently awaiting review.'}
+                    </p>
                   ) : (
                     <div className="flex flex-col gap-3">
                       {adminApplications
@@ -1737,11 +1937,11 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                           <div key={app.application_id} className="border border-slate-200 rounded-xl p-4 bg-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
                               <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <strong className="text-sm block">Collector: {app.name}</strong>
+                                <strong className="text-sm block">{lang === 'hi' ? 'कबाड़ीवाला:' : 'Collector:'} {app.name}</strong>
                                 <DemoSeedBadge compact />
                               </div>
-                              <span className="text-xs text-slate-600 block"><strong>Phone:</strong> {maskPhone(app.phone)} · <strong>Vehicle:</strong> {app.vehicle_type}</span>
-                              <span className="text-xs text-slate-500 block">📍 Area: {app.service_area} · Ref: {app.authorization_ref}</span>
+                              <span className="text-xs text-slate-600 block"><strong>{lang === 'hi' ? 'फोन:' : 'Phone:'}</strong> {maskPhone(app.phone)} · <strong>{lang === 'hi' ? 'वाहन:' : 'Vehicle:'}</strong> {app.vehicle_type}</span>
+                              <span className="text-xs text-slate-500 block">📍 {lang === 'hi' ? 'क्षेत्र:' : 'Area:'} {app.service_area} · {lang === 'hi' ? 'प्रमाणन संदर्भ:' : 'Ref:'} {app.authorization_ref}</span>
                               <div className="flex gap-1 mt-1">
                                 {app.categories?.map((cat: string) => (
                                   <span key={cat} className="text-[10px] bg-slate-200 px-1.5 py-0.5 rounded font-mono">{cat}</span>
@@ -1775,25 +1975,29 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
                 {/* Run Aggregation Engine */}
                 <div className="bg-white border-2 border-dashed border-emerald-400 rounded-2xl p-6 text-center mb-6">
-                  <h3 className="text-lg font-bold mb-2">Live Demo Control: Route Clustering Engine</h3>
+                  <h3 className="text-lg font-bold mb-2">
+                    {lang === 'hi' ? 'लाइव डेमो नियंत्रण: रूट क्लस्टरिंग एल्गोरिदम' : 'Live Demo Control: Route Clustering Engine'}
+                  </h3>
                   <div className="flex justify-center mb-3">
                     <DemoSeedBadge />
                   </div>
                   <p className="text-xs text-slate-600 max-w-md mx-auto mb-4">
-                    Trigger the scheduler to batch pending household requests in Delhi-NCR and compute measured travel kilometres saved.
+                    {lang === 'hi'
+                      ? 'लंबित घरेलू अनुरोधों को क्लस्टर करने और ईंधन बचत मापने के लिए शेड्यूलर चलाएँ।'
+                      : 'Trigger the scheduler to batch pending household requests in Delhi-NCR and compute measured travel kilometres saved.'}
                   </p>
                   <button type="button" className="camera-button mx-auto" onClick={handleRunAdminAggregation}>
                     <Icon name="Navigation" size={20} />
-                    Run Pickup Aggregation Now
+                    {lang === 'hi' ? 'पिकअप एकत्रीकरण अभी चलाएँ' : 'Run Pickup Aggregation Now'}
                   </button>
 
                   {adminReport && (
                     <div className="mt-5 p-4 bg-emerald-50 border border-emerald-300 rounded-xl text-left text-xs text-emerald-950">
-                      <strong className="block text-sm font-bold text-emerald-900 mb-1">✓ Aggregation Dispatched!</strong>
+                      <strong className="block text-sm font-bold text-emerald-900 mb-1">✓ {lang === 'hi' ? 'एकत्रीकरण पूरा हुआ!' : 'Aggregation Dispatched!'}</strong>
                       <p className="m-0 mb-2">{adminReport.message}</p>
                       <div className="flex gap-6 font-mono text-emerald-800 flex-wrap">
-                        <span><span className="demo-seed-inline">Demo seed data</span> Saved Distance: <strong>{adminReport.total_saved_km} km</strong></span>
-                        <span><span className="demo-seed-inline">Demo seed data</span> Saved Carbon: <strong>{adminReport.total_co2e_saved_kg} kg CO₂e</strong></span>
+                        <span><span className="demo-seed-inline">{lang === 'hi' ? 'डेमो सीड डेटा' : 'Demo seed data'}</span> {lang === 'hi' ? 'बची हुई दूरी:' : 'Saved Distance:'} <strong>{adminReport.total_saved_km} km</strong></span>
+                        <span><span className="demo-seed-inline">{lang === 'hi' ? 'डेमो सीड डेटा' : 'Demo seed data'}</span> {lang === 'hi' ? 'बचा हुआ कार्बन:' : 'Saved Carbon:'} <strong>{adminReport.total_co2e_saved_kg} kg CO₂e</strong></span>
                       </div>
                     </div>
                   )}
@@ -1803,19 +2007,14 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
           </section>
         )}
 
-        {/* HOUSEHOLD LOGIN MODAL (Google Auth Only) */}
+        {/* HOUSEHOLD LOGIN MODAL */}
         {authModal === 'household' && (
           <div className="modal-overlay" onClick={() => setAuthModal('none')}>
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <div className="flex items-center gap-2">
-                  <svg width="22" height="22" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                  </svg>
-                  <h3 className="text-lg font-bold m-0">{lang === 'hi' ? 'गूगल साइन-इन (घर/नागरिक)' : 'Household Sign-In with Google'}</h3>
+                  <Icon name="Users" size={24} className="text-emerald-700" />
+                  <h3 className="text-lg font-bold m-0">{lang === 'hi' ? 'घरेलू नागरिक लॉगिन' : 'Household Citizen Sign-In'}</h3>
                 </div>
                 <button type="button" className="modal-close-btn" onClick={() => setAuthModal('none')}>
                   <Icon name="X" size={20} />
@@ -1824,7 +2023,7 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
 
               {pendingScanToClaim && (
                 <div className="p-3 mb-4 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900">
-                  ⚡ Sign in with Google to attach your e-waste scan and book verified doorstep pickup.
+                  ⚡ {lang === 'hi' ? 'अपना ई-कचरा स्कैन जोड़ने और पिकअप बुक करने के लिए नागरिक खाते से साइन-इन करें।' : 'Sign in to attach your e-waste scan and book verified doorstep pickup.'}
                 </div>
               )}
 
@@ -1834,31 +2033,58 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                 </div>
               )}
 
-              {/* Official Google Identity Services Container (rendered automatically when Client ID is configured) */}
-              <div id="google-signin-btn-container" className="flex justify-center mb-3"></div>
-
-              {/* Google Account Sign-In Form */}
-              <div className="google-auth-box">
-                <p className="text-xs text-slate-600 mb-3">
-                  Connect your Google account to track verified recycling impact, claim leaderboard badges, and manage doorstep pickups.
+              {/* Demo 1-Click Sign-In (Always accessible for evaluators) */}
+              <div className="demo-login-box mb-4 bg-emerald-50/70 border border-emerald-200 rounded-xl p-4">
+                <h4 className="flex items-center justify-between text-xs font-bold text-emerald-950 uppercase tracking-wide mb-1">
+                  <span>⚡ {lang === 'hi' ? 'डेमो 1-क्लिक घरेलू प्रोफाइल' : 'Demo 1-Click Household Sign-In'}</span>
+                  <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">
+                    {lang === 'hi' ? 'मूल्यांकन हेतु' : 'For Evaluators'}
+                  </span>
+                </h4>
+                <p className="text-xs text-emerald-900/80 mb-3">
+                  {lang === 'hi'
+                    ? 'त्वरित मूल्यांकन के लिए किसी भी पूर्व-सत्यापित नागरिक प्रोफाइल पर क्लिक करें:'
+                    : 'Click either verified citizen profile below to test doorstep pickup, QR verification & eco-points:'}
                 </p>
-                <form onSubmit={(e) => { e.preventDefault(); void handleGoogleAuthSubmit(); }}>
+                <div className="demo-btn-group">
+                  <button type="button" className="demo-btn flex-1 text-left" onClick={() => void loginWithToken('demo-token-household-1')}>
+                    <strong className="block text-emerald-950">EcoPioneer</strong>
+                    <span className="text-xs text-emerald-800">Mayur Vihar · East Delhi</span>
+                  </button>
+                  <button type="button" className="demo-btn flex-1 text-left" onClick={() => void loginWithToken('demo-token-household-2')}>
+                    <strong className="block text-emerald-950">GreenHero</strong>
+                    <span className="text-xs text-emerald-800">Saket · South Delhi</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Custom Citizen Sign-In */}
+              <div className="google-auth-box bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  {lang === 'hi' ? 'या अपना नागरिक खाता बनाएं / साइन-इन करें' : 'Or Citizen Sign-In'}
+                </h4>
+                <p className="text-xs text-slate-600 mb-3">
+                  {lang === 'hi'
+                    ? 'व्यक्तिगत रीसाइक्लिंग प्रभाव और रिवॉर्ड्स ट्रैक करने के लिए अपना विवरण दर्ज करें:'
+                    : 'Enter your name and contact to track your personal circular impact and rewards:'}
+                </p>
+                <form onSubmit={(e) => { e.preventDefault(); void handleHouseholdAuthSubmit(); }}>
                   <div className="form-group mb-2">
-                    <label className="text-xs font-semibold text-slate-700">Google Email Address</label>
+                    <label className="text-xs font-semibold text-slate-700">{lang === 'hi' ? 'ईमेल या मोबाइल नंबर' : 'Email or Mobile Number'}</label>
                     <input
-                      type="email"
+                      type="text"
                       required
-                      placeholder="yourname@gmail.com"
+                      placeholder={lang === 'hi' ? 'उदा. priya@example.com या 9811023456' : 'e.g. priya@example.com or 9811023456'}
                       value={googleEmail}
                       onChange={(e) => setGoogleEmail(e.target.value)}
                       className="form-input text-sm"
                     />
                   </div>
                   <div className="form-group mb-3">
-                    <label className="text-xs font-semibold text-slate-700">Display Name / Pseudonym</label>
+                    <label className="text-xs font-semibold text-slate-700">{lang === 'hi' ? 'नाम / उपनाम' : 'Your Name / Pseudonym'}</label>
                     <input
                       type="text"
-                      placeholder="e.g. EcoChampion_Delhi"
+                      placeholder={lang === 'hi' ? 'उदा. प्रिया शर्मा' : 'e.g. Priya Sharma'}
                       value={googleName}
                       onChange={(e) => setGoogleName(e.target.value)}
                       className="form-input text-sm"
@@ -1868,32 +2094,11 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
                     type="submit"
                     className="camera-button w-full flex items-center justify-center gap-2"
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                    </svg>
-                    Continue with Google
+                    <Icon name="Check" size={16} />
+                    {lang === 'hi' ? 'नागरिक के रूप में जारी रखें' : 'Continue as Citizen'}
                   </button>
                 </form>
               </div>
-
-              {isDemo && (
-                <div className="demo-login-box">
-                  <h4>⚡ Demo 1-Click Household Sign-In</h4>
-                  <div className="demo-btn-group">
-                    <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-household-1')}>
-                      EcoPioneer
-                      <span>household1@demo</span>
-                    </button>
-                    <button type="button" className="demo-btn" onClick={() => void loginWithToken('demo-token-household-2')}>
-                      GreenHero
-                      <span>household2@demo</span>
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         )}
