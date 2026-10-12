@@ -73,10 +73,13 @@ export default function HeroSection() {
           }
           .hero-badge {
             position: absolute; right: calc(50*var(--u)); top: calc(24*var(--u)); width: calc(98*var(--u)); height: calc(98*var(--u)); border-radius: 50%;
+            background: #0F3D33; color: #F4F1E8;
             box-shadow: inset 0 0 0 calc(4*var(--u)) #0F3D33, inset 0 0 0 calc(6*var(--u)) #F4F1E8;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
           }
           .hero-note {
             position: absolute; left: calc(690*var(--u)); top: calc(192*var(--u)); width: calc(96*var(--u)); font-size: calc(22*var(--u)); transform: rotate(-12deg);
+            font-family: 'Caveat', cursive; color: white; line-height: 1.1;
           }
           .hero-arrow {
             position: absolute; left: calc(724*var(--u)); top: calc(300*var(--u)); width: calc(44*var(--u)); height: calc(48*var(--u)); stroke-width: calc(2.5*var(--u));
