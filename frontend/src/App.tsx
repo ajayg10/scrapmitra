@@ -123,6 +123,10 @@ export default function App({ isDemo: propIsDemo }: { isDemo?: boolean } = {}) {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const DEMO_PROFILES: Record<string, UserProfile> = {
     'demo-token-household-1': {
       user_id: 'sub_hh_01',

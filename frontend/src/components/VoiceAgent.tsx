@@ -77,15 +77,22 @@ export default function VoiceAgent({
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const lastScanIdRef = useRef<string | undefined>(undefined);
   const lastUploadRef = useRef<boolean>(false);
 
-  // Auto-scroll chat to bottom
+  // Auto-scroll chat to bottom inside chat window only (prevents window scrolling)
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (turns.length > 0 && chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
   }, [turns]);
 
   // React to new image upload
@@ -510,7 +517,7 @@ export default function VoiceAgent({
       {!isMinimized && (
         <>
           {/* Chat Window */}
-          <div className="voice-chat-window" role="log" aria-live="polite">
+          <div ref={chatWindowRef} className="voice-chat-window" role="log" aria-live="polite">
             {turns.length === 0 && (
               <div className="voice-empty-hint">
                 <span style={{ fontSize: '1.5rem' }}>💬</span>
@@ -566,8 +573,6 @@ export default function VoiceAgent({
             ⚠️ {error}
           </div>
         )}
-
-        <div ref={chatBottomRef} />
       </div>
 
       {/* Quick Chips */}
